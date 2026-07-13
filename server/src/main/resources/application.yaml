@@ -1,3 +1,66 @@
 spring:
   application:
     name: server
+
+  client:
+    frontend-url: http://localhost:3000
+
+  docker:
+    compose:
+      file: "../infrastructure/docker/compose.yml"
+      enabled: true
+      lifecycle-management: start-and-stop
+
+  datasource:
+    url: jdbc:postgresql://localhost:${DB_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  security:
+    user:
+      name: "${SPRING_SECURITY_USERNAME}"
+      password: "${SPRING_SECURITY_PASSWORD}"
+
+    jwt:
+      issuer: pleasebookme
+
+      secret: ${JWT_SECRET}
+
+      access-expiration: 900
+
+      refresh-expiration: 2592000
+
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+              - profile
+              - email
+              - https://googleapis.com
+              - https://googleapis.com
+              - https://googleapis.com
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub

@@ -92,4 +92,8 @@ if (dotenvFile.exists()) {
 	tasks.named<JavaExec>("bootRun") {
 		dotenvVars.forEach { (key, value) -> environment(key, value) }
 	}
+
+	tasks.withType<Test> {
+		dotenvVars.forEach { (key, value) -> environment(key, value) }
+	}
 }

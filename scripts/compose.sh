@@ -3,7 +3,7 @@ set -euo pipefail
 
 read command
 
-if ["$command" == "up"]
+if [ "$command" == "up" ]
 then
     docker compose -f ./infrastructure/docker/compose.yml up -d
 else
