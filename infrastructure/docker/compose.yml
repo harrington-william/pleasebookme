@@ -1,0 +1,78 @@
+name: pleasebookme
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: pleasebookme_db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_SUPERADMIN_USERNAME}
+      POSTGRES_PASSWORD: ${DB_SUPERADMIN_PASSWORD}
+
+    ports:
+      - "${DB_PORT}:5432"
+
+    volumes:
+      - pleasebookme_data:/var/lib/postgresql/data
+      - ./backups:/backups
+
+    networks:
+      - pleasebookme_network
+
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "pg_isready -h localhost -U ${DB_SUPERADMIN_USERNAME} -d ${DB_NAME}"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pleasebookme_pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+
+    ports:
+      - "${PGADMIN_PORT}:80"
+
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+    networks:
+      - pleasebookme_network
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  pleasebookme_data:
+    name: pleasebookme_data
+
+  pgadmin_data:
+    name: pleasebookme_pgadmin_data
+
+networks:
+  pleasebookme_network:
+    driver: bridge
+    internal: false
