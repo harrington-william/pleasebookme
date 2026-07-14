@@ -41,6 +41,7 @@ spring:
       - classpath:db/migration/integration
       - classpath:db/migration/notification
       - classpath:db/migration/audit
+    out-of-order: true
 
   security:
     user:
