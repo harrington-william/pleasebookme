@@ -1,0 +1,1 @@
+DROP TYPE IF EXISTS core.week_start CASCADE;
