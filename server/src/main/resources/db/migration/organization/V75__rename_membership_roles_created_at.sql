@@ -1,0 +1,1 @@
+ALTER TABLE organization.membership_roles RENAME COLUMN created_at TO assigned_at;
