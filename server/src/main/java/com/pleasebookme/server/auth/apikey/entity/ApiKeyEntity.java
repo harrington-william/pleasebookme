@@ -2,6 +2,7 @@ package com.pleasebookme.server.auth.apikey.entity;
 
 import com.pleasebookme.server.auth.enums.ApiKeyStatus;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
+import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,8 +35,9 @@ public class ApiKeyEntity {
     @Column(name = "uid", nullable = false, unique = true, updatable = false)
     private UUID apiKeyUid;
 
-    @Column(name = "tenant_id", nullable = false)
-    private BigInteger tenantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", nullable = false)
+    private TenantEntity tenant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_user_id", nullable = false)
