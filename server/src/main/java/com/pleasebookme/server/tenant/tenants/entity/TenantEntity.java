@@ -2,6 +2,7 @@ package com.pleasebookme.server.tenant.tenants.entity;
 
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.global.enums.Locale;
+import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
 import com.pleasebookme.server.tenant.ecosystem.entity.EcosystemEntity;
 import com.pleasebookme.server.tenant.enums.TenantRegion;
 import com.pleasebookme.server.tenant.enums.TenantStatus;
@@ -29,7 +30,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-// Missing organization
 public class TenantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,8 +40,9 @@ public class TenantEntity {
     @Column(name = "uid", nullable = false, unique = true, updatable = false)
     private UUID tenantUid;
 
-    @Column(name = "organization_id", nullable = false)
-    private BigInteger organizationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private OrganizationEntity organization;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_user_id", nullable = false)
