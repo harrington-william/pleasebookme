@@ -107,6 +107,7 @@ Implemented schemas:
 - notification
 - integration
 - customer
+- organization
 
 Temporarily excluded schemas:
 
