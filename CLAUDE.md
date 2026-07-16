@@ -1,4 +1,9 @@
 @AGENTS.md
+@SERVER_AGENTS.md
+
+# Context Rules
+
+- Maintain Spring Boot server context in @SERVER_AGENTS.md
 
 # Business Name: **Please Book Me**
 # Current Phase: We are currently building PLATFORM V1. The first ever production-grade product.
@@ -213,5 +218,3 @@ Implemented schemas:
 The long-term objective is to evolve beyond a booking application into an API-first reservation infrastructure platform. Every interface—including the embedded booking widget, business dashboard, customer portal, mobile applications, and future third-party integrations—operates as a client of the same centralized backend infrastructure. This architecture enables the platform to scale from serving local Vietnamese businesses to becoming a reusable reservation platform capable of supporting multiple industries, international regions, and external software ecosystems.
 
 # Folder Structure
-
-
