@@ -27,6 +27,7 @@ public class TenantPlanEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger tenantPlanId;
 
     @Column(name = "code", nullable = false, unique = true, length = 50)

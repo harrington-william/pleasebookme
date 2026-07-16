@@ -30,6 +30,7 @@ public class ResourceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger resourceId;
 
     @UuidGenerator

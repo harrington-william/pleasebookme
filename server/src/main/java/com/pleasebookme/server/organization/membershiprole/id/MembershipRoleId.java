@@ -6,13 +6,17 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Embeddable
 public class MembershipRoleId implements Serializable {
     @Column(name = "membership_id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger membershipId;
 
     @Column(name = "role_id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger roleId;
 
     public MembershipRoleId() {}

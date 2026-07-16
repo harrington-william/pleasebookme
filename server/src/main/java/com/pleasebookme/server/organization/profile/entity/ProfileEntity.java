@@ -11,6 +11,8 @@ import org.hibernate.annotations.UuidGenerator;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -27,6 +29,7 @@ public class ProfileEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger profileId;
 
     @UuidGenerator

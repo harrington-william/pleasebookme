@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -22,6 +24,7 @@ public class NotificationChannelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger notificationChannelId;
 
     @Column(name = "code", nullable = false, unique = true, length = 50)

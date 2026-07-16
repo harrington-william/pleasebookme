@@ -10,6 +10,8 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -25,6 +27,7 @@ public class RoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger roleId;
 
     @Column(name = "name", nullable = false, length = 100)
@@ -36,6 +39,7 @@ public class RoleEntity {
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
+        schema = "auth",
         name = "role_permissions",
         joinColumns = @JoinColumn(name = "role_id"),
         inverseJoinColumns = @JoinColumn(name = "permission_id")

@@ -27,6 +27,7 @@ public class BookingPolicyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger bookingPolicyId;
 
     @ManyToOne(fetch = FetchType.LAZY)

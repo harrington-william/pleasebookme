@@ -26,6 +26,7 @@ public class NotificationQueueEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger notificationQueueId;
 
     @ManyToOne(fetch = FetchType.LAZY)

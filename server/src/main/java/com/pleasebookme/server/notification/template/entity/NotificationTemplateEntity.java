@@ -27,6 +27,7 @@ public class NotificationTemplateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger notificationTemplateId;
 
     @ManyToOne(fetch = FetchType.LAZY)

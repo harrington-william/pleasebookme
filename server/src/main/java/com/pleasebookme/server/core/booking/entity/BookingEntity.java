@@ -32,6 +32,7 @@ public class BookingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger bookingId;
 
     @UuidGenerator

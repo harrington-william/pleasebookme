@@ -25,6 +25,7 @@ public class AttendeeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger attendeeId;
 
     @ManyToOne(fetch = FetchType.LAZY)

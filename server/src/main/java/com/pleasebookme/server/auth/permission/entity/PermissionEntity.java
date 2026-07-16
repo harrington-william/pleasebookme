@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -22,6 +24,7 @@ public class PermissionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger permissionId;
 
     @Column(name = "name", nullable = false, length = 100)

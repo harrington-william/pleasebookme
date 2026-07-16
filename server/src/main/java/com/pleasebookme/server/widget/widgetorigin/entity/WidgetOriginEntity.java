@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -23,6 +25,7 @@ public class WidgetOriginEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger widgetOriginId;
 
     @ManyToOne(fetch = FetchType.LAZY)

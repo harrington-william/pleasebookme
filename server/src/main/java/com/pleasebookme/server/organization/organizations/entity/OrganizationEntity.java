@@ -27,6 +27,7 @@ public class OrganizationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger organizationId;
 
     @Column(name = "name", nullable = false)

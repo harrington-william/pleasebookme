@@ -28,6 +28,7 @@ public class DestinationSheetsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger destinationSheetsId;
 
     @Enumerated(EnumType.STRING)

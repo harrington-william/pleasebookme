@@ -6,6 +6,8 @@ import lombok.*;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -21,6 +23,7 @@ public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger accountId;
 
     @ManyToOne(fetch = FetchType.LAZY)

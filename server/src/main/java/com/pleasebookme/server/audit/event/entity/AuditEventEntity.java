@@ -45,6 +45,7 @@ public class AuditEventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger auditEventId;
 
     @UuidGenerator

@@ -6,10 +6,13 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Embeddable
 public class ResourceAttributesId implements Serializable {
     @Column(name = "resource_id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger resourceId;
 
     @Column(name = "key", length = 100)

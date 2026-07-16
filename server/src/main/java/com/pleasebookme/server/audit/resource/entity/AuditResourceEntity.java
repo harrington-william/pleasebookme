@@ -33,9 +33,11 @@ public class AuditResourceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger auditResourceId;
 
     @Column(name = "event_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger eventId;
 
     @Enumerated(EnumType.STRING)

@@ -36,6 +36,7 @@ public class NotificationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger notificationId;
 
     @UuidGenerator

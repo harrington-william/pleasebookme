@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -22,6 +24,7 @@ import java.time.Instant;
 public class UserPasswordEntity {
     @Id
     @Column(name = "user_id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger userId;
 
     @OneToOne(fetch = FetchType.LAZY)

@@ -26,6 +26,7 @@ public class ResourceTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger resourceTypeId;
 
     @ManyToOne(fetch = FetchType.LAZY)

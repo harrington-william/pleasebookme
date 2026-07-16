@@ -6,13 +6,17 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Embeddable
 public class RolePermissionId implements Serializable {
     @Column(name = "role_id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger roleId;
 
     @Column(name = "permission_id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger permissionId;
 
     public RolePermissionId() {}

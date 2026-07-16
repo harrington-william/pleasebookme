@@ -33,6 +33,7 @@ public class AuditActorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger auditActorId;
 
     @Enumerated(EnumType.STRING)
@@ -44,6 +45,7 @@ public class AuditActorEntity {
     private String userUid;
 
     @Column(name = "membership_id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger membershipId;
 
     @Column(name = "widget_uid")
@@ -53,6 +55,7 @@ public class AuditActorEntity {
     private String apiKeyUid;
 
     @Column(name = "attendee_id", unique = true)
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger attendeeId;
 
     @Column(name = "system_name", length = 100)

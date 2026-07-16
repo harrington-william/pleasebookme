@@ -29,6 +29,7 @@ public class ApiKeyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger apiKeyId;
 
     @UuidGenerator

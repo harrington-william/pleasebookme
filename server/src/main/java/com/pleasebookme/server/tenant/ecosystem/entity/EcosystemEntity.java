@@ -26,6 +26,7 @@ public class EcosystemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JdbcTypeCode(SqlTypes.BIGINT)
     private BigInteger ecosystemId;
 
     @Column(name = "code", nullable = false, unique = true, length = 50)
