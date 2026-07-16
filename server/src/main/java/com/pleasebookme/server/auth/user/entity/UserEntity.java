@@ -6,9 +6,7 @@ import com.pleasebookme.server.global.enums.Locale;
 import com.pleasebookme.server.global.enums.Theme;
 import com.pleasebookme.server.global.enums.WeekStart;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -27,6 +25,8 @@ import java.util.UUID;
     schema = "auth",
     name = "users"
 )
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
