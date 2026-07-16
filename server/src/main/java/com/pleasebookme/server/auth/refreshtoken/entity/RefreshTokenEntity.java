@@ -1,6 +1,7 @@
 package com.pleasebookme.server.auth.refreshtoken.entity;
 
 import com.pleasebookme.server.auth.user.entity.UserEntity;
+import com.pleasebookme.server.widget.widgets.entity.WidgetEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,7 +19,6 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-// Missing widget
 public class RefreshTokenEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,8 +35,9 @@ public class RefreshTokenEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "widget_id")
-    private BigInteger widgetId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "widget_id")
+    private WidgetEntity widget;
 
     @Column(name = "device_name")
     private String deviceName;

@@ -3,6 +3,8 @@ package com.pleasebookme.server.core.booking.entity;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.core.enums.BookingStatus;
 import com.pleasebookme.server.core.service.entity.ServiceEntity;
+import com.pleasebookme.server.integration.calendar.entity.DestinationCalendarEntity;
+import com.pleasebookme.server.integration.sheets.entity.DestinationSheetsEntity;
 import jakarta.persistence.*;
 import java.math.BigInteger;
 import java.time.Instant;
@@ -25,7 +27,6 @@ import tools.jackson.databind.JsonNode;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-// Missing destination calendar & sheets
 public class BookingEntity {
 
     @Id
@@ -106,11 +107,13 @@ public class BookingEntity {
     @Column(name = "metadata")
     private JsonNode metadata;
 
-    @Column(name = "destination_calendar_id")
-    private BigInteger destinationCalendarId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "destination_calendar_id")
+    private DestinationCalendarEntity destinationCalendar;
 
-    @Column(name = "destination_sheets_id")
-    private BigInteger destinationSheetsId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "destination_sheets_id")
+    private DestinationSheetsEntity destinationSheets;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
