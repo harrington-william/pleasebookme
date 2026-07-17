@@ -28,6 +28,16 @@ public class UserController {
         return UserResponse.from(userService.getUserById(userId));
     }
 
+    @GetMapping("/email/{email}")
+    public UserResponse getUserByEmail(@PathVariable String email) {
+        return UserResponse.from(userService.getUserByEmail(email));
+    }
+
+    @GetMapping("/phone/{phone}")
+    public UserResponse getUserByPhone(@PathVariable String phone) {
+        return UserResponse.from(userService.getUserByPhone(phone));
+    }
+
     @GetMapping
     public List<UserResponse> getUsers() {
         return userService.getAllUsers().stream()

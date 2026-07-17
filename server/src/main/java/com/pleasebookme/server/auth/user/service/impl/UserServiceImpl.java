@@ -2,6 +2,8 @@ package com.pleasebookme.server.auth.user.service.impl;
 
 import com.pleasebookme.server.auth.user.dto.UserRequest;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
+import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
+import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.user.repository.UserRepository;
 import com.pleasebookme.server.auth.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity createUser(UserRequest request) {
-        UserEntity.UserEntityBuilder builder = UserEntity.builder()
+        if (userRepository.existsByUsername(request.username())) {
+            throw new DuplicateUserException("Username already exists: " + request.username());
+        }
+
+        if (userRepository.existsByEmail(request.email())) {
+            throw new DuplicateUserException("Email already exists: " + request.email());
+        }
+
+        if (userRepository.existsByPhone(request.phone())) {
+            throw new DuplicateUserException("Phone already exists: " + request.phone());
+        }
+
+        UserEntity.UserEntityBuilder user = UserEntity.builder()
             .username(request.username())
             .name(request.name())
             .email(request.email())
@@ -27,19 +41,18 @@ public class UserServiceImpl implements UserService {
             .bio(request.bio())
             .avatarUrl(request.avatarUrl());
 
-        if (request.locale() != null) builder.locale(request.locale());
-        if (request.timezone() != null) builder.timezone(request.timezone());
-        if (request.theme() != null) builder.theme(request.theme());
-        if (request.weekStart() != null) builder.weekStart(request.weekStart());
+        if (request.locale() != null) user.locale(request.locale());
+        if (request.timezone() != null) user.timezone(request.timezone());
+        if (request.theme() != null) user.theme(request.theme());
+        if (request.weekStart() != null) user.weekStart(request.weekStart());
 
-        return userRepository.save(builder.build());
+        return userRepository.save(user.build());
     }
 
     @Override
     public UserEntity getUserById(BigInteger userId) {
         return userRepository.findById(userId)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
+            .orElseThrow(() -> new UserNotFoundException(
                 "User not found: " + userId
             ));
     }
@@ -47,8 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
+            .orElseThrow(() -> new UserNotFoundException(
                 "User not found: " + email
             ));
     }
@@ -56,8 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity getUserByPhone(String phone) {
         return userRepository.findByPhone(phone)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
+            .orElseThrow(() -> new UserNotFoundException(
                 "User not found: " + phone
             ));
     }
@@ -73,8 +84,7 @@ public class UserServiceImpl implements UserService {
         UserRequest request
     ) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new UserNotFoundException(
                     "User not found: " + userId
                 ));
 
