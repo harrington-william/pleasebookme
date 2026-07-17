@@ -1,4 +1,53 @@
 package com.pleasebookme.server.core.bookingpolicy.dto;
 
-public record BookingPolicyRequest() {
+import com.pleasebookme.server.core.enums.BookingMode;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import java.math.BigInteger;
+
+public record BookingPolicyRequest(
+    @NotNull
+    BigInteger serviceId,
+
+    BookingMode bookingMode,
+
+    @NotBlank
+    @Size(max = 50)
+    String durationType,
+
+    Integer defaultDuration,
+
+    Integer minimumDuration,
+
+    Integer maximumDuration,
+
+    @NotNull
+    Integer minimumNotice,
+
+    @NotNull
+    Integer maximumAdvanceBooking,
+
+    Integer slotInterval,
+
+    Integer beforeBuffer,
+
+    Integer afterBuffer,
+
+    Boolean allowOverlap,
+
+    Boolean allowMultipleAttendee,
+
+    Boolean requiresPayment,
+
+    Boolean autoConfirm,
+
+    @NotBlank
+    @Size(max = 50)
+    String bookingWindowType,
+
+    @NotNull
+    Integer capacity
+) {
 }
