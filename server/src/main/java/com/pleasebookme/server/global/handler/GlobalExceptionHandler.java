@@ -2,6 +2,8 @@ package com.pleasebookme.server.global.handler;
 
 import com.pleasebookme.server.auth.password.exception.DuplicateUserPasswordException;
 import com.pleasebookme.server.auth.password.exception.UserPasswordNotFoundException;
+import com.pleasebookme.server.auth.role.exception.DuplicateRoleException;
+import com.pleasebookme.server.auth.role.exception.RoleNotFoundException;
 import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
@@ -81,6 +83,38 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateUserPasswordException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateUserPasswordException(
         DuplicateUserPasswordException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleRoleNotFoundException(
+        RoleNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateRoleException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateRoleException(
+        DuplicateRoleException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(

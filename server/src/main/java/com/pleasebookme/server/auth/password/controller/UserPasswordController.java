@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
 
 @RestController
-@RequestMapping("/api/v1/user-passwords")
+@RequestMapping("/api/v1/passwords")
 @RequiredArgsConstructor
 public class UserPasswordController {
     private final UserPasswordService userPasswordService;
