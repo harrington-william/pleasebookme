@@ -1,5 +1,9 @@
 package com.pleasebookme.server.global.handler;
 
+import com.pleasebookme.server.auth.account.exception.AccountNotFoundException;
+import com.pleasebookme.server.auth.account.exception.DuplicateAccountException;
+import com.pleasebookme.server.auth.apikey.exception.ApiKeyNotFoundException;
+import com.pleasebookme.server.auth.apikey.exception.DuplicateApiKeyException;
 import com.pleasebookme.server.auth.password.exception.DuplicateUserPasswordException;
 import com.pleasebookme.server.auth.password.exception.UserPasswordNotFoundException;
 import com.pleasebookme.server.auth.permission.exception.DuplicatePermissionException;
@@ -8,6 +12,8 @@ import com.pleasebookme.server.auth.role.exception.DuplicateRoleException;
 import com.pleasebookme.server.auth.role.exception.RoleNotFoundException;
 import com.pleasebookme.server.auth.rolepermission.exception.DuplicateRolePermissionException;
 import com.pleasebookme.server.auth.rolepermission.exception.RolePermissionNotFoundException;
+import com.pleasebookme.server.auth.refreshtoken.exception.DuplicateRefreshTokenException;
+import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenNotFoundException;
 import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleException;
@@ -217,6 +223,102 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateRolePermissionException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateRolePermissionException(
         DuplicateRolePermissionException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccountNotFoundException(
+        AccountNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateAccountException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateAccountException(
+        DuplicateAccountException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ApiKeyNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleApiKeyNotFoundException(
+        ApiKeyNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateApiKeyException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateApiKeyException(
+        DuplicateApiKeyException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(RefreshTokenNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleRefreshTokenNotFoundException(
+        RefreshTokenNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateRefreshTokenException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateRefreshTokenException(
+        DuplicateRefreshTokenException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
