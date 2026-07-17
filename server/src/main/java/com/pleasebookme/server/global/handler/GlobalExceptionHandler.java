@@ -18,7 +18,14 @@ import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleException;
 import com.pleasebookme.server.auth.userrole.exception.UserRoleNotFoundException;
+import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException;
+import com.pleasebookme.server.core.availability.exception.AvailabilityNotFoundException;
+import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
+import com.pleasebookme.server.core.bookingpolicy.exception.BookingPolicyNotFoundException;
+import com.pleasebookme.server.core.outofoffice.exception.OutOfOfficeNotFoundException;
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
+import com.pleasebookme.server.core.selectedslot.exception.DuplicateSelectedSlotException;
+import com.pleasebookme.server.core.selectedslot.exception.SelectedSlotNotFoundException;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
@@ -456,6 +463,118 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DestinationCalendarNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleDestinationCalendarNotFoundException(
         DestinationCalendarNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AvailabilityNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAvailabilityNotFoundException(
+        AvailabilityNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BookingPolicyNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookingPolicyNotFoundException(
+        BookingPolicyNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BookingNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookingNotFoundException(
+        BookingNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AttendeeNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAttendeeNotFoundException(
+        AttendeeNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(SelectedSlotNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleSelectedSlotNotFoundException(
+        SelectedSlotNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateSelectedSlotException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateSelectedSlotException(
+        DuplicateSelectedSlotException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(OutOfOfficeNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleOutOfOfficeNotFoundException(
+        OutOfOfficeNotFoundException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
