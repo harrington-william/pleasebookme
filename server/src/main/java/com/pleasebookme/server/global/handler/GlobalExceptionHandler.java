@@ -35,6 +35,18 @@ import com.pleasebookme.server.organization.organizations.exception.DuplicateOrg
 import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
 import com.pleasebookme.server.organization.profile.exception.DuplicateProfileException;
 import com.pleasebookme.server.organization.profile.exception.ProfileNotFoundException;
+import com.pleasebookme.server.tenant.domain.exception.DuplicateTenantDomainException;
+import com.pleasebookme.server.tenant.domain.exception.TenantDomainNotFoundException;
+import com.pleasebookme.server.tenant.ecosystem.exception.DuplicateEcosystemException;
+import com.pleasebookme.server.tenant.ecosystem.exception.EcosystemNotFoundException;
+import com.pleasebookme.server.tenant.plan.exception.DuplicateTenantPlanException;
+import com.pleasebookme.server.tenant.plan.exception.TenantPlanNotFoundException;
+import com.pleasebookme.server.tenant.tenants.exception.DuplicateTenantException;
+import com.pleasebookme.server.tenant.tenants.exception.TenantNotFoundException;
+import com.pleasebookme.server.widget.widgetorigin.exception.DuplicateWidgetOriginException;
+import com.pleasebookme.server.widget.widgetorigin.exception.WidgetOriginNotFoundException;
+import com.pleasebookme.server.widget.widgets.exception.DuplicateWidgetException;
+import com.pleasebookme.server.widget.widgets.exception.WidgetNotFoundException;
 import com.pleasebookme.server.global.response.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -602,5 +614,197 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TenantNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleTenantNotFoundException(
+        TenantNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateTenantException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateTenantException(
+        DuplicateTenantException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(WidgetNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetNotFoundException(
+        WidgetNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateWidgetException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateWidgetException(
+        DuplicateWidgetException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(EcosystemNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleEcosystemNotFoundException(
+        EcosystemNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateEcosystemException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateEcosystemException(
+        DuplicateEcosystemException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TenantPlanNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleTenantPlanNotFoundException(
+        TenantPlanNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateTenantPlanException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateTenantPlanException(
+        DuplicateTenantPlanException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TenantDomainNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleTenantDomainNotFoundException(
+        TenantDomainNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateTenantDomainException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateTenantDomainException(
+        DuplicateTenantDomainException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(WidgetOriginNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetOriginNotFoundException(
+        WidgetOriginNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateWidgetOriginException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateWidgetOriginException(
+        DuplicateWidgetOriginException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 }
