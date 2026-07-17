@@ -18,7 +18,16 @@ import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleException;
 import com.pleasebookme.server.auth.userrole.exception.UserRoleNotFoundException;
+import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
+import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
+import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
+import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
+import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
+import com.pleasebookme.server.organization.organizations.exception.DuplicateOrganizationException;
+import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
+import com.pleasebookme.server.organization.profile.exception.DuplicateProfileException;
+import com.pleasebookme.server.organization.profile.exception.ProfileNotFoundException;
 import com.pleasebookme.server.global.response.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -330,5 +339,149 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ServiceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleServiceNotFoundException(
+        ServiceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateServiceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateServiceException(
+        DuplicateServiceException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(OrganizationNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleOrganizationNotFoundException(
+        OrganizationNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateOrganizationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateOrganizationException(
+        DuplicateOrganizationException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ProfileNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleProfileNotFoundException(
+        ProfileNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateProfileException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateProfileException(
+        DuplicateProfileException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ScheduleNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleScheduleNotFoundException(
+        ScheduleNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DestinationCalendarNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleDestinationCalendarNotFoundException(
+        DestinationCalendarNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DestinationSheetsNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleDestinationSheetsNotFoundException(
+        DestinationSheetsNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
