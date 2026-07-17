@@ -6,8 +6,12 @@ import com.pleasebookme.server.auth.permission.exception.DuplicatePermissionExce
 import com.pleasebookme.server.auth.permission.exception.PermissionNotFoundException;
 import com.pleasebookme.server.auth.role.exception.DuplicateRoleException;
 import com.pleasebookme.server.auth.role.exception.RoleNotFoundException;
+import com.pleasebookme.server.auth.rolepermission.exception.DuplicateRolePermissionException;
+import com.pleasebookme.server.auth.rolepermission.exception.RolePermissionNotFoundException;
 import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
+import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleException;
+import com.pleasebookme.server.auth.userrole.exception.UserRoleNotFoundException;
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
 import com.pleasebookme.server.global.response.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -149,6 +153,70 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicatePermissionException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicatePermissionException(
         DuplicatePermissionException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UserRoleNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleUserRoleNotFoundException(
+        UserRoleNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateUserRoleException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateUserRoleException(
+        DuplicateUserRoleException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(RolePermissionNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleRolePermissionNotFoundException(
+        RolePermissionNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateRolePermissionException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateRolePermissionException(
+        DuplicateRolePermissionException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
