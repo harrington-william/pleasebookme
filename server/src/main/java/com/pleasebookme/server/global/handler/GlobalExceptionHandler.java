@@ -2,6 +2,8 @@ package com.pleasebookme.server.global.handler;
 
 import com.pleasebookme.server.auth.password.exception.DuplicateUserPasswordException;
 import com.pleasebookme.server.auth.password.exception.UserPasswordNotFoundException;
+import com.pleasebookme.server.auth.permission.exception.DuplicatePermissionException;
+import com.pleasebookme.server.auth.permission.exception.PermissionNotFoundException;
 import com.pleasebookme.server.auth.role.exception.DuplicateRoleException;
 import com.pleasebookme.server.auth.role.exception.RoleNotFoundException;
 import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
@@ -115,6 +117,38 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateRoleException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateRoleException(
         DuplicateRoleException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(PermissionNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handlePermissionNotFoundException(
+        PermissionNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicatePermissionException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicatePermissionException(
+        DuplicatePermissionException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
