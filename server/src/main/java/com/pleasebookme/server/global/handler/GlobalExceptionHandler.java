@@ -38,6 +38,15 @@ import com.pleasebookme.server.customer.tag.exception.DuplicateCustomerTagExcept
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
 import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
+import com.pleasebookme.server.notification.channel.exception.DuplicateNotificationChannelException;
+import com.pleasebookme.server.notification.channel.exception.NotificationChannelNotFoundException;
+import com.pleasebookme.server.notification.delivery.exception.NotificationDeliveryNotFoundException;
+import com.pleasebookme.server.notification.notifications.exception.NotificationNotFoundException;
+import com.pleasebookme.server.notification.preferences.exception.DuplicateNotificationPreferenceException;
+import com.pleasebookme.server.notification.preferences.exception.NotificationPreferenceNotFoundException;
+import com.pleasebookme.server.notification.queue.exception.NotificationQueueNotFoundException;
+import com.pleasebookme.server.notification.template.exception.DuplicateNotificationTemplateException;
+import com.pleasebookme.server.notification.template.exception.NotificationTemplateNotFoundException;
 import com.pleasebookme.server.organization.organizations.exception.DuplicateOrganizationException;
 import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
 import com.pleasebookme.server.organization.profile.exception.DuplicateProfileException;
@@ -1094,5 +1103,149 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotificationChannelNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotificationChannelNotFoundException(
+        NotificationChannelNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateNotificationChannelException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateNotificationChannelException(
+        DuplicateNotificationChannelException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NotificationTemplateNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotificationTemplateNotFoundException(
+        NotificationTemplateNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateNotificationTemplateException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateNotificationTemplateException(
+        DuplicateNotificationTemplateException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotificationNotFoundException(
+        NotificationNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotificationQueueNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotificationQueueNotFoundException(
+        NotificationQueueNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotificationDeliveryNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotificationDeliveryNotFoundException(
+        NotificationDeliveryNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotificationPreferenceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotificationPreferenceNotFoundException(
+        NotificationPreferenceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateNotificationPreferenceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateNotificationPreferenceException(
+        DuplicateNotificationPreferenceException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 }
