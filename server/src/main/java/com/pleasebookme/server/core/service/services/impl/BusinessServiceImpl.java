@@ -1,4 +1,4 @@
-package com.pleasebookme.server.core.service.service.impl;
+package com.pleasebookme.server.core.service.services.impl;
 
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
@@ -11,7 +11,7 @@ import com.pleasebookme.server.core.service.entity.ServiceEntity;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.core.service.repository.ServiceRepository;
-import com.pleasebookme.server.core.service.service.OrganizationServiceService;
+import com.pleasebookme.server.core.service.services.BusinessServiceService;
 import com.pleasebookme.server.integration.calendar.entity.DestinationCalendarEntity;
 import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
 import com.pleasebookme.server.integration.calendar.repository.DestinationCalendarRepository;
@@ -32,7 +32,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrganizationServiceImpl implements OrganizationServiceService {
+public class BusinessServiceImpl implements BusinessServiceService {
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
