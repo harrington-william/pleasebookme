@@ -35,6 +35,15 @@ import com.pleasebookme.server.organization.organizations.exception.DuplicateOrg
 import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
 import com.pleasebookme.server.organization.profile.exception.DuplicateProfileException;
 import com.pleasebookme.server.organization.profile.exception.ProfileNotFoundException;
+import com.pleasebookme.server.resource.assignment.exception.ResourceAssignmentNotFoundException;
+import com.pleasebookme.server.resource.attribute.exception.DuplicateResourceAttributeException;
+import com.pleasebookme.server.resource.attribute.exception.ResourceAttributeNotFoundException;
+import com.pleasebookme.server.resource.calendar.exception.ResourceCalendarNotFoundException;
+import com.pleasebookme.server.resource.maintenance.exception.ResourceMaintenanceNotFoundException;
+import com.pleasebookme.server.resource.overrides.exception.ResourceOverrideNotFoundException;
+import com.pleasebookme.server.resource.pricing.exception.ResourcePricingNotFoundException;
+import com.pleasebookme.server.resource.resources.exception.DuplicateResourceException;
+import com.pleasebookme.server.resource.type.exception.ResourceTypeNotFoundException;
 import com.pleasebookme.server.tenant.domain.exception.DuplicateTenantDomainException;
 import com.pleasebookme.server.tenant.domain.exception.TenantDomainNotFoundException;
 import com.pleasebookme.server.tenant.ecosystem.exception.DuplicateEcosystemException;
@@ -795,6 +804,166 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateWidgetOriginException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateWidgetOriginException(
         DuplicateWidgetOriginException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ResourceTypeNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceTypeNotFoundException(
+        ResourceTypeNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(com.pleasebookme.server.resource.resources.exception.ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceEntityNotFoundException(
+        com.pleasebookme.server.resource.resources.exception.ResourceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateResourceException(
+        DuplicateResourceException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ResourcePricingNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourcePricingNotFoundException(
+        ResourcePricingNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceAssignmentNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceAssignmentNotFoundException(
+        ResourceAssignmentNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceCalendarNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceCalendarNotFoundException(
+        ResourceCalendarNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceMaintenanceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceMaintenanceNotFoundException(
+        ResourceMaintenanceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceOverrideNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceOverrideNotFoundException(
+        ResourceOverrideNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceAttributeNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceAttributeNotFoundException(
+        ResourceAttributeNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateResourceAttributeException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateResourceAttributeException(
+        DuplicateResourceAttributeException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
