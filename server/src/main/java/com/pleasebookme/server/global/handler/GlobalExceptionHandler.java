@@ -28,6 +28,13 @@ import com.pleasebookme.server.core.selectedslot.exception.DuplicateSelectedSlot
 import com.pleasebookme.server.core.selectedslot.exception.SelectedSlotNotFoundException;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
+import com.pleasebookme.server.customer.activity.exception.CustomerActivityNotFoundException;
+import com.pleasebookme.server.customer.customers.exception.CustomerNotFoundException;
+import com.pleasebookme.server.customer.customers.exception.DuplicateCustomerException;
+import com.pleasebookme.server.customer.note.exception.CustomerNoteNotFoundException;
+import com.pleasebookme.server.customer.source.exception.CustomerSourceNotFoundException;
+import com.pleasebookme.server.customer.tag.exception.CustomerTagNotFoundException;
+import com.pleasebookme.server.customer.tag.exception.DuplicateCustomerTagException;
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
 import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
@@ -975,5 +982,117 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleCustomerNotFoundException(
+        CustomerNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateCustomerException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateCustomerException(
+        DuplicateCustomerException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(CustomerTagNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleCustomerTagNotFoundException(
+        CustomerTagNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateCustomerTagException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateCustomerTagException(
+        DuplicateCustomerTagException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(CustomerSourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleCustomerSourceNotFoundException(
+        CustomerSourceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CustomerNoteNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleCustomerNoteNotFoundException(
+        CustomerNoteNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CustomerActivityNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleCustomerActivityNotFoundException(
+        CustomerActivityNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
