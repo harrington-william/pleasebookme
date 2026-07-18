@@ -18,6 +18,11 @@ import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleException;
 import com.pleasebookme.server.auth.userrole.exception.UserRoleNotFoundException;
+import com.pleasebookme.server.audit.actor.exception.AuditActorNotFoundException;
+import com.pleasebookme.server.audit.actor.exception.DuplicateAuditActorException;
+import com.pleasebookme.server.audit.change.exception.AuditChangeNotFoundException;
+import com.pleasebookme.server.audit.event.exception.AuditEventNotFoundException;
+import com.pleasebookme.server.audit.resource.exception.AuditResourceNotFoundException;
 import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException;
 import com.pleasebookme.server.core.availability.exception.AvailabilityNotFoundException;
 import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
@@ -1247,5 +1252,85 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AuditEventNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuditEventNotFoundException(
+        AuditEventNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AuditActorNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuditActorNotFoundException(
+        AuditActorNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateAuditActorException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateAuditActorException(
+        DuplicateAuditActorException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AuditResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuditResourceNotFoundException(
+        AuditResourceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AuditChangeNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuditChangeNotFoundException(
+        AuditChangeNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
