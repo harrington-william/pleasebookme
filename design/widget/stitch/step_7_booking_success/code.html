@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PleaseBookMe - Booking Success</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "secondary-container": "#3131c0",
+                  "primary": "#adc6ff",
+                  "outline": "#8c909f",
+                  "surface-bright": "#37393d",
+                  "surface-container": "#1e2023",
+                  "on-primary-fixed-variant": "#004395",
+                  "surface-container-lowest": "#0c0e11",
+                  "surface-tint": "#adc6ff",
+                  "on-primary-fixed": "#001a42",
+                  "on-tertiary-container": "#461f00",
+                  "surface-container-low": "#1a1c1f",
+                  "on-background": "#e2e2e6",
+                  "on-tertiary-fixed-variant": "#723600",
+                  "on-secondary-fixed-variant": "#2f2ebe",
+                  "on-surface": "#e2e2e6",
+                  "surface-dim": "#111317",
+                  "outline-variant": "#424754",
+                  "on-primary": "#002e6a",
+                  "background": "#111317",
+                  "tertiary-container": "#df7412",
+                  "surface-variant": "#333538",
+                  "primary-fixed": "#d8e2ff",
+                  "on-error-container": "#ffdad6",
+                  "on-secondary": "#1000a9",
+                  "on-secondary-container": "#b0b2ff",
+                  "secondary": "#c0c1ff",
+                  "tertiary": "#ffb786",
+                  "primary-container": "#4d8eff",
+                  "surface-container-high": "#282a2d",
+                  "inverse-surface": "#e2e2e6",
+                  "tertiary-fixed": "#ffdcc6",
+                  "tertiary-fixed-dim": "#ffb786",
+                  "on-secondary-fixed": "#07006c",
+                  "on-surface-variant": "#c2c6d6",
+                  "surface": "#111317",
+                  "inverse-on-surface": "#2f3034",
+                  "on-tertiary-fixed": "#311400",
+                  "on-primary-container": "#00285d",
+                  "secondary-fixed-dim": "#c0c1ff",
+                  "error": "#ffb4ab",
+                  "secondary-fixed": "#e1e0ff",
+                  "inverse-primary": "#005ac2",
+                  "on-tertiary": "#502400",
+                  "surface-container-highest": "#333538",
+                  "on-error": "#690005",
+                  "error-container": "#93000a",
+                  "primary-fixed-dim": "#adc6ff"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "xs": "4px",
+                  "sm": "8px",
+                  "base": "4px",
+                  "md": "16px",
+                  "lg": "24px",
+                  "stack_gap": "12px",
+                  "container_padding": "20px",
+                  "xl": "32px",
+                  "2xl": "48px"
+          },
+          "fontFamily": {
+                  "display-mobile": [
+                          "Inter"
+                  ],
+                  "body-md": [
+                          "Inter"
+                  ],
+                  "headline-sm": [
+                          "Inter"
+                  ],
+                  "body-lg": [
+                          "Inter"
+                  ],
+                  "display": [
+                          "Inter"
+                  ],
+                  "headline-md": [
+                          "Inter"
+                  ],
+                  "label-md": [
+                          "Inter"
+                  ],
+                  "label-sm": [
+                          "Inter"
+                  ]
+          },
+          "fontSize": {
+                  "display-mobile": [
+                          "20px",
+                          {
+                                  "lineHeight": "28px",
+                                  "fontWeight": "600"
+                          }
+                  ],
+                  "body-md": [
+                          "14px",
+                          {
+                                  "lineHeight": "20px",
+                                  "fontWeight": "400"
+                          }
+                  ],
+                  "headline-sm": [
+                          "18px",
+                          {
+                                  "lineHeight": "26px",
+                                  "fontWeight": "600"
+                          }
+                  ],
+                  "body-lg": [
+                          "16px",
+                          {
+                                  "lineHeight": "24px",
+                                  "fontWeight": "400"
+                          }
+                  ],
+                  "display": [
+                          "24px",
+                          {
+                                  "lineHeight": "32px",
+                                  "letterSpacing": "-0.02em",
+                                  "fontWeight": "600"
+                          }
+                  ],
+                  "headline-md": [
+                          "20px",
+                          {
+                                  "lineHeight": "28px",
+                                  "letterSpacing": "-0.01em",
+                                  "fontWeight": "600"
+                          }
+                  ],
+                  "label-md": [
+                          "14px",
+                          {
+                                  "lineHeight": "20px",
+                                  "fontWeight": "500"
+                          }
+                  ],
+                  "label-sm": [
+                          "12px",
+                          {
+                                  "lineHeight": "16px",
+                                  "letterSpacing": "0.05em",
+                                  "fontWeight": "600"
+                          }
+                  ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-full flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container h-full rounded-l-xl bg-surface-container-low dark:bg-surface-container-low shadow-md shadow-md hidden md:flex flex-col w-64 h-full p-md gap-stack_gap shrink-0 z-10">
+<div class="flex items-center gap-stack_gap mb-lg">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">storefront</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Barber Studio</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Premium Grooming</p>
+</div>
+</div>
+<div class="flex flex-col gap-sm flex-1">
+<a class="flex items-center gap-md py-sm rounded-lg transition-all duration-200 text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface pl-2 hover:bg-surface-variant dark:hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined font-label-md text-label-md">settings</span>
+<span class="font-label-md text-label-md">Service</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg transition-all duration-200 text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface pl-2 hover:bg-surface-variant dark:hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined font-label-md text-label-md">person</span>
+<span class="font-label-md text-label-md">Staff</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg transition-all duration-200 text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface pl-2 hover:bg-surface-variant dark:hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined font-label-md text-label-md">calendar_today</span>
+<span class="font-label-md text-label-md">Date</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg transition-all duration-200 text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface pl-2 hover:bg-surface-variant dark:hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined font-label-md text-label-md">schedule</span>
+<span class="font-label-md text-label-md">Time</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg transition-all duration-200 text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface pl-2 hover:bg-surface-variant dark:hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined font-label-md text-label-md">person_outline</span>
+<span class="font-label-md text-label-md">Details</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg transition-all duration-200 text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface pl-2 hover:bg-surface-variant dark:hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined font-label-md text-label-md">checklist</span>
+<span class="font-label-md text-label-md">Review</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg transition-all duration-200 text-primary dark:text-primary font-bold border-l-2 border-primary pl-2 hover:bg-surface-variant dark:hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined font-label-md text-label-md">check_circle</span>
+<span class="font-label-md text-label-md">Done</span>
+</a>
+</div>
+<div class="mt-auto">
+<button class="w-full py-sm px-md flex items-center justify-center gap-sm rounded-full border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">help</span>
+        Need Help?
+      </button>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col relative overflow-y-auto">
+<!-- Progress Bar -->
+<div class="w-full h-1 bg-surface-variant absolute top-0 left-0 z-20">
+<div class="h-full bg-[#3B82F6] w-full transition-all duration-500 rounded-r-full"></div>
+</div>
+<div class="flex-1 flex items-center justify-center p-container_padding md:p-2xl w-full max-w-[600px] mx-auto">
+<div class="w-full flex flex-col items-center text-center">
+<!-- Success Illustration -->
+<div class="mb-lg relative flex items-center justify-center w-24 h-24">
+<div class="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-75"></div>
+<div class="relative w-24 h-24 bg-primary rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(173,198,255,0.3)]">
+<span class="material-symbols-outlined text-on-primary text-[48px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<h1 class="font-display text-display text-on-surface mb-xs">Booking Confirmed!</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-xl">Your appointment has been successfully scheduled.</p>
+<!-- Summary Box -->
+<div class="w-full bg-surface-container rounded-xl border border-outline-variant p-lg flex flex-col gap-md mb-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)] text-left">
+<div class="flex justify-between items-center pb-md border-b border-outline-variant/50">
+<span class="font-label-md text-label-md text-on-surface-variant">Booking Reference</span>
+<span class="font-label-md text-label-md text-primary font-bold">#PBM-9823</span>
+</div>
+<div class="flex gap-md items-start">
+<div class="w-12 h-12 rounded-lg bg-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">content_cut</span>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Premium Grooming</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">with Alex Johnson</p>
+</div>
+</div>
+<div class="flex flex-col gap-sm mt-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">calendar_today</span>
+<span class="font-body-md text-body-md text-on-surface">Thursday, October 24, 2024</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">schedule</span>
+<span class="font-body-md text-body-md text-on-surface">2:00 PM - 3:00 PM (1 hour)</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">location_on</span>
+<span class="font-body-md text-body-md text-on-surface">123 Main Street, Suite 4B, Cityville</span>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="w-full flex flex-col gap-md">
+<button class="w-full bg-[#3B82F6] hover:bg-blue-600 text-white font-label-md text-label-md h-12 rounded-lg flex items-center justify-center gap-sm transition-colors shadow-md">
+            Return to Website
+          </button>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md w-full">
+<button class="w-full bg-transparent border border-outline-variant hover:bg-surface-variant text-on-surface font-label-md text-label-md h-12 rounded-lg flex items-center justify-center gap-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">event</span>
+              Add to Google Calendar
+            </button>
+<button class="w-full bg-transparent border border-outline-variant hover:bg-surface-variant text-on-surface font-label-md text-label-md h-12 rounded-lg flex items-center justify-center gap-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+              Book Another
+            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

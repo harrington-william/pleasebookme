@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="en" class="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&amp;family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#31353b",
+                        "on-tertiary": "#502400",
+                        "inverse-on-surface": "#2d3137",
+                        "inverse-surface": "#dfe2eb",
+                        "secondary": "#4edea3",
+                        "error-container": "#93000a",
+                        "on-surface": "#dfe2eb",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-background": "#dfe2eb",
+                        "surface-dim": "#101419",
+                        "secondary-container": "#00a572",
+                        "on-primary-fixed-variant": "#004395",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-container-highest": "#31353b",
+                        "on-secondary-container": "#00311f",
+                        "outline": "#8c909f",
+                        "inverse-primary": "#005ac2",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "primary-container": "#4d8eff",
+                        "background": "#101419",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface": "#101419",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary-container": "#461f00",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-error": "#690005",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container": "#1c2026",
+                        "primary-fixed": "#d8e2ff",
+                        "outline-variant": "#424754",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container-lowest": "#0a0e14",
+                        "surface-bright": "#353940",
+                        "on-tertiary-fixed": "#311400",
+                        "tertiary-container": "#df7412",
+                        "on-primary": "#002e6a",
+                        "surface-tint": "#adc6ff",
+                        "tertiary": "#ffb786",
+                        "surface-container-high": "#262a30",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary": "#adc6ff",
+                        "on-primary-container": "#00285d",
+                        "on-secondary": "#003824",
+                        "surface-container-low": "#181c22"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "xs": "8px",
+                        "container-max": "1440px",
+                        "2xl": "48px",
+                        "sm": "12px",
+                        "xl": "32px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "display": ["Geist"],
+                        "body-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "mono-label": ["Geist Mono"],
+                        "label-md": ["Geist"],
+                        "headline-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="bg-surface-container-lowest text-on-surface h-screen w-full overflow-hidden flex antialiased">
+<!-- Left Column: Form -->
+<div class="w-full lg:w-[45%] flex flex-col justify-center items-center px-lg sm:px-2xl relative z-10">
+<!-- Main Form Container -->
+<div class="w-full max-w-[360px] flex flex-col gap-xl">
+<!-- Header -->
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-xs mb-md">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">dataset</span>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">PleaseBookMe</h1>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Sign in to infrastructure</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Enter your details to access your workspace.</p>
+</div>
+<!-- SSO Options -->
+<div class="flex flex-col gap-md">
+<button class="w-full flex items-center justify-center gap-sm bg-transparent border border-outline-variant hover:bg-surface-container-low hover:border-outline text-on-surface font-label-md text-label-md h-10 rounded-DEFAULT transition-all duration-200">
+<!-- Embedded minimal Google G icon -->
+<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+                    Continue with Google
+                </button>
+</div>
+<!-- Divider -->
+<div class="flex items-center gap-md">
+<div class="h-px bg-outline-variant flex-1"></div>
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">or continue with email</span>
+<div class="h-px bg-outline-variant flex-1"></div>
+</div>
+<!-- Form Fields -->
+<form class="flex flex-col gap-lg" action="#" method="POST">
+<div class="flex flex-col gap-xs">
+<label for="email" class="font-label-md text-label-md text-on-surface-variant">Email Address</label>
+<input type="email" id="email" name="email" required="" placeholder="name@company.com" class="w-full bg-surface-dim border border-outline-variant rounded-DEFAULT h-10 px-md font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm">
+</div>
+<div class="flex flex-col gap-xs">
+<div class="flex justify-between items-center">
+<label for="password" class="font-label-md text-label-md text-on-surface-variant">Password</label>
+<a href="#" class="font-label-md text-label-md text-primary hover:text-primary-fixed transition-colors">Forgot password?</a>
+</div>
+<input type="password" id="password" name="password" required="" placeholder="••••••••" class="w-full bg-surface-dim border border-outline-variant rounded-DEFAULT h-10 px-md font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm">
+</div>
+<div class="flex items-center gap-sm">
+<input type="checkbox" id="remember" name="remember" class="w-4 h-4 rounded-sm bg-surface-dim border-outline-variant text-primary focus:ring-primary focus:ring-offset-0 focus:ring-offset-transparent bg-transparent">
+<label for="remember" class="font-body-md text-body-md text-on-surface-variant cursor-pointer select-none">Remember me for 30 days</label>
+</div>
+<button type="submit" class="w-full h-10 mt-xs bg-primary hover:bg-surface-tint text-on-primary-container font-label-md text-label-md rounded-DEFAULT flex items-center justify-center transition-all duration-200 shadow-sm active:scale-[0.98]">
+                    Sign In to Console
+                </button>
+</form>
+<!-- Footer -->
+<div class="text-center mt-md">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Don't have an account? 
+                    <a href="#" class="text-primary hover:text-primary-fixed font-label-md transition-colors">Request Access</a>
+</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Illustration / Branding -->
+<div class="hidden lg:flex w-[55%] h-full bg-surface-container border-l border-outline-variant relative overflow-hidden flex-col justify-center items-center p-2xl">
+<!-- Abstract glowing orb effect for background depth -->
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<!-- Dashboard Mockup Image Container -->
+<div class="relative w-full max-w-2xl aspect-[16/10] rounded-xl border border-outline-variant bg-surface-dim shadow-[0_20px_40px_rgba(0,0,0,0.6)] overflow-hidden">
+<!-- Mac-like window controls for aesthetic -->
+<div class="h-8 w-full bg-surface-container-high border-b border-outline-variant flex items-center px-md gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant/50"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant/50"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant/50"></div>
+</div>
+<img alt="Dashboard Interface Preview" class="w-full h-[calc(100%-2rem)] object-cover opacity-90" data-alt="A high-fidelity conceptual rendering of a modern enterprise reservation dashboard interface displayed on a sleek monitor. The UI features a strict monochromatic dark-mode aesthetic with deep charcoal surfaces (#101419) and subtle grey grid lines. Complex data visualizations, including precise Gantt charts and minimalist metric cards, are illuminated with very subtle blue (#4d8eff) and muted emerald accents, conveying robust technical infrastructure. The lighting is dramatic and directional, casting soft, expensive-looking ambient shadows behind floating glass-like data panels, perfectly aligning with a premium developer-centric brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdy80FfTCoEqtFqINDFnA5VDQVXHIvsQJ090VuyzD8nXCq_sTlSfg9W8SVlZzXQqMzXNsAj8pp5157qWJNKkgb2kol4VSC2Ei6jAb-FiSR3f-QIuw3ue8mgcw3sMUclSQiYSQWEwyZWEfX54V_viT6_X131ROpMeIw97cc4qGq_DpUPFQVX9X_-kUtZMhJPBM1p9za1KMcDAKFrcqfJvAgk-xYFExpKDChkbm6glfWt1DLaEHQkcaqiD1ns1E5pkKZQ6aSDcMZmgU6">
+</div>
+<!-- Text Overlay -->
+<div class="mt-xl text-center max-w-md relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Infrastructure as Interface</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Experience calm, resilient, and impeccably organized reservation management designed for scale.</p>
+</div>
+</div>
+</body></html>

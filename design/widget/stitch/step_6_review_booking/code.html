@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Review - PleaseBookMe</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "secondary-container": "#3131c0",
+                            "primary": "#adc6ff",
+                            "outline": "#8c909f",
+                            "surface-bright": "#37393d",
+                            "surface-container": "#1e2023",
+                            "on-primary-fixed-variant": "#004395",
+                            "surface-container-lowest": "#0c0e11",
+                            "surface-tint": "#adc6ff",
+                            "on-primary-fixed": "#001a42",
+                            "on-tertiary-container": "#461f00",
+                            "surface-container-low": "#1a1c1f",
+                            "on-background": "#e2e2e6",
+                            "on-tertiary-fixed-variant": "#723600",
+                            "on-secondary-fixed-variant": "#2f2ebe",
+                            "on-surface": "#e2e2e6",
+                            "surface-dim": "#111317",
+                            "outline-variant": "#424754",
+                            "on-primary": "#002e6a",
+                            "background": "#111317",
+                            "tertiary-container": "#df7412",
+                            "surface-variant": "#333538",
+                            "primary-fixed": "#d8e2ff",
+                            "on-error-container": "#ffdad6",
+                            "on-secondary": "#1000a9",
+                            "on-secondary-container": "#b0b2ff",
+                            "secondary": "#c0c1ff",
+                            "tertiary": "#ffb786",
+                            "primary-container": "#4d8eff",
+                            "surface-container-high": "#282a2d",
+                            "inverse-surface": "#e2e2e6",
+                            "tertiary-fixed": "#ffdcc6",
+                            "tertiary-fixed-dim": "#ffb786",
+                            "on-secondary-fixed": "#07006c",
+                            "on-surface-variant": "#c2c6d6",
+                            "surface": "#111317",
+                            "inverse-on-surface": "#2f3034",
+                            "on-tertiary-fixed": "#311400",
+                            "on-primary-container": "#00285d",
+                            "secondary-fixed-dim": "#c0c1ff",
+                            "error": "#ffb4ab",
+                            "secondary-fixed": "#e1e0ff",
+                            "inverse-primary": "#005ac2",
+                            "on-tertiary": "#502400",
+                            "surface-container-highest": "#333538",
+                            "on-error": "#690005",
+                            "error-container": "#93000a",
+                            "primary-fixed-dim": "#adc6ff"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "xs": "4px",
+                            "sm": "8px",
+                            "base": "4px",
+                            "md": "16px",
+                            "lg": "24px",
+                            "stack_gap": "12px",
+                            "container_padding": "20px",
+                            "xl": "32px",
+                            "2xl": "48px"
+                    },
+                    "fontFamily": {
+                            "display-mobile": ["Inter"],
+                            "body-md": ["Inter"],
+                            "headline-sm": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "display": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "label-md": ["Inter"],
+                            "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                            "display-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                            "headline-sm": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+                            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                            "display": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                            "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                            "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased">
+<!-- Progress Bar (Step 6 of 7) -->
+<div class="w-full h-1 bg-surface-container-highest">
+<div class="h-full bg-primary" style="width: 85.7%;"></div>
+</div>
+<!-- Mobile TopNavBar -->
+<header class="md:hidden bg-surface flex justify-between items-center w-full px-lg py-md max-w-[480px] mx-auto docked full-width top-0 border-b border-outline-variant flat no shadows">
+<div class="font-display-mobile text-display-mobile font-semibold text-on-surface">PleaseBookMe</div>
+<div class="flex gap-sm">
+<span class="material-symbols-outlined text-primary scale-95 duration-150 hover:text-primary transition-colors cursor-pointer" data-icon="account_circle">account_circle</span>
+<span class="material-symbols-outlined text-on-surface-variant scale-95 duration-150 hover:text-primary transition-colors cursor-pointer" data-icon="help">help</span>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden max-w-[1200px] w-full mx-auto">
+<!-- Desktop SideNavBar -->
+<nav class="hidden md:flex flex-col w-64 h-full p-md gap-stack_gap bg-surface-container shadow-md rounded-l-xl border-r border-surface-container-low shrink-0 z-10">
+<div class="flex items-center gap-md mb-xl mt-lg px-2">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Business Logo" class="w-full h-full object-cover" data-alt="A stylized minimalist icon of a pair of scissors and a comb, serving as a placeholder for a modern barber studio business logo. The design is sleek, utilizing crisp lines and a monotone color palette suited for a premium grooming brand, rendered with high contrast against a dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgLPNlf4-kHX8fAhocTm5nkq6UcCkyZvJhNxQfBEICj12ZkPNbuXPlVG2ehR8n5QRGk5PcOjxNJxjIdgo56BhCRzDAFM6n7LCA7hGdORSOqD3IIrWjTiV_j8wXcUSOPeWd-RGzMAlioYZ1-Yn_oZ2x7FYr1Q95aMjaHoAmaGzM4qmDfLq3Adtp5Qn68MoXU9q1acum9PC7T94S2PimSnSX10NFMloczQq2Q44WTaSTH7O0NN9LAtCUxbA2IXa3F7xA-g7iTJ0hsOfJ"/>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface truncate">Barber Studio</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant font-normal">Premium Grooming</p>
+</div>
+</div>
+<div class="flex flex-col gap-sm flex-1">
+<a class="flex items-center gap-md py-2 px-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Service</span>
+</a>
+<a class="flex items-center gap-md py-2 px-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Staff</span>
+</a>
+<a class="flex items-center gap-md py-2 px-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Date</span>
+</a>
+<a class="flex items-center gap-md py-2 px-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface" data-icon="schedule">schedule</span>
+<span class="font-label-md text-label-md">Time</span>
+</a>
+<a class="flex items-center gap-md py-2 px-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface" data-icon="person_outline">person_outline</span>
+<span class="font-label-md text-label-md">Details</span>
+</a>
+<a class="flex items-center gap-md py-2 text-primary font-bold border-l-2 border-primary pl-2 transition-all duration-200 rounded-r-lg bg-surface-variant/30" href="#">
+<span class="material-symbols-outlined fill" data-icon="checklist">checklist</span>
+<span class="font-label-md text-label-md">Review</span>
+</a>
+<a class="flex items-center gap-md py-2 px-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 rounded-lg group pointer-events-none opacity-50" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface" data-icon="check_circle">check_circle</span>
+<span class="font-label-md text-label-md">Done</span>
+</a>
+</div>
+<div class="mt-auto pb-4 px-2">
+<button class="w-full py-2 flex items-center justify-center gap-sm rounded-lg border border-outline-variant text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
+                    Need Help?
+                </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-container_padding md:px-2xl py-xl w-full max-w-[480px] md:max-w-none mx-auto relative z-0">
+<div class="max-w-2xl mx-auto flex flex-col min-h-full">
+<!-- Header -->
+<div class="mb-lg">
+<h1 class="font-display-mobile md:font-display text-display-mobile md:text-display text-on-surface mb-2">Review Booking</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Please review your appointment details before confirming.</p>
+</div>
+<!-- Review Cards (Bento style grid) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md mb-xl">
+<!-- Service Summary -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col relative overflow-hidden group">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Service</span>
+<a class="text-primary font-label-sm text-label-sm hover:underline flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" href="#">
+<span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                            </a>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Haircut &amp; Style</div>
+<div class="font-body-lg text-body-lg text-primary mt-1">$45.00</div>
+<div class="absolute bottom-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-[64px]">content_cut</span>
+</div>
+</div>
+<!-- Date & Time -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col relative group">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Date &amp; Time</span>
+<a class="text-primary font-label-sm text-label-sm hover:underline flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" href="#">
+<span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                            </a>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Oct 24, 2:30 PM</div>
+<div class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 45 mins
+                        </div>
+</div>
+<!-- Barber/Staff -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex items-center gap-md relative group md:col-span-2">
+<div class="absolute top-md right-md">
+<a class="text-primary font-label-sm text-label-sm hover:underline flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" href="#">
+<span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                            </a>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a male barber named John Smith. He has a neat beard and is wearing a modern black apron over a white shirt. The lighting is moody and cinematic, consistent with a high-end grooming studio. The background is slightly blurred to keep focus on the subject." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAG2zoaX25Cesq8caLxfWWuZ8MbDFE6S42uJNH2tAgMbEMSkxejeC9Z4zDSTojQbiPW_ZCr_L_k7MWkHdZi_GgGvSnB7WQ87a1LvdGwUVX9qIAiTjHevc68BIQiq9ECYt-xjpXM56EsaDQ_rkEUjav326i8pzcGo04mGJZyrJK95PV0P7qDEayIuBV4bv4oo5GGpDaZPX-M7NhroOWdZjdnq0UAY-zn70REz-mQ-W2Z3eISSQ28CrWSbkNdQ2xRpcDEqJnr3Wodw3I"/>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block mb-1">Professional</span>
+<div class="font-headline-sm text-headline-sm text-on-surface">John Smith</div>
+</div>
+</div>
+<!-- Customer Details -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md flex flex-col relative group md:col-span-2">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Your Details</span>
+<a class="text-primary font-label-sm text-label-sm hover:underline flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" href="#">
+<span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                            </a>
+</div>
+<div class="font-body-lg text-body-lg text-on-surface font-medium">Alex Johnson</div>
+<div class="font-body-md text-body-md text-on-surface-variant">alex@example.com</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="mt-auto pt-lg border-t border-surface-container flex flex-col gap-md">
+<div class="flex justify-between items-center text-on-surface">
+<span class="font-body-lg text-body-lg font-medium">Total due today</span>
+<span class="font-headline-sm text-headline-sm">$45.00</span>
+</div>
+<button class="w-full bg-[#3B82F6] hover:bg-[#2563eb] text-white font-label-md text-label-md py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20">
+                        Confirm Booking
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<p class="font-label-sm text-label-sm text-on-surface-variant text-center opacity-70">
+                        By confirming, you agree to our cancellation policy.
+                    </p>
+</div>
+</div>
+</main>
+</div>
+</body></html>

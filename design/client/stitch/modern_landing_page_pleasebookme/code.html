@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PleaseBookMe | High-Conversion SaaS Landing Page</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#31353b",
+                        "surface-container-high": "#262a30",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container": "#1c2026",
+                        "surface-bright": "#353940",
+                        "on-primary-container": "#00285d",
+                        "error": "#ffb4ab",
+                        "secondary": "#4edea3",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary-fixed-variant": "#005236",
+                        "tertiary-fixed": "#ffdcc6",
+                        "outline": "#8c909f",
+                        "primary-fixed-dim": "#adc6ff",
+                        "inverse-primary": "#005ac2",
+                        "inverse-on-surface": "#2d3137",
+                        "primary": "#adc6ff",
+                        "surface-dim": "#101419",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-tertiary-container": "#461f00",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#ffb786",
+                        "on-background": "#dfe2eb",
+                        "secondary-fixed": "#6ffbbe",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-tertiary-fixed": "#311400",
+                        "background": "#101419",
+                        "surface-container-highest": "#31353b",
+                        "on-tertiary": "#502400",
+                        "error-container": "#93000a",
+                        "surface": "#101419",
+                        "on-primary-fixed": "#001a42",
+                        "on-surface": "#dfe2eb",
+                        "primary-container": "#4d8eff",
+                        "surface-tint": "#adc6ff",
+                        "outline-variant": "#424754",
+                        "on-secondary": "#003824",
+                        "on-primary": "#002e6a",
+                        "on-error": "#690005",
+                        "inverse-surface": "#dfe2eb",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary-container": "#df7412",
+                        "surface-container-low": "#181c22",
+                        "surface-container-lowest": "#0a0e14",
+                        "secondary-container": "#00a572",
+                        "on-primary-fixed-variant": "#004395"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "24px",
+                        "2xl": "48px",
+                        "md": "16px",
+                        "xs": "8px",
+                        "lg": "24px",
+                        "container-max": "1440px",
+                        "xl": "32px",
+                        "base": "4px",
+                        "sm": "12px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Geist", "sans-serif"],
+                        "body-lg": ["Geist", "sans-serif"],
+                        "label-md": ["Geist", "sans-serif"],
+                        "headline-lg-mobile": ["Geist", "sans-serif"],
+                        "headline-lg": ["Geist", "sans-serif"],
+                        "display": ["Geist", "sans-serif"],
+                        "headline-md": ["Geist", "sans-serif"],
+                        "mono-label": ["Geist Mono", "monospace"]
+                    },
+                    fontSize: {
+                        "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0", fontWeight: "400" }],
+                        "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "0", fontWeight: "400" }],
+                        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500" }],
+                        "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "display": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "500" }],
+                        "mono-label": ["12px", { lineHeight: "16px", letterSpacing: "0", fontWeight: "400" }]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1F2329 1px, transparent 1px), linear-gradient(to bottom, #1F2329 1px, transparent 1px)"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0B0D10; color: #dfe2eb; }
+        .glass-panel {
+            background: rgba(18, 21, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid #1F2329;
+        }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(11,13,16,0) 70%);
+            top: -200px;
+            right: -200px;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(31,35,41,0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(31,35,41,0.5) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="font-body-md antialiased overflow-x-hidden">
+<!-- Sticky Header -->
+<header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b-0">
+<div class="max-w-container-max mx-auto px-lg h-16 flex items-center justify-between">
+<div class="flex items-center gap-2xl">
+<div class="font-headline-md font-bold tracking-tight text-white flex items-center gap-xs">
+<div class="w-6 h-6 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-on-primary font-bold">calendar_month</span>
+</div>
+                    PleaseBookMe
+                </div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="font-body-md text-on-surface-variant hover:text-white transition-colors" href="#">Features</a>
+<a class="font-body-md text-on-surface-variant hover:text-white transition-colors" href="#">Solutions</a>
+<a class="font-body-md text-on-surface-variant hover:text-white transition-colors" href="#">Pricing</a>
+<a class="font-body-md text-on-surface-variant hover:text-white transition-colors" href="#">Developers</a>
+<a class="font-body-md text-on-surface-variant hover:text-white transition-colors" href="#">Docs</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<a class="font-body-md text-on-surface-variant hover:text-white transition-colors hidden sm:block" href="#">Sign In</a>
+<button class="bg-primary text-on-primary font-label-md px-md py-xs rounded-lg hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(173,198,255,0.3)]">
+                    Start Free
+                </button>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="relative pt-32 pb-2xl md:pt-48 md:pb-32 px-lg overflow-hidden">
+<div class="hero-glow"></div>
+<div class="absolute inset-0 bg-grid z-[-2] opacity-50"></div>
+<div class="max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-2 gap-2xl items-center">
+<!-- Left: Copy -->
+<div class="flex flex-col gap-lg z-10">
+<div class="inline-flex items-center gap-xs px-sm py-base rounded-full bg-surface-container-high border border-outline-variant w-fit">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-on-surface-variant">Infrastructure as Interface</span>
+</div>
+<h1 class="font-display text-white lg:text-[64px] lg:leading-[72px] tracking-tighter">
+                    Build a better <br/>
+<span class="text-primary">booking experience.</span>
+</h1>
+<p class="font-body-lg text-on-surface-variant max-w-lg">
+                    The enterprise-grade reservation infrastructure designed for speed, scale, and uncompromising reliability. Manage availability, automate workflows, and integrate seamlessly.
+                </p>
+<div class="flex flex-wrap items-center gap-md pt-xs">
+<button class="bg-primary text-on-primary font-label-md px-lg py-sm rounded-lg hover:bg-primary/90 transition-colors shadow-[0_0_20px_rgba(173,198,255,0.4)]">
+                        Get Started
+                    </button>
+<button class="glass-panel text-white font-label-md px-lg py-sm rounded-lg hover:bg-surface-container-high transition-colors flex items-center gap-xs border-outline-variant">
+<span class="material-symbols-outlined text-[18px]">play_circle</span>
+                        Watch Demo
+                    </button>
+</div>
+</div>
+<!-- Right: Dashboard Window -->
+<div class="relative z-10 w-full h-[500px] lg:h-[600px]">
+<div class="absolute inset-0 bg-surface-container rounded-xl border border-outline-variant shadow-[0_20px_40px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col transform lg:translate-x-12 lg:-translate-y-4">
+<!-- Fake Mac Window Header -->
+<div class="h-8 border-b border-outline-variant bg-surface-dim flex items-center px-sm gap-2">
+<div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+<div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+<div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+<div class="mx-auto font-mono-label text-on-surface-variant text-[10px]">app.pleasebookme.com</div>
+</div>
+<!-- Dashboard Content -->
+<div class="flex-1 flex bg-[#0B0D10]">
+<!-- Sidebar -->
+<div class="w-48 border-r border-outline-variant p-sm flex flex-col gap-sm hidden sm:flex">
+<div class="h-6 w-32 bg-surface-variant rounded mb-md"></div>
+<div class="h-4 w-full bg-surface-variant rounded opacity-50"></div>
+<div class="h-4 w-5/6 bg-surface-variant rounded opacity-50"></div>
+<div class="h-4 w-4/6 bg-surface-variant rounded opacity-50"></div>
+</div>
+<!-- Main Area -->
+<div class="flex-1 p-lg flex flex-col gap-lg">
+<div class="flex justify-between items-center">
+<div class="h-6 w-40 bg-surface-variant rounded"></div>
+<div class="h-8 w-24 bg-primary rounded-lg opacity-80"></div>
+</div>
+<!-- Cards Grid -->
+<div class="grid grid-cols-2 gap-sm">
+<div class="h-24 bg-surface-container rounded-lg border border-outline-variant p-sm">
+<div class="h-4 w-16 bg-surface-variant rounded mb-2"></div>
+<div class="h-8 w-12 bg-primary opacity-50 rounded"></div>
+</div>
+<div class="h-24 bg-surface-container rounded-lg border border-outline-variant p-sm">
+<div class="h-4 w-20 bg-surface-variant rounded mb-2"></div>
+<div class="h-8 w-16 bg-surface-variant rounded"></div>
+</div>
+</div>
+<!-- Table -->
+<div class="flex-1 bg-surface-container rounded-lg border border-outline-variant p-sm">
+<div class="h-4 w-full bg-surface-variant rounded opacity-30 mb-sm"></div>
+<div class="h-8 w-full bg-surface-variant rounded opacity-50 mb-xs"></div>
+<div class="h-8 w-full bg-surface-variant rounded opacity-50 mb-xs"></div>
+<div class="h-8 w-full bg-surface-variant rounded opacity-50"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Proof -->
+<section class="py-xl border-y border-outline-variant bg-surface-dim">
+<div class="max-w-container-max mx-auto px-lg">
+<p class="text-center font-mono-label text-on-surface-variant mb-lg uppercase tracking-wider">Trusted by engineering teams at</p>
+<div class="flex flex-wrap justify-center items-center gap-2xl opacity-60 grayscale">
+<div class="font-headline-md font-bold text-white flex items-center gap-xs">
+<span class="material-symbols-outlined">layers</span> TechFlow
+                </div>
+<div class="font-headline-md font-bold text-white flex items-center gap-xs">
+<span class="material-symbols-outlined">change_history</span> Acme Corp
+                </div>
+<div class="font-headline-md font-bold text-white flex items-center gap-xs">
+<span class="material-symbols-outlined">webhook</span> Zenith
+                </div>
+<div class="font-headline-md font-bold text-white flex items-center gap-xs">
+<span class="material-symbols-outlined">all_inclusive</span> Infinity
+                </div>
+</div>
+</div>
+</section>
+</body></html>

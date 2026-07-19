@@ -8,8 +8,8 @@ services:
 
     environment:
       POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_SUPERADMIN_USERNAME}
-      POSTGRES_PASSWORD: ${DB_SUPERADMIN_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
     ports:
       - "${DB_PORT}:5432"
@@ -24,7 +24,7 @@ services:
     healthcheck:
       test: [
         "CMD-SHELL",
-        "pg_isready -h localhost -U ${DB_SUPERADMIN_USERNAME} -d ${DB_NAME}"
+        "pg_isready -h localhost -U ${POSTGRES_USERNAME} -d ${DB_NAME}"
       ]
       interval: 10s
       timeout: 5s

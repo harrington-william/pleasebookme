@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PleaseBookMe - Customer Information</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "secondary-container": "#3131c0",
+                            "primary": "#adc6ff",
+                            "outline": "#8c909f",
+                            "surface-bright": "#37393d",
+                            "surface-container": "#1e2023",
+                            "on-primary-fixed-variant": "#004395",
+                            "surface-container-lowest": "#0c0e11",
+                            "surface-tint": "#adc6ff",
+                            "on-primary-fixed": "#001a42",
+                            "on-tertiary-container": "#461f00",
+                            "surface-container-low": "#1a1c1f",
+                            "on-background": "#e2e2e6",
+                            "on-tertiary-fixed-variant": "#723600",
+                            "on-secondary-fixed-variant": "#2f2ebe",
+                            "on-surface": "#e2e2e6",
+                            "surface-dim": "#111317",
+                            "outline-variant": "#424754",
+                            "on-primary": "#002e6a",
+                            "background": "#111317",
+                            "tertiary-container": "#df7412",
+                            "surface-variant": "#333538",
+                            "primary-fixed": "#d8e2ff",
+                            "on-error-container": "#ffdad6",
+                            "on-secondary": "#1000a9",
+                            "on-secondary-container": "#b0b2ff",
+                            "secondary": "#c0c1ff",
+                            "tertiary": "#ffb786",
+                            "primary-container": "#4d8eff",
+                            "surface-container-high": "#282a2d",
+                            "inverse-surface": "#e2e2e6",
+                            "tertiary-fixed": "#ffdcc6",
+                            "tertiary-fixed-dim": "#ffb786",
+                            "on-secondary-fixed": "#07006c",
+                            "on-surface-variant": "#c2c6d6",
+                            "surface": "#111317",
+                            "inverse-on-surface": "#2f3034",
+                            "on-tertiary-fixed": "#311400",
+                            "on-primary-container": "#00285d",
+                            "secondary-fixed-dim": "#c0c1ff",
+                            "error": "#ffb4ab",
+                            "secondary-fixed": "#e1e0ff",
+                            "inverse-primary": "#005ac2",
+                            "on-tertiary": "#502400",
+                            "surface-container-highest": "#333538",
+                            "on-error": "#690005",
+                            "error-container": "#93000a",
+                            "primary-fixed-dim": "#adc6ff"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "xs": "4px",
+                            "sm": "8px",
+                            "base": "4px",
+                            "md": "16px",
+                            "lg": "24px",
+                            "stack_gap": "12px",
+                            "container_padding": "20px",
+                            "xl": "32px",
+                            "2xl": "48px"
+                    },
+                    "fontFamily": {
+                            "display-mobile": ["Inter"],
+                            "body-md": ["Inter"],
+                            "headline-sm": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "display": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "label-md": ["Inter"],
+                            "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                            "display-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                            "headline-sm": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+                            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                            "display": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                            "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                            "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        
+        /* Custom scrollbar for better dark mode aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: theme('colors.surface');
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant');
+            border-radius: theme('borderRadius.full');
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bg-background antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Progress Bar -->
+<div class="w-full h-1 bg-surface-container-high fixed top-0 left-0 z-50">
+<div class="h-full bg-primary transition-all duration-500 ease-in-out" style="width: 71.4%;"></div> <!-- Step 5 of 7 -->
+</div>
+<!-- Main Layout Container -->
+<div class="flex flex-1 pt-1 h-screen overflow-hidden">
+<!-- Side Nav (Desktop only per instructions, matching JSON spec) -->
+<aside class="hidden md:flex flex-col w-64 h-full p-md gap-stack_gap bg-surface-container shadow-md rounded-l-xl z-40 border-r border-outline-variant flex-shrink-0">
+<!-- Brand Area -->
+<div class="flex items-center gap-md mb-xl p-xs">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant flex-shrink-0">
+<img alt="Business Logo" class="w-full h-full object-cover" data-alt="A high-resolution, professional logo for 'Barber Studio' featuring elegant, minimalist typography and a stylized pair of shears. The logo is rendered in stark white against a deep charcoal background, perfectly suiting a premium dark-mode interface. The lighting highlights the crisp vector edges, conveying precision and luxury grooming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKgdBTqNp_ygNWD34kONHTmk4vFRtrFHHx2-ggE77PndKGIIsuOUyHpnMp0EZn9IiM82Z41Ugx8PkbA2zadjhGoFSh7D9j8xOs2QOwaBKiffY67pgInfh2czedsygSonIsrKSvzTM0FfJomtjHDZZ5sdYF5NEMZJj1tC7wbGGXkUNhzEUxNnPjyYJ-X984ZJq5AAu-UkSg3TydDBJU-O9hC0Jo2tZSnIQeU_d7vnO2poj-0C-xDGfmkY_1YROQdcco4BoVVF4VTcim"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Barber Studio</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Premium Grooming</span>
+</div>
+</div>
+<!-- Nav Links -->
+<nav class="flex flex-col gap-sm flex-1">
+<a class="flex items-center gap-md py-sm pl-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Service</span>
+</a>
+<a class="flex items-center gap-md py-sm pl-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Staff</span>
+</a>
+<a class="flex items-center gap-md py-sm pl-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Date</span>
+</a>
+<a class="flex items-center gap-md py-sm pl-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors" data-icon="schedule">schedule</span>
+<span class="font-label-md text-label-md">Time</span>
+</a>
+<a class="flex items-center gap-md py-sm pl-2 rounded-md text-primary font-bold border-l-2 border-primary bg-surface-variant/50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-primary" data-icon="person_outline" data-weight="fill" style="font-variation-settings: 'FILL' 1;">person_outline</span>
+<span class="font-label-md text-label-md">Details</span>
+</a>
+<a class="flex items-center gap-md py-sm pl-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors" data-icon="checklist">checklist</span>
+<span class="font-label-md text-label-md">Review</span>
+</a>
+</nav>
+<!-- Bottom CTA -->
+<div class="mt-auto pt-md border-t border-outline-variant">
+<button class="w-full py-2 px-4 rounded-md border border-outline hover:border-primary text-on-surface hover:text-primary transition-colors font-label-md text-label-md flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+                    Need Help?
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto w-full max-w-[480px] mx-auto relative px-container_padding py-xl md:px-lg flex flex-col justify-center items-center">
+<div class="w-full flex flex-col gap-xl">
+<!-- Header -->
+<header class="text-left space-y-xs">
+<h1 class="font-display text-display text-on-surface md:font-display md:text-display font-display-mobile text-display-mobile">Your Details</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Please provide your contact information to finalize the booking.</p>
+</header>
+<!-- Form -->
+<form class="flex flex-col gap-lg w-full">
+<!-- Full Name -->
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface" for="fullName">Full Name</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-md text-outline-variant select-none pointer-events-none" data-icon="person">person</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-lg text-body-lg rounded-lg py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-shadow placeholder-on-surface-variant/50 hover:border-outline" id="fullName" name="fullName" placeholder="Jane Doe" required="" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-md text-outline-variant select-none pointer-events-none" data-icon="mail">mail</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-lg text-body-lg rounded-lg py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-shadow placeholder-on-surface-variant/50 hover:border-outline" id="email" name="email" placeholder="jane@example.com" required="" type="email"/>
+</div>
+</div>
+<!-- Phone Number -->
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface" for="phone">Phone Number</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-md text-outline-variant select-none pointer-events-none" data-icon="call">call</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-lg text-body-lg rounded-lg py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-shadow placeholder-on-surface-variant/50 hover:border-outline" id="phone" name="phone" placeholder="(555) 123-4567" required="" type="tel"/>
+</div>
+</div>
+<!-- Notes (Optional) -->
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface flex justify-between" for="notes">
+<span>Notes</span>
+<span class="text-on-surface-variant font-normal">Optional</span>
+</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-lg text-body-lg rounded-lg p-4 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-shadow placeholder-on-surface-variant/50 hover:border-outline resize-none" id="notes" name="notes" placeholder="Any special requests or details we should know?" rows="3"></textarea>
+</div>
+<!-- Actions -->
+<div class="flex gap-md pt-md mt-md border-t border-outline-variant/30">
+<button class="w-1/3 py-3 px-4 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors font-label-md text-label-md flex justify-center items-center" type="button">
+                            Back
+                        </button>
+<button class="w-2/3 py-3 px-4 rounded-lg bg-[#3B82F6] text-white hover:bg-primary-container hover:text-on-primary-container transition-colors font-label-md text-label-md flex justify-center items-center shadow-lg shadow-[#3B82F6]/20 font-bold" type="submit">
+                            Continue to Review
+                        </button>
+</div>
+</form>
+</div>
+</main>
+</div>
+</body></html>

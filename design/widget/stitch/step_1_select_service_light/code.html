@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PleaseBookMe - Service Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#3131c0",
+                        "primary": "#adc6ff",
+                        "outline": "#8c909f",
+                        "surface-bright": "#37393d",
+                        "surface-container": "#1e2023",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface-container-lowest": "#0c0e11",
+                        "surface-tint": "#adc6ff",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-container": "#461f00",
+                        "surface-container-low": "#1a1c1f",
+                        "on-background": "#e2e2e6",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-surface": "#e2e2e6",
+                        "surface-dim": "#111317",
+                        "outline-variant": "#424754",
+                        "on-primary": "#002e6a",
+                        "background": "#111317",
+                        "tertiary-container": "#df7412",
+                        "surface-variant": "#333538",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary": "#1000a9",
+                        "on-secondary-container": "#b0b2ff",
+                        "secondary": "#c0c1ff",
+                        "tertiary": "#ffb786",
+                        "primary-container": "#4d8eff",
+                        "surface-container-high": "#282a2d",
+                        "inverse-surface": "#e2e2e6",
+                        "tertiary-fixed": "#ffdcc6",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-secondary-fixed": "#07006c",
+                        "on-surface-variant": "#c2c6d6",
+                        "surface": "#111317",
+                        "inverse-on-surface": "#2f3034",
+                        "on-tertiary-fixed": "#311400",
+                        "on-primary-container": "#00285d",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#e1e0ff",
+                        "inverse-primary": "#005ac2",
+                        "on-tertiary": "#502400",
+                        "surface-container-highest": "#333538",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "stack_gap": "12px",
+                        "container_padding": "20px",
+                        "xl": "32px",
+                        "2xl": "48px"
+                    },
+                    "fontFamily": {
+                        "display-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Light Theme Overrides based on user prompt */
+        body { background-color: #FFFFFF; color: #1F2937; }
+        .service-card { background-color: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 12px; }
+        .accent-primary { color: #3B82F6; }
+        .bg-accent-primary { background-color: #3B82F6; }
+        .border-accent-primary { border-color: #3B82F6; }
+    </style>
+</head>
+<body class="min-h-screen flex font-body-md bg-white">
+<!-- TopNavBar (Mobile) -->
+<header class="md:hidden fixed top-0 w-full z-50 bg-white border-b border-gray-200">
+<div class="flex justify-between items-center w-full px-lg py-md max-w-[480px] mx-auto">
+<span class="font-display-mobile text-display-mobile font-semibold text-gray-900">PleaseBookMe</span>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-gray-700 hover:text-[#3B82F6] transition-colors scale-95 duration-150" data-icon="account_circle">account_circle</span>
+<span class="material-symbols-outlined text-gray-700 hover:text-[#3B82F6] transition-colors scale-95 duration-150" data-icon="help">help</span>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col w-64 h-full p-md gap-stack_gap fixed left-0 top-0 bg-gray-50 border-r border-gray-200 z-40">
+<div class="mb-8 flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A small, minimalist circular logo for a premium barber studio, featuring clean geometric lines and a modern, high-contrast aesthetic in black and white, suitable for a light mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVTpy4tsJlaB-G_6IRCs3MGUsZmLdJcBQBh5yZKR84kaIsM5F_RbkLgTrLfmwstPemgIbuna4UmAJeTRG1ZxKdKs1u_9YkUhN_2qY9AGBcgQ8vsW-fNM1yHMVGsFTL_D0lbz3rqSNwslYpreTq1BdEm473sFHYruvRdtiXg9G_vI8okgzCkzSMzWUiN5S1tfsRLV_pjXrOsHjJ-1MsAorkO-VmbXc-FLVI1Q9mfOORM5iD7alh0-ufHmP8F99RI9BxTVxQXIdIAWXd"/>
+<div>
+<h2 class="font-headline-md text-headline-md text-gray-900">Barber Studio</h2>
+<p class="font-label-sm text-label-sm text-gray-500">Premium Grooming</p>
+</div>
+</div>
+<ul class="flex-1 space-y-2">
+<li>
+<a class="flex items-center gap-3 p-2 rounded-lg bg-blue-50 text-[#3B82F6] font-bold border-l-2 border-[#3B82F6] pl-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Service</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 pl-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Staff</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 pl-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Date</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 pl-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+<span class="font-label-md text-label-md">Time</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 pl-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person_outline">person_outline</span>
+<span class="font-label-md text-label-md">Details</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 pl-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="checklist">checklist</span>
+<span class="font-label-md text-label-md">Review</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 pl-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+<span class="font-label-md text-label-md">Done</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto">
+<button class="w-full py-2 px-4 rounded border border-gray-300 text-gray-700 font-label-md text-label-md hover:bg-gray-100 transition-colors">
+                Need Help?
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[480px] mx-auto md:ml-64 px-container_padding pt-20 md:pt-10 pb-32">
+<!-- Progress Bar -->
+<div class="fixed top-0 left-0 md:left-64 right-0 h-1 bg-gray-200 z-50">
+<div class="h-full bg-accent-primary w-1/7 transition-all duration-500"></div>
+</div>
+<div class="mb-lg">
+<h1 class="font-display text-display text-gray-900 mb-2">Select a Service</h1>
+<p class="font-body-lg text-body-lg text-gray-500">Choose what you'd like to book today.</p>
+</div>
+<!-- Service Cards Grid -->
+<div class="grid grid-cols-1 gap-md">
+<!-- Card 1 -->
+<label class="cursor-pointer group relative">
+<input checked="" class="peer sr-only" name="service" type="radio"/>
+<div class="service-card p-md transition-all duration-200 peer-checked:border-accent-primary peer-checked:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)] peer-checked:bg-blue-50/50 hover:shadow-md">
+<div class="flex items-start gap-md">
+<img class="w-24 h-24 rounded-lg object-cover flex-shrink-0" data-alt="A professional close-up shot of a modern haircut in a brightly lit, premium barber studio. The image features crisp details, soft natural lighting, and a clean white background, reflecting a high-end grooming experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNjXFtlwYNZ4gIzDYhMQmuecb0c2WBR1MtV9QXXubDq6-eSKCyCVk7zNl-4e45HA97IS86NgvD6ffsDLXE-5WiUWqjDhiEX--93KzrBTHPd72ILA2ETKFl3ComX4oZreOBn2rElNHNjk29SC4_XhCumHstVAbEe2cFMDEMwx0Ov8afjj9Ic_HOIqyc3ukg3lcNQdzsrgZy9dsymJvJfG-ieBb95xH6f3J_fgOZfqWpAAkeOQZhXCw_n3AzHuhkP1MHu7ydqCJpJyhN"/>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-sm">
+<h3 class="font-headline-sm text-headline-sm text-gray-900">Executive Haircut</h3>
+<span class="bg-blue-100 text-[#3B82F6] font-label-sm text-label-sm px-2 py-1 rounded-full">Popular</span>
+</div>
+<p class="font-body-md text-body-md text-gray-600 mb-sm">A precision cut tailored to your style, including a wash and hot towel finish.</p>
+<div class="flex items-center gap-4">
+<span class="font-label-md text-label-md text-gray-900 font-bold">$45</span>
+<span class="font-label-md text-label-md text-gray-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 45 min
+                                </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Selection Indicator -->
+<div class="absolute top-4 right-4 hidden peer-checked:flex items-center justify-center w-6 h-6 bg-accent-primary rounded-full text-white shadow-sm">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</label>
+<!-- Card 2 -->
+<label class="cursor-pointer group relative">
+<input class="peer sr-only" name="service" type="radio"/>
+<div class="service-card p-md transition-all duration-200 peer-checked:border-accent-primary peer-checked:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)] hover:shadow-md">
+<div class="flex items-start gap-md">
+<img class="w-24 h-24 rounded-lg object-cover flex-shrink-0" data-alt="A sharp, detailed photograph of a professional beard trim in progress. The lighting is bright and even, highlighting the clean lines of the beard against a light, minimalist background, conveying luxury and care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAuVHs8UwHn082nUUQQile3UJqnaUIkHsAT73MTyFHEj9iks_NbjTGvCuFjge5jYzBNZnF-Lp1AX9jnMOhCHNjAiK6l1y6Uf7DUP0y1Z8YjGpdLAyzmIUgmoySBHmHLvQFZ5MmSG9QRwcXFKyMkcPEesmOtwn9Q6V5puKW1OVfrb_hBqNl-WarbyEHN6AIPlLxZtk95QyrVSLV_fPEqRYcnVUHM8FhhUCir1i-o3Ey_vlD-KlwhE0a-5fZA3HbLj0eN1IBYrwpZoVr"/>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-sm">
+<h3 class="font-headline-sm text-headline-sm text-gray-900">Beard Trim &amp; Line Up</h3>
+</div>
+<p class="font-body-md text-body-md text-gray-600 mb-sm">Detailed sculpting and straight razor line up with nourishing oils.</p>
+<div class="flex items-center gap-4">
+<span class="font-label-md text-label-md text-gray-900 font-bold">$25</span>
+<span class="font-label-md text-label-md text-gray-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 30 min
+                                </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Selection Indicator -->
+<div class="absolute top-4 right-4 hidden peer-checked:flex items-center justify-center w-6 h-6 bg-accent-primary rounded-full text-white shadow-sm">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</label>
+<!-- Card 3 -->
+<label class="cursor-pointer group relative">
+<input class="peer sr-only" name="service" type="radio"/>
+<div class="service-card p-md transition-all duration-200 peer-checked:border-accent-primary peer-checked:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)] hover:shadow-md">
+<div class="flex items-start gap-md">
+<div class="w-24 h-24 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-gray-400 text-4xl">content_cut</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-sm">
+<h3 class="font-headline-sm text-headline-sm text-gray-900">The Full Package</h3>
+<span class="bg-gray-200 text-gray-700 font-label-sm text-label-sm px-2 py-1 rounded-full">Save $10</span>
+</div>
+<p class="font-body-md text-body-md text-gray-600 mb-sm">Executive Haircut combined with a detailed Beard Trim &amp; Line Up.</p>
+<div class="flex items-center gap-4">
+<span class="font-label-md text-label-md text-gray-900 font-bold">$60</span>
+<span class="font-label-md text-label-md text-gray-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 75 min
+                                </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Selection Indicator -->
+<div class="absolute top-4 right-4 hidden peer-checked:flex items-center justify-center w-6 h-6 bg-accent-primary rounded-full text-white shadow-sm">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+</label>
+</div>
+</main>
+<!-- Bottom Action Bar (Fixed) -->
+<div class="fixed bottom-0 left-0 md:left-64 right-0 bg-white border-t border-gray-200 p-md z-50">
+<div class="max-w-[480px] mx-auto flex gap-4">
+<button class="flex-1 bg-accent-primary text-white font-label-md text-label-md py-3 rounded-lg hover:bg-blue-600 transition-colors shadow-sm">
+                Continue
+            </button>
+</div>
+</div>
+</body></html>
