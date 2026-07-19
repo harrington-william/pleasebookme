@@ -1,0 +1,1 @@
+ALTER TABLE auth.refresh_tokens RENAME COLUMN client TO device_name;

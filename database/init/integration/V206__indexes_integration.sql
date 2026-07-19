@@ -1,0 +1,11 @@
+-- =====================================================
+-- PleaseBookMe Platform
+-- Database Initialization
+-- Phase 12 - Indexes - Integration
+-- =====================================================
+
+CREATE INDEX idx_destination_calendars_user_id ON integration.destination_calendars(user_id);
+CREATE INDEX idx_destination_calendars_service_id ON integration.destination_calendars(service_id);
+
+CREATE INDEX idx_destination_sheets_user_id ON integration.destination_sheets(user_id);
+CREATE INDEX idx_destination_sheets_service_id ON integration.destination_sheets(service_id);

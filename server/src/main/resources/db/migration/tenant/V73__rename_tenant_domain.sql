@@ -1,0 +1,1 @@
+ALTER TABLE tenant.domains RENAME TO tenant_domains;

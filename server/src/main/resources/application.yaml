@@ -29,6 +29,18 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+    locations:
+      - classpath:db/migration/common
+      - classpath:db/migration/auth
+      - classpath:db/migration/organization
+      - classpath:db/migration/tenant
+      - classpath:db/migration/core
+      - classpath:db/migration/resource
+      - classpath:db/migration/customer
+      - classpath:db/migration/widget
+      - classpath:db/migration/integration
+      - classpath:db/migration/notification
+      - classpath:db/migration/audit
 
   security:
     user:

@@ -1,0 +1,33 @@
+-- =====================================================
+-- PleaseBookMe Platform
+-- Database Initialization
+-- Phase 5 - Core - Booking Policies
+-- =====================================================
+
+-- `duration_type` and `booking_window_type` kept as VARCHAR pending proper
+-- enums - CORE_SCHEMA.md does not document their value sets.
+CREATE TABLE core.booking_policies (
+    id BIGSERIAL PRIMARY KEY,
+    service_id BIGINT NOT NULL,
+    booking_mode core.booking_mode NOT NULL DEFAULT 'FIXED',
+    duration_type VARCHAR(50) NOT NULL,
+    default_duration INTEGER NOT NULL DEFAULT 1,
+    minimum_duration INTEGER,
+    maximum_duration INTEGER,
+    minimum_notice INTEGER NOT NULL,
+    maximum_advance_booking INTEGER NOT NULL,
+    slot_interval INTEGER NOT NULL DEFAULT 30,
+    before_buffer INTEGER NOT NULL DEFAULT 0,
+    after_buffer INTEGER NOT NULL DEFAULT 0,
+    allow_overlap BOOLEAN NOT NULL DEFAULT false,
+    allow_multiple_attendee BOOLEAN NOT NULL DEFAULT false,
+    requires_payment BOOLEAN NOT NULL DEFAULT false,
+    auto_confirm BOOLEAN NOT NULL DEFAULT true,
+    booking_window_type VARCHAR(50) NOT NULL,
+    capacity INTEGER NOT NULL,
+    metadata JSONB,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+    CONSTRAINT fk_booking_policy_service FOREIGN KEY (service_id) REFERENCES core.services(id) ON DELETE CASCADE
+);

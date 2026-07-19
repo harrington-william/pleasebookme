@@ -1,0 +1,353 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>PleaseBookMe - Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#adc6ff",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "on-error": "#690005",
+                    "on-primary-container": "#00285d",
+                    "background": "#101419",
+                    "on-secondary-fixed": "#002113",
+                    "secondary-fixed": "#6ffbbe",
+                    "primary": "#adc6ff",
+                    "surface-container-low": "#181c22",
+                    "on-secondary-fixed-variant": "#005236",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "on-surface-variant": "#c2c6d6",
+                    "tertiary": "#ffb786",
+                    "secondary": "#4edea3",
+                    "tertiary-fixed": "#ffdcc6",
+                    "inverse-surface": "#dfe2eb",
+                    "outline": "#8c909f",
+                    "inverse-primary": "#005ac2",
+                    "on-surface": "#dfe2eb",
+                    "surface-container-lowest": "#0a0e14",
+                    "surface-container-highest": "#31353b",
+                    "primary-container": "#4d8eff",
+                    "surface-dim": "#101419",
+                    "inverse-on-surface": "#2d3137",
+                    "on-primary-fixed-variant": "#004395",
+                    "secondary-container": "#00a572",
+                    "surface-container-high": "#262a30",
+                    "on-tertiary": "#502400",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-tertiary-fixed": "#311400",
+                    "surface-variant": "#31353b",
+                    "surface-container": "#1c2026",
+                    "primary-fixed": "#d8e2ff",
+                    "tertiary-container": "#df7412",
+                    "on-secondary-container": "#00311f",
+                    "on-secondary": "#003824",
+                    "on-primary": "#002e6a",
+                    "on-error-container": "#ffdad6",
+                    "surface-bright": "#353940",
+                    "surface": "#101419",
+                    "on-background": "#dfe2eb",
+                    "outline-variant": "#424754",
+                    "on-tertiary-container": "#461f00",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-primary-fixed": "#001a42",
+                    "error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "2xl": "48px",
+                    "base": "4px",
+                    "sm": "12px",
+                    "xs": "8px",
+                    "xl": "32px",
+                    "container-max": "1440px",
+                    "gutter": "24px",
+                    "lg": "24px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Geist"],
+                    "label-md": ["Geist"],
+                    "mono-label": ["Geist Mono"],
+                    "body-md": ["Geist"],
+                    "body-lg": ["Geist"],
+                    "display": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "headline-lg-mobile": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "mono-label": ["12px", {"lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #0B0D10; color: #dfe2eb; }
+        .card-border { border: 1px solid #1F2329; }
+        .card-hover:hover { background-color: #12151A; border-color: #2D333B; }
+        .ghost-btn { border: 1px solid #1F2329; transition: background-color 0.2s, border-color 0.2s; }
+        .ghost-btn:hover { background-color: #1C1F26; border-color: #2D333B; }
+        .accent-btn { background-color: #3B82F6; color: white; transition: opacity 0.2s; }
+        .accent-btn:hover { opacity: 0.9; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+    </style>
+</head>
+<body class="font-body-md antialiased min-h-screen">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full py-lg px-md bg-surface-container fixed left-0 top-0 h-full w-[280px] border-r border-outline-variant z-50">
+<div class="mb-xl">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">widgets</span>
+                PleaseBookMe
+            </h1>
+<p class="font-label-md text-label-md text-on-surface-variant mt-xs">Enterprise Infrastructure</p>
+</div>
+<button class="accent-btn w-full py-sm rounded-DEFAULT font-label-md text-label-md mb-xl flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">add</span> Quick Create
+        </button>
+<div class="flex-1 overflow-y-auto pr-xs">
+<ul class="space-y-base">
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span> <span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">event_available</span> <span class="font-body-md text-body-md">Bookings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">schedule</span> <span class="font-body-md text-body-md">Availability</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-primary bg-primary-container/10 font-bold border-r-2 border-primary scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">category</span> <span class="font-body-md text-body-md">Services</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span> <span class="font-body-md text-body-md">Resources</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span> <span class="font-body-md text-body-md">Customers</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span> <span class="font-body-md text-body-md">Calendar</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">widgets</span> <span class="font-body-md text-body-md">Widgets</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span> <span class="font-body-md text-body-md">Analytics</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-xl pt-lg border-t border-outline-variant">
+<ul class="space-y-base">
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span> <span class="font-body-md text-body-md">Settings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-xs rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span> <span class="font-body-md text-body-md">Logout</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="hidden md:flex justify-between items-center h-16 px-lg bg-surface fixed top-0 right-0 z-40 border-b border-outline-variant w-[calc(100%-280px)]">
+<div class="flex items-center gap-sm flex-1">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full bg-[#0B0D10] border border-outline-variant rounded-[10px] py-xs pl-[36px] pr-sm text-body-md font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent transition-all" placeholder="Search services..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate user on a dark, minimalist background. The lighting is soft and studio-quality, emphasizing high contrast and sharp focus, matching a modern enterprise dark-mode UI style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPW2hmoCNk-BTZaTFq2tpCj3gYqBKJSDAsEsKQzHMT-MdEAM_B3EMuyO0LInpKZ5t6Gmn1AAvxyDuFViuBxW0yM5oV-7Stp1FwiMT_qIY2cOUpQJavGYc56QOc7tfEZT3-osMBcXBjxDC2231AQC5o0SaFtu-v1p1_nsDJeHLEecevPtwyRitl8cSEAXvd-Xn_WngGOieUL-vS3K05brV7MPdQkivfp40ji2vGk_xctlh9NkiaCi1VIU7hnYJUVLb11ROS-qNgxs01">
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="md:ml-[280px] md:pt-16 min-h-screen p-md md:p-[48px]">
+<!-- Header Area -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-xl">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Services Catalog</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Manage your bookable offerings, configure durations, and assign resources.</p>
+</div>
+<div class="flex gap-sm">
+<button class="ghost-btn px-md py-xs rounded-[10px] font-label-md text-label-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Filter
+                </button>
+<button class="accent-btn px-md py-xs rounded-[10px] font-label-md text-label-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">add</span> Create New Service
+                </button>
+</div>
+</div>
+<!-- Services Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-lg">
+<!-- Card 1 -->
+<div class="bg-[#12151A] rounded-lg p-lg card-border card-hover flex flex-col h-full transition-colors duration-200">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-[10px] bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-primary">videocam</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Initial Consultation</h3>
+<div class="flex items-center gap-xs mt-1">
+<span class="status-dot bg-secondary"></span>
+<span class="font-mono-label text-mono-label text-on-surface-variant">Active</span>
+</div>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="space-y-sm flex-1">
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Duration</span>
+<span class="font-body-md text-body-md text-on-surface">45 min</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Price</span>
+<span class="font-body-md text-body-md text-on-surface">$150.00</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Policy</span>
+<span class="font-body-md text-body-md text-on-surface">Strict (24h)</span>
+</div>
+</div>
+<div class="mt-md pt-md border-t border-[#1F2329] flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Resource" class="w-6 h-6 rounded-full border border-[#12151A] object-cover" data-alt="Small avatar of a professional consultant with a neutral background, high contrast dark mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhYQvx-M12IHqZGOw6oJoxjTwKVWSnTxmGPaurPb7m2TD6Xejxm90H4ttIfiJ635Or1Ej6t9gt45Jnc7XyRBE7vnoCXIwTvir6zf4Lar5LvwGYjxTg3Qugg2IIttB34gQh67X_KVDpwEDwCe5hjaAGBlWHdsirqKnKKCyTNkvsN7MkK-5RxobiFdnnm-rn2QFaSkAonOgYkFA_tMU00mUJmjthCY5kf1JIAOtC-FOgyqg458F0dQfefD7484FnaccavXfp_tpa40Jm">
+<img alt="Resource" class="w-6 h-6 rounded-full border border-[#12151A] object-cover" data-alt="Small avatar of another professional consultant with a neutral background, high contrast dark mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdzsxNgqfkJ8s1bDcnUPphoSfmNNDwTs_VntGdXZFpzoOagTxu4Q4wM4Kds6YBmXlMmS5-WsEd7ak87kv6QVc_WfEBidl1nZlvioa2cYk41cHZnxwJBWJP3EXFjtd82n9PeZvzrmSTxEZxsMndda0ZcF1RNh6YZAEJseb1BIOh8CwrHC12uGLcnXRTGezBfRYVzvk2THnIu73WsF8A8y9XL1AIoKc5dxeP3cRyCXRCsjCeozB_54kpefc-5kmoTMq8SCcpxcxSbAj-">
+<div class="w-6 h-6 rounded-full bg-surface-container-high border border-[#12151A] flex items-center justify-center font-mono-label text-[10px] text-on-surface-variant">+2</div>
+</div>
+<button class="ghost-btn px-sm py-1 rounded-[6px] font-label-md text-label-md text-on-surface text-[11px]">Quick Edit</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-[#12151A] rounded-lg p-lg card-border card-hover flex flex-col h-full transition-colors duration-200">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-[10px] bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-tertiary">engineering</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Technical Audit</h3>
+<div class="flex items-center gap-xs mt-1">
+<span class="status-dot bg-secondary"></span>
+<span class="font-mono-label text-mono-label text-on-surface-variant">Active</span>
+</div>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="space-y-sm flex-1">
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Duration</span>
+<span class="font-body-md text-body-md text-on-surface">120 min</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Price</span>
+<span class="font-body-md text-body-md text-on-surface">$500.00</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Policy</span>
+<span class="font-body-md text-body-md text-on-surface">Flexible (48h)</span>
+</div>
+</div>
+<div class="mt-md pt-md border-t border-[#1F2329] flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="Resource" class="w-6 h-6 rounded-full border border-[#12151A] object-cover" data-alt="Small avatar of a technical expert in dark mode studio lighting, professional corporate look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAbGERhI-UPea0VcOrejyPnGI-p9hLHse6jTHvakkOYZv3upIxPOlxh6N88UBpcmwgPZTQkOo4QCVfTslbpNA91znl2EHu5zZKOcU-92EfzoCD3CUtP75Ekz3otQwa1QheA6B-Am6qy904L6Quo4yoBe9inby2lM7Ul5v4JUx1FrXhDIg6DJRrXK70MyC9Fg1riOi-BzwfNzvlSRZhO3ksAOb2CX9EHIkwSXugyPKNYA42VdZjiyYN3lZOjym0QW5R0w8jYtLKwd2p">
+</div>
+<button class="ghost-btn px-sm py-1 rounded-[6px] font-label-md text-label-md text-on-surface text-[11px]">Quick Edit</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-[#12151A] rounded-lg p-lg card-border card-hover flex flex-col h-full transition-colors duration-200 opacity-70">
+<div class="flex justify-between items-start mb-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-[10px] bg-surface-container flex items-center justify-center border border-outline-variant opacity-50">
+<span class="material-symbols-outlined text-on-surface">campaign</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Marketing Strategy</h3>
+<div class="flex items-center gap-xs mt-1">
+<span class="status-dot bg-outline"></span>
+<span class="font-mono-label text-mono-label text-on-surface-variant">Draft</span>
+</div>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="space-y-sm flex-1">
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Duration</span>
+<span class="font-body-md text-body-md text-on-surface">90 min</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Price</span>
+<span class="font-body-md text-body-md text-on-surface">TBD</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-[#1F2329]">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">Policy</span>
+<span class="font-body-md text-body-md text-on-surface">Standard</span>
+</div>
+</div>
+<div class="mt-md pt-md border-t border-[#1F2329] flex justify-between items-center">
+<div class="text-on-surface-variant font-mono-label text-[11px]">No resources assigned</div>
+<button class="ghost-btn px-sm py-1 rounded-[6px] font-label-md text-label-md text-on-surface text-[11px]">Quick Edit</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

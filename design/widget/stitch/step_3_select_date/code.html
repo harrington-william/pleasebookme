@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PleaseBookMe - Date Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#3131c0",
+                        "primary": "#adc6ff",
+                        "outline": "#8c909f",
+                        "surface-bright": "#37393d",
+                        "surface-container": "#1e2023",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface-container-lowest": "#0c0e11",
+                        "surface-tint": "#adc6ff",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-container": "#461f00",
+                        "surface-container-low": "#1a1c1f",
+                        "on-background": "#e2e2e6",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-surface": "#e2e2e6",
+                        "surface-dim": "#111317",
+                        "outline-variant": "#424754",
+                        "on-primary": "#002e6a",
+                        "background": "#111317",
+                        "tertiary-container": "#df7412",
+                        "surface-variant": "#333538",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary": "#1000a9",
+                        "on-secondary-container": "#b0b2ff",
+                        "secondary": "#c0c1ff",
+                        "tertiary": "#ffb786",
+                        "primary-container": "#4d8eff",
+                        "surface-container-high": "#282a2d",
+                        "inverse-surface": "#e2e2e6",
+                        "tertiary-fixed": "#ffdcc6",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-secondary-fixed": "#07006c",
+                        "on-surface-variant": "#c2c6d6",
+                        "surface": "#111317",
+                        "inverse-on-surface": "#2f3034",
+                        "on-tertiary-fixed": "#311400",
+                        "on-primary-container": "#00285d",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#e1e0ff",
+                        "inverse-primary": "#005ac2",
+                        "on-tertiary": "#502400",
+                        "surface-container-highest": "#333538",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "stack_gap": "12px",
+                        "container_padding": "20px",
+                        "xl": "32px",
+                        "2xl": "48px"
+                    },
+                    "fontFamily": {
+                        "display-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row antialiased">
+<!-- SideNavBar (Desktop Only) -->
+<nav class="hidden md:flex flex-col w-64 h-full p-md gap-stack_gap bg-surface-container shadow-md h-screen rounded-r-xl border-r border-surface-container-low shrink-0 fixed left-0 top-0 z-10">
+<div class="flex items-center gap-md mb-lg pl-2 pt-2">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden shrink-0 border border-outline-variant">
+<img alt="Business Logo" class="w-full h-full object-cover" data-alt="A small, stylized circular business logo for 'Barber Studio' featuring a minimalist scissor and comb icon in white against a dark premium metallic background. The lighting is subtle, suggesting a high-end grooming establishment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj1W03pjQ14HAJbjsHZ-tw6_3Al1dxySzeC9qbhHmOBmxwg3xviZSIi6dNNVk3MMw89yWflN8CSeoeEhkmvbocgEV4JUqtkAjkHNGQawpt7Ou8QmNLszxkizdmmbRXV4BqjI-iLbmo1MmCNjErv6frsB88zzp2GD-_DodnW7PJM_p4ebdHiXTDMqnhp1cbtt1OEHLOjarLBbWafBX3Hn11NF-VxLGZISn7yFARXFTfWNQ-6lLGXme7Q_c88K600oQfBmvROTHnxMGx"/>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">Barber Studio</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Premium Grooming</div>
+</div>
+</div>
+<div class="flex flex-col gap-sm flex-grow mt-4">
+<!-- Step 1: Service (Done) -->
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-md text-label-md">Service</span>
+<span class="material-symbols-outlined ml-auto text-primary text-[16px]">check</span>
+</a>
+<!-- Step 2: Staff (Done) -->
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-md text-label-md">Staff</span>
+<span class="material-symbols-outlined ml-auto text-primary text-[16px]">check</span>
+</a>
+<!-- Step 3: Date (Active) -->
+<a class="flex items-center gap-md py-2 px-3 bg-surface-variant/50 rounded-lg text-primary font-bold border-l-2 border-primary pl-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-label-md text-label-md">Date</span>
+</a>
+<!-- Step 4: Time -->
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 0;">schedule</span>
+<span class="font-label-md text-label-md">Time</span>
+</a>
+<!-- Step 5: Details -->
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 0;">person_outline</span>
+<span class="font-label-md text-label-md">Details</span>
+</a>
+<!-- Step 6: Review -->
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 0;">checklist</span>
+<span class="font-label-md text-label-md">Review</span>
+</a>
+<!-- Step 7: Done -->
+<a class="flex items-center gap-md py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-200 opacity-50 cursor-not-allowed" href="#">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 0;">check_circle</span>
+<span class="font-label-md text-label-md">Done</span>
+</a>
+</div>
+<div class="mt-auto pt-md border-t border-surface-container-low">
+<button class="w-full flex items-center justify-center gap-sm py-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">help</span>
+                Need Help?
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col md:ml-64 relative min-h-screen">
+<!-- Progress Bar (Top) -->
+<div class="absolute top-0 left-0 w-full h-1 bg-surface-container z-20">
+<div class="h-full bg-primary" style="width: 42.85%;"></div> <!-- Step 3 of 7 -->
+</div>
+<!-- TopNavBar (Mobile Only) -->
+<header class="flex justify-between items-center w-full px-lg py-md md:hidden bg-surface border-b border-outline-variant sticky top-0 z-10 pt-[24px]">
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="font-display-mobile text-display-mobile font-semibold text-on-surface">PleaseBookMe</div>
+</div>
+<div class="flex items-center gap-stack_gap text-on-surface-variant">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">help</span></button>
+</div>
+</header>
+<!-- Canvas Content -->
+<div class="flex-1 flex flex-col items-center p-container_padding md:p-2xl max-w-[600px] mx-auto w-full pt-[40px] md:pt-[64px]">
+<div class="w-full mb-lg text-center md:text-left">
+<h1 class="font-display text-display text-on-surface mb-2">Select a Date</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Choose when you'd like to visit.</p>
+</div>
+<!-- Calendar Card -->
+<div class="w-full bg-surface rounded-xl border border-outline-variant p-md md:p-lg shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)]">
+<!-- Calendar Header -->
+<div class="flex justify-between items-center mb-lg">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="font-headline-sm text-headline-sm text-on-surface">October 2023</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<!-- Calendar Grid -->
+<div class="grid grid-cols-7 gap-y-sm gap-x-xs text-center mb-md">
+<!-- Days of Week -->
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">S</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">M</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">T</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">W</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">T</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">F</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant py-2">S</div>
+<!-- Week 1 -->
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">1</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">2</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">3</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">4</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">5</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">6</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">7</div>
+<!-- Week 2 -->
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">8</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">9</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">10</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">11</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">12</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">13</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">14</div>
+<!-- Week 3 (Today is 18th) -->
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">15</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">16</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">17</div>
+<div class="h-10 w-full flex items-center justify-center relative font-body-md text-body-md text-on-surface">
+<span class="z-10">18</span>
+<div class="absolute bottom-1 w-4 h-[2px] bg-primary rounded-full"></div>
+</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">19</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">20</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">21</div>
+<!-- Week 4 (Selected is 24th) -->
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface-variant opacity-30">22</div> <!-- No availability -->
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">23</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-primary bg-[#3B82F6] rounded-full shadow-md font-semibold cursor-pointer">24</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">25</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">26</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">27</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">28</div>
+<!-- Week 5 -->
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">29</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">30</div>
+<div class="h-10 w-full flex items-center justify-center font-body-md text-body-md text-on-surface cursor-pointer hover:bg-surface-variant rounded-full transition-colors">31</div>
+<div class="h-10 w-full"></div>
+<div class="h-10 w-full"></div>
+<div class="h-10 w-full"></div>
+<div class="h-10 w-full"></div>
+</div>
+<!-- Timezone -->
+<div class="flex items-center gap-xs justify-center text-on-surface-variant font-label-sm text-label-sm pt-4 border-t border-surface-variant">
+<span class="material-symbols-outlined text-[16px]">public</span>
+                    Europe/London (GMT+1)
+                </div>
+</div>
+<!-- Action Bar -->
+<div class="w-full mt-xl flex gap-md">
+<button class="flex-1 py-3 px-lg rounded-lg border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-variant transition-colors text-center">Back</button>
+<button class="flex-[2] py-3 px-lg rounded-lg bg-[#3B82F6] text-white font-label-md text-label-md hover:opacity-90 transition-opacity text-center shadow-md">Continue to Time</button>
+</div>
+<div class="mt-lg md:hidden w-full flex justify-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Powered by PleaseBookMe</span>
+</div>
+</div>
+</main>
+</body></html>

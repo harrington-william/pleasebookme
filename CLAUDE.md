@@ -1,4 +1,10 @@
 @AGENTS.md
+@SERVER_AGENTS.md
+@CODING_CONVENTIONS.md
+
+# Context Rules
+
+- Maintain Spring Boot server context in @SERVER_AGENTS.md
 
 # Business Name: **Please Book Me**
 # Current Phase: We are currently building PLATFORM V1. The first ever production-grade product.
@@ -69,7 +75,7 @@ MVP v1 was the foundational booking-engine phase and has already been completed 
 
 MVP v2 is the current active phase. The objective of MVP v2 is to normalize identity and security architecture while reusing the entire booking engine from MVP v1. This phase introduces authentication systems, RBAC, attribute-based authorization concepts, tenant isolation, permission boundaries, and security-oriented database schemas. The system remains built with Spring Boot and NextJS + TypeScript because the purpose of this phase is not framework migration, but security flow understanding. This phase also acts as a transition period during which TypeScript knowledge and NextJS knowledge are developed progressively. MVP v2 represents the transformation from a scheduling prototype into a real platform infrastructure foundation because the system now begins handling ownership, authorization, resource isolation, and protected operational workflows. The technical focus of MVP v2 is not feature expansion, but normalization of backend security architecture and preparation for future scalable platform behavior.
 
-## Production Platform v1.0 — Commercial Foundation (In Progress)
+## Production Platform v1.0.0 — Commercial Foundation (In Progress)
 
 This phase marks the transition from MVP development into the first production-grade version of the platform.
 
@@ -80,7 +86,6 @@ Unlike previous planning, this phase does not include a backend migration away f
 Major objectives include:
 
 - Production deployment on AWS
-- Nginx reverse proxy and traffic routing
 - Automated CI/CD pipelines
 - Production environment management
 - HTTPS and operational security hardening
@@ -90,10 +95,31 @@ Major objectives include:
 - Embedded booking widget
 - Public booking website
 - Multi-tenant platform expansion
+- Google Calendar synchronization
+- Google Sheets synchronization
 - Integration schemas
 - Expanded domain schemas
 - Reservation infrastructure normalization
 - API-first platform architecture
+
+Implemented schemas:
+
+- core
+- auth
+- audit
+- tenant
+- widget
+- resource
+- notification
+- integration
+- customer
+- organization
+
+Temporarily excluded schemas:
+
+- webhook
+- billing
+- analytics
 
 This phase also introduces operational dashboards that allow business owners to configure booking policies, resources, availability, schedules, customers, and reservations through a production-ready management interface.
 
@@ -103,20 +129,20 @@ By the completion of this phase, the platform should operate as a centralized Sa
 
 # Platform Phases
 
-## Platform v2.0 — Infrastructure Integration
+## Platform v2.0.0 — Infrastructure Integration
 
-Platform v2.0 focuses on transforming the centralized application into an integration-ready operational platform.
+Platform v2.0.0 focuses on transforming the centralized application into an integration-ready operational platform.
 
 The primary objective is to introduce asynchronous communication patterns, external service integrations, and infrastructure components that prepare the system for larger operational workloads.
 
 Major additions include:
 
 - Apache Kafka message streaming
+- Nginx reverse proxy for traffic routing
 - Cloudflare edge entry point
 - API Gateway
 - SMS notification providers
 - Email notification services
-- Google Calendar synchronization
 - External integration architecture
 - Analytics schema
 - Operational event streaming
@@ -124,20 +150,24 @@ Major additions include:
 - CI/CD optimization
 - Infrastructure deployment refinement
 
+Implemented schemas:
+
+- billing
+- analytics
+- expand customer schema
+
 During this phase, notifications become independent infrastructure capabilities rather than synchronous application logic. Business events begin producing platform events that can be consumed by downstream services without increasing coupling.
 
-The completion of Platform v2.0 establishes the foundation for an event-driven architecture while maintaining the simplicity of the centralized production deployment.
+The completion of Platform v2.0.0 establishes the foundation for an event-driven architecture while maintaining the simplicity of the centralized production deployment.
 
-## Platform v3.0 — Infrastructure Optimization & Analytics
+## Platform v3.0.0 — Infrastructure Optimization & Analytics
 
-Platform v3.0 represents the transition from application engineering into infrastructure engineering.
+Platform v3.0.0 represents the transition from application engineering into infrastructure engineering.
 
 The primary objective is operational scalability, data engineering, observability, and analytical capability.
 
 Major objectives include:
 
-- ETL pipelines
-- Data warehouse
 - Analytics service
 - Operational dashboards
 - Business intelligence
@@ -160,13 +190,15 @@ This phase also introduces the architectural preparation required for internatio
 
 # Production Evolution
 
-After Platform v3.0, the project enters continuous production evolution.
+After Platform v3.0.0, the project enters continuous production evolution.
 
 At this stage, the platform is no longer discovering fundamental architectural concepts. Instead, development focuses on infrastructure maturity, commercial expansion, operational excellence, developer experience, and ecosystem growth.
 
 Future engineering initiatives include:
 
 - Public Developer API
+- ETL pipelines
+- Data warehouse
 - API key management
 - SDK development
 - Webhook platform
@@ -180,6 +212,10 @@ Future engineering initiatives include:
 - Disaster recovery
 - Regional expansion
 
+Implemented schemas:
+
+- webhook
+
 The long-term objective is to evolve beyond a booking application into an API-first reservation infrastructure platform. Every interface—including the embedded booking widget, business dashboard, customer portal, mobile applications, and future third-party integrations—operates as a client of the same centralized backend infrastructure. This architecture enables the platform to scale from serving local Vietnamese businesses to becoming a reusable reservation platform capable of supporting multiple industries, international regions, and external software ecosystems.
 
-# Coding Conventions
+# Folder Structure

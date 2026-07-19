@@ -1,0 +1,1 @@
+ALTER TABLE core.bookings RENAME COLUMN cancelation_reason TO cancellation_reason

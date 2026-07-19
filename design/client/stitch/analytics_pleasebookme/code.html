@@ -1,0 +1,348 @@
+<!DOCTYPE html><html class="dark" lang="en"><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>PleaseBookMe Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#adc6ff",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-error": "#690005",
+                        "on-primary-container": "#00285d",
+                        "background": "#101419",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-fixed": "#6ffbbe",
+                        "primary": "#adc6ff",
+                        "surface-container-low": "#181c22",
+                        "on-secondary-fixed-variant": "#005236",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary": "#ffb786",
+                        "secondary": "#4edea3",
+                        "tertiary-fixed": "#ffdcc6",
+                        "inverse-surface": "#dfe2eb",
+                        "outline": "#8c909f",
+                        "inverse-primary": "#005ac2",
+                        "on-surface": "#dfe2eb",
+                        "surface-container-lowest": "#0a0e14",
+                        "surface-container-highest": "#31353b",
+                        "primary-container": "#4d8eff",
+                        "surface-dim": "#101419",
+                        "inverse-on-surface": "#2d3137",
+                        "on-primary-fixed-variant": "#004395",
+                        "secondary-container": "#00a572",
+                        "surface-container-high": "#262a30",
+                        "on-tertiary": "#502400",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-tertiary-fixed": "#311400",
+                        "surface-variant": "#31353b",
+                        "surface-container": "#1c2026",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-container": "#df7412",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "on-primary": "#002e6a",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#353940",
+                        "surface": "#101419",
+                        "on-background": "#dfe2eb",
+                        "outline-variant": "#424754",
+                        "on-tertiary-container": "#461f00",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-fixed": "#001a42",
+                        "error-container": "#93000a",
+                        "accent": "#3B82F6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "2xl": "48px",
+                        "base": "4px",
+                        "sm": "12px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "lg": "24px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "label-md": ["Geist"],
+                        "mono-label": ["Geist Mono"],
+                        "body-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "display": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-lg-mobile": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#0B0D10] text-on-background font-body-md min-h-screen flex selection:bg-accent/30">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-surface-container dark:bg-surface-container font-body-md text-body-md fixed left-0 top-0 h-full w-[280px] border-r border-outline-variant dark:border-outline-variant flex flex-col py-lg px-md z-50">
+<div class="mb-xl px-2">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface mb-1">PleaseBookMe</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Enterprise Infrastructure</p>
+</div>
+<button class="mb-lg w-full bg-accent hover:bg-accent/90 text-white font-label-md text-label-md py-sm px-md rounded-lg flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span> Quick Create
+        </button>
+<div class="flex-1 overflow-y-auto pr-2 space-y-1">
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="event_available">event_available</span> Bookings</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="schedule">schedule</span> Availability</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="category">category</span> Services</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span> Resources</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="group">group</span> Customers</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span> Calendar</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="widgets">widgets</span> Widgets</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-primary dark:text-primary bg-primary-container/10 font-bold border-r-2 border-primary scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="analytics" data-weight="fill">analytics</span> Analytics</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="notifications">notifications</span> Notifications</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="extension">extension</span> Integrations</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="api">api</span> API</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" data-icon="settings">settings</span> Settings</a>
+</div>
+<div class="mt-auto pt-lg border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined" data-icon="account_circle">account_circle</span> Profile</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span> Theme</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined" data-icon="help">help</span> Support</a>
+<a class="flex items-center gap-sm py-sm px-sm rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors text-error" href="#"><span class="material-symbols-outlined" data-icon="logout">logout</span> Logout</a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="hidden md:flex bg-surface dark:bg-surface font-label-md text-label-md fixed top-0 right-0 z-40 border-b border-outline-variant dark:border-outline-variant flex justify-between items-center h-16 px-lg left-[280px] w-[calc(100%-280px)]">
+<div class="flex-1 flex items-center gap-md">
+<!-- Search placeholder -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full bg-[#0B0D10] border-none rounded-lg pl-9 pr-3 py-2 text-on-surface focus:ring-2 focus:ring-accent font-body-md text-body-md placeholder:text-on-surface-variant/50" placeholder="Search analytics..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors cursor-pointer active:opacity-80 transition-opacity"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface transition-colors cursor-pointer active:opacity-80 transition-opacity"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A macro photography shot of a highly detailed, abstract user avatar rendered in 3D. The avatar is composed of smooth, glossy dark metallic spheres with subtle blue #3B82F6 neon lighting reflecting off the surfaces. The background is pure, deep space black, emphasizing the premium, high-tech enterprise aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2RI8r8sKxBDqrqtPbx1QaCKSkid6GPeDUtZ3tq_nRKcnp83UckAU3VRIAyMoQLk69FBRDKaUraclWiMoumWpoTa-7zwBh5jbk4lt3fOr1OSVN5RLlZZfj74cOw76f-2rGXGIyaR9XydLERPcEG1aKc_rtfsef2FoIpdnDWdw7XZG5ThH0JxHI8EQni9GFWlLQnO6IHYSgxEmHDOIPj_sNThDEFt3DUQ5QrZH4nKn5X6jaIp_Yi_q6S2bJLdaeSoaLf8icqlmW4Z94">
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="w-full md:pl-[280px] pt-16 md:pt-16 min-h-screen">
+<div class="max-w-[1440px] mx-auto p-md md:p-2xl space-y-lg">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg md:text-headline-lg text-on-surface">Business Intelligence</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Real-time insights across all reservation infrastructure.</p>
+</div>
+<div class="flex items-center gap-sm w-full sm:w-auto">
+<div class="flex items-center bg-[#12151A] border border-[#1F2329] rounded-lg p-1">
+<button class="px-sm py-1.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">7D</button>
+<button class="px-sm py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">30D</button>
+<button class="px-sm py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">YTD</button>
+</div>
+<button class="flex items-center gap-xs px-sm py-2 bg-[#12151A] border border-[#1F2329] rounded-lg text-on-surface hover:border-[#2D333B] transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">download</span> Export CSV
+                    </button>
+</div>
+</div>
+<!-- Metrics Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Revenue Card -->
+<div class="bg-[#12151A] border border-[#1F2329] rounded-xl p-lg flex flex-col justify-between hover:border-[#2D333B] transition-colors relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Total Revenue</p>
+<div class="flex items-baseline gap-sm">
+<h3 class="font-display text-display text-on-surface">$124,500</h3>
+<span class="flex items-center text-secondary text-label-md font-label-md bg-secondary/10 px-1.5 py-0.5 rounded-sm"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12.5%</span>
+</div>
+</div>
+<div class="h-16 mt-sm relative z-10">
+<!-- Mock sparkline via gradient -->
+<div class="absolute bottom-0 w-full h-full bg-gradient-to-t from-accent/20 to-transparent mask-image-linear-gradient"></div>
+<svg class="w-full h-full preserve-3d" preserveAspectRatio="none" viewBox="0 0 100 30">
+<path d="M0 30 L0 15 L10 20 L20 10 L30 18 L40 5 L50 22 L60 8 L70 15 L80 2 L90 12 L100 5 L100 30 Z" fill="url(#sparkline-grad)" opacity="0.3"></path>
+<path d="M0 15 L10 20 L20 10 L30 18 L40 5 L50 22 L60 8 L70 15 L80 2 L90 12 L100 5" fill="none" stroke="#3B82F6" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<defs>
+<linearGradient id="sparkline-grad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#3B82F6" stop-opacity="0.5"></stop>
+<stop offset="100%" stop-color="#3B82F6" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+</div>
+<!-- Utilization Card -->
+<div class="bg-[#12151A] border border-[#1F2329] rounded-xl p-lg flex flex-col justify-between hover:border-[#2D333B] transition-colors relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-tertiary-container/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Resource Utilization</p>
+<div class="flex items-baseline gap-sm">
+<h3 class="font-display text-display text-on-surface">78.2%</h3>
+<span class="flex items-center text-secondary text-label-md font-label-md bg-secondary/10 px-1.5 py-0.5 rounded-sm"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 4.1%</span>
+</div>
+</div>
+<div class="mt-auto pt-sm relative z-10">
+<div class="w-full bg-[#1F2329] rounded-full h-2">
+<div class="bg-accent h-2 rounded-full" style="width: 78.2%"></div>
+</div>
+</div>
+</div>
+<!-- Retention Card -->
+<div class="bg-[#12151A] border border-[#1F2329] rounded-xl p-lg flex flex-col justify-between hover:border-[#2D333B] transition-colors relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Customer Retention</p>
+<div class="flex items-baseline gap-sm">
+<h3 class="font-display text-display text-on-surface">64.5%</h3>
+<span class="flex items-center text-error text-label-md font-label-md bg-error/10 px-1.5 py-0.5 rounded-sm"><span class="material-symbols-outlined text-[14px]">arrow_downward</span> 1.2%</span>
+</div>
+</div>
+<div class="mt-auto pt-sm relative z-10 font-mono-label text-mono-label text-on-surface-variant">
+                        Cohort analysis indicates slight dip in M3.
+                    </div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md">
+<!-- Main Line Chart -->
+<div class="lg:col-span-2 bg-[#12151A] border border-[#1F2329] rounded-xl p-lg flex flex-col">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface">Booking Volume vs Cancellation</h3>
+<button class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">more_horiz</span></button>
+</div>
+<div class="flex-1 min-h-[300px] bg-[#0B0D10] border border-[#1F2329] rounded-lg p-sm relative">
+<!-- Simulated Chart Grid -->
+<div class="absolute inset-0 p-lg flex flex-col justify-between opacity-20 pointer-events-none">
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+</div>
+<!-- Placeholder for complex interactive chart -->
+<div class="w-full h-full flex items-center justify-center text-on-surface-variant font-mono-label">
+                            [Interactive Stripe-style Line Chart Mount Point]
+                            <br>
+<!-- Decorative representation -->
+<svg class="absolute inset-0 w-full h-full px-lg py-md preserve-3d" preserveAspectRatio="none" viewBox="0 0 100 50">
+<!-- Volume Line -->
+<path d="M0 40 Q 10 35 20 42 T 40 30 T 60 20 T 80 15 T 100 5" fill="none" stroke="#3B82F6" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<!-- Cancellation Line -->
+<path d="M0 45 Q 20 40 40 46 T 80 40 T 100 38" fill="none" opacity="0.7" stroke="#EF4444" stroke-dasharray="4" stroke-width="1.5" vector-effect="non-scaling-stroke"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Side Info List -->
+<div class="bg-[#12151A] border border-[#1F2329] rounded-xl p-lg flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-lg">Top Services</h3>
+<div class="flex-1 space-y-4">
+<!-- List Item -->
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-accent"></div>
+<span class="font-body-md text-body-md text-on-surface">Executive Coaching</span>
+</div>
+<span class="font-mono-label text-mono-label text-on-surface-variant group-hover:text-on-surface transition-colors">1,204</span>
+</div>
+<div class="w-full bg-[#1F2329] h-1 rounded-full"><div class="bg-accent h-1 rounded-full w-[80%]"></div></div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-body-md text-body-md text-on-surface">Strategy Session</span>
+</div>
+<span class="font-mono-label text-mono-label text-on-surface-variant group-hover:text-on-surface transition-colors">843</span>
+</div>
+<div class="w-full bg-[#1F2329] h-1 rounded-full"><div class="bg-secondary h-1 rounded-full w-[60%]"></div></div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="font-body-md text-body-md text-on-surface">Technical Review</span>
+</div>
+<span class="font-mono-label text-mono-label text-on-surface-variant group-hover:text-on-surface transition-colors">450</span>
+</div>
+<div class="w-full bg-[#1F2329] h-1 rounded-full"><div class="bg-tertiary h-1 rounded-full w-[35%]"></div></div>
+</div>
+</div>
+</div>
+<!-- Bottom Data Table -->
+<div class="bg-[#12151A] border border-[#1F2329] rounded-xl overflow-hidden">
+<div class="p-lg border-b border-[#1F2329] flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-on-surface">Peak Booking Hours Analysis</h3>
+<button class="font-label-md text-label-md text-accent hover:text-primary transition-colors">View Detailed Log</button>
+</div>
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left font-body-md text-body-md text-on-surface">
+<thead class="bg-[#0B0D10] border-b border-[#1F2329] font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
+<tr>
+<th class="px-lg py-sm">Time Slot</th>
+<th class="px-lg py-sm">Volume (Avg)</th>
+<th class="px-lg py-sm">Conversion Rate</th>
+<th class="px-lg py-sm">Primary Resource</th>
+<th class="px-lg py-sm text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#1F2329]">
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="px-lg py-sm font-mono-label">09:00 - 11:00</td>
+<td class="px-lg py-sm">450/hr</td>
+<td class="px-lg py-sm">82%</td>
+<td class="px-lg py-sm">API Gateway A</td>
+<td class="px-lg py-sm text-right"><span class="inline-flex items-center gap-1 text-secondary bg-secondary/10 px-2 py-0.5 rounded-sm font-label-md"><div class="w-1.5 h-1.5 rounded-full bg-secondary"></div> Optimal</span></td>
+</tr>
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="px-lg py-sm font-mono-label">14:00 - 16:00</td>
+<td class="px-lg py-sm">620/hr</td>
+<td class="px-lg py-sm">75%</td>
+<td class="px-lg py-sm">API Gateway B</td>
+<td class="px-lg py-sm text-right"><span class="inline-flex items-center gap-1 text-tertiary-container bg-tertiary-container/10 px-2 py-0.5 rounded-sm font-label-md"><div class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></div> Heavy Load</span></td>
+</tr>
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="px-lg py-sm font-mono-label">19:00 - 21:00</td>
+<td class="px-lg py-sm">120/hr</td>
+<td class="px-lg py-sm">91%</td>
+<td class="px-lg py-sm">Gateway C (Fallback)</td>
+<td class="px-lg py-sm text-right"><span class="inline-flex items-center gap-1 text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded-sm font-label-md"><div class="w-1.5 h-1.5 rounded-full bg-on-surface-variant"></div> Low Traffic</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</body></html>
