@@ -52,6 +52,10 @@ import com.pleasebookme.server.notification.preferences.exception.NotificationPr
 import com.pleasebookme.server.notification.queue.exception.NotificationQueueNotFoundException;
 import com.pleasebookme.server.notification.template.exception.DuplicateNotificationTemplateException;
 import com.pleasebookme.server.notification.template.exception.NotificationTemplateNotFoundException;
+import com.pleasebookme.server.organization.membership.exception.DuplicateMembershipException;
+import com.pleasebookme.server.organization.membership.exception.MembershipNotFoundException;
+import com.pleasebookme.server.organization.membershiprole.exception.DuplicateMembershipRoleException;
+import com.pleasebookme.server.organization.membershiprole.exception.MembershipRoleNotFoundException;
 import com.pleasebookme.server.organization.organizations.exception.DuplicateOrganizationException;
 import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
 import com.pleasebookme.server.organization.profile.exception.DuplicateProfileException;
@@ -1332,5 +1336,69 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MembershipNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleMembershipNotFoundException(
+        MembershipNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateMembershipException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateMembershipException(
+        DuplicateMembershipException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(MembershipRoleNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleMembershipRoleNotFoundException(
+        MembershipRoleNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateMembershipRoleException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateMembershipRoleException(
+        DuplicateMembershipRoleException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 }
