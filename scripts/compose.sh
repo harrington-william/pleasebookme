@@ -10,4 +10,5 @@ else
     docker compose -f ./infrastructure/docker/compose.yml down
 fi
 
-echo "\nCompose $command successfully"
+echo ""
+echo "Compose $command successfully"
