@@ -1,0 +1,51 @@
+package com.pleasebookme.server.security.identity.principal;
+
+import com.pleasebookme.server.auth.enums.AccountStatus;
+import com.pleasebookme.server.global.enums.Locale;
+import com.pleasebookme.server.security.identity.enums.AuthenticatedActorType;
+
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+public record AuthenticatedPrincipal(
+
+    AuthenticatedActorType actorType,
+
+    BigInteger userId,
+    BigInteger tenantIdd,
+    BigInteger organizationId,
+    BigInteger membershipId,
+    BigInteger profileIdd,
+
+    String username,
+    String email,
+
+    String displayName,
+    Locale locale,
+    String timezone,
+
+    AccountStatus accountStatus,
+    Set<String> roles,
+    Set<String> permissions,
+    Map<String, Object> attributes
+
+) implements Serializable {
+    public boolean hasRole(String role) {
+        return roles.contains(role);
+    }
+
+    public boolean hasPermission(String permission) {
+        return permissions.contains(permission);
+    }
+
+    public boolean isSystem() {
+        return actorType == AuthenticatedActorType.SYSTEM;
+    }
+
+    public boolean isActive() {
+        return accountStatus == AccountStatus.ACTIVE;
+    }
+}
