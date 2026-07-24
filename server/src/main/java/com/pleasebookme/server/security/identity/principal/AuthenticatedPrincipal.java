@@ -18,7 +18,7 @@ public record AuthenticatedPrincipal(
     UUID tenantUid,
     BigInteger organizationId,
     BigInteger membershipId,
-    BigInteger profileIdd,
+    BigInteger profileId,
 
     String username,
     String email,

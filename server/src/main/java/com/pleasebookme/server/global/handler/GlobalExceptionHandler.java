@@ -1,5 +1,16 @@
 package com.pleasebookme.server.global.handler;
 
+import com.pleasebookme.server.security.token.jwt.exception.TokenExpiredException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.pleasebookme.server.audit.actor.exception.AuditActorNotFoundException;
+import com.pleasebookme.server.audit.actor.exception.DuplicateAuditActorException;
+import com.pleasebookme.server.audit.change.exception.AuditChangeNotFoundException;
+import com.pleasebookme.server.audit.event.exception.AuditEventNotFoundException;
+import com.pleasebookme.server.audit.resource.exception.AuditResourceNotFoundException;
 import com.pleasebookme.server.auth.account.exception.AccountNotFoundException;
 import com.pleasebookme.server.auth.account.exception.DuplicateAccountException;
 import com.pleasebookme.server.auth.apikey.exception.ApiKeyNotFoundException;
@@ -8,21 +19,16 @@ import com.pleasebookme.server.auth.password.exception.DuplicateUserPasswordExce
 import com.pleasebookme.server.auth.password.exception.UserPasswordNotFoundException;
 import com.pleasebookme.server.auth.permission.exception.DuplicatePermissionException;
 import com.pleasebookme.server.auth.permission.exception.PermissionNotFoundException;
+import com.pleasebookme.server.auth.refreshtoken.exception.DuplicateRefreshTokenException;
+import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenNotFoundException;
 import com.pleasebookme.server.auth.role.exception.DuplicateRoleException;
 import com.pleasebookme.server.auth.role.exception.RoleNotFoundException;
 import com.pleasebookme.server.auth.rolepermission.exception.DuplicateRolePermissionException;
 import com.pleasebookme.server.auth.rolepermission.exception.RolePermissionNotFoundException;
-import com.pleasebookme.server.auth.refreshtoken.exception.DuplicateRefreshTokenException;
-import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenNotFoundException;
 import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleException;
 import com.pleasebookme.server.auth.userrole.exception.UserRoleNotFoundException;
-import com.pleasebookme.server.audit.actor.exception.AuditActorNotFoundException;
-import com.pleasebookme.server.audit.actor.exception.DuplicateAuditActorException;
-import com.pleasebookme.server.audit.change.exception.AuditChangeNotFoundException;
-import com.pleasebookme.server.audit.event.exception.AuditEventNotFoundException;
-import com.pleasebookme.server.audit.resource.exception.AuditResourceNotFoundException;
 import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException;
 import com.pleasebookme.server.core.availability.exception.AvailabilityNotFoundException;
 import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
@@ -41,6 +47,7 @@ import com.pleasebookme.server.customer.source.exception.CustomerSourceNotFoundE
 import com.pleasebookme.server.customer.tag.exception.CustomerTagNotFoundException;
 import com.pleasebookme.server.customer.tag.exception.DuplicateCustomerTagException;
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
+import com.pleasebookme.server.global.response.ApiErrorResponse;
 import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
 import com.pleasebookme.server.notification.channel.exception.DuplicateNotificationChannelException;
@@ -81,12 +88,8 @@ import com.pleasebookme.server.widget.widgetorigin.exception.DuplicateWidgetOrig
 import com.pleasebookme.server.widget.widgetorigin.exception.WidgetOriginNotFoundException;
 import com.pleasebookme.server.widget.widgets.exception.DuplicateWidgetException;
 import com.pleasebookme.server.widget.widgets.exception.WidgetNotFoundException;
-import com.pleasebookme.server.global.response.ApiErrorResponse;
+
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -1400,5 +1403,21 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleTokenExpiredException(
+        TokenExpiredException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

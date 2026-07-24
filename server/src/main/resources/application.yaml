@@ -50,6 +50,10 @@ spring:
     jwt:
       issuer: pleasebookme
 
+      audience: pleasebookme-api
+
+      algorithm: HS256
+
       secret: ${JWT_SECRET}
 
       access-expiration: 900
