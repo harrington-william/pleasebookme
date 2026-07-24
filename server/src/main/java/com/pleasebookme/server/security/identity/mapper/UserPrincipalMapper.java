@@ -20,8 +20,8 @@ public class UserPrincipalMapper implements PrincipalMapper<AuthenticationAggreg
         return new AuthenticatedPrincipal(
             AuthenticatedActorType.USER,
 
-            aggregation.user().getUserId(),
-            aggregation.tenant().getTenantId(),
+            aggregation.user().getUserUid(),
+            aggregation.tenant().getTenantUid(),
             aggregation.organization().getOrganizationId(),
             aggregation.membership().getMembershipId(),
             aggregation.profile().getProfileId(),

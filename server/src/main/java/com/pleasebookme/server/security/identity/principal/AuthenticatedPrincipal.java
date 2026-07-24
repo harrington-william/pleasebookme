@@ -14,8 +14,8 @@ public record AuthenticatedPrincipal(
 
     AuthenticatedActorType actorType,
 
-    BigInteger userId,
-    BigInteger tenantIdd,
+    UUID userUid,
+    UUID tenantUid,
     BigInteger organizationId,
     BigInteger membershipId,
     BigInteger profileIdd,
