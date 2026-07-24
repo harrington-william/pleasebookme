@@ -2,6 +2,7 @@ package com.pleasebookme.server.security.identity.service;
 
 import com.pleasebookme.server.security.identity.adapter.UserDetailsAdapter;
 import com.pleasebookme.server.security.identity.aggregation.AuthenticationAggregation;
+import com.pleasebookme.server.security.identity.loader.DefaultIdentityLoader;
 import com.pleasebookme.server.security.identity.loader.IdentityLoader;
 import com.pleasebookme.server.security.identity.mapper.UserPrincipalMapper;
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
@@ -23,7 +24,7 @@ public class PrincipalUserDetailsService implements UserDetailsService {
         throws UsernameNotFoundException {
 
         AuthenticationAggregation aggregation =
-            identityLoader.load(username);
+            identityLoader.loadByUsername(username);
 
         AuthenticatedPrincipal principal =
             userPrincipalMapper.map(aggregation);
