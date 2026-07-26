@@ -1,6 +1,7 @@
 package com.pleasebookme.server.security.token.jwt.config;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -21,9 +22,9 @@ public record JwtProperties(
     @NotBlank
     String secret,
 
-    @NotBlank
+    @NotNull
     Duration accessTokenLifeTime,
 
-    @NotBlank
+    @NotNull
     Duration refreshTokenLifeTime
 ) {}

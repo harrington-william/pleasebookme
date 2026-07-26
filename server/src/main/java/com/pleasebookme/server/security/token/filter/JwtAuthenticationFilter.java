@@ -6,7 +6,6 @@ import com.pleasebookme.server.security.identity.mapper.PrincipalMapper;
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
 import com.pleasebookme.server.security.token.authentication.AuthenticationTokenFactory;
 import com.pleasebookme.server.security.token.jwt.claims.JwtClaims;
-import com.pleasebookme.server.security.token.jwt.config.JwtProperties;
 import com.pleasebookme.server.security.token.jwt.engine.JwtEngine;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -54,25 +53,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             UUID userUid = claims.subject();
 
-            if (
-                userUid != null ||
-                SecurityContextHolder
-                    .getContext()
-                    .getAuthentication() == null
-            ) {
-                AuthenticationAggregation aggregation =
-                    identityLoader.loadByUid(userUid);
+            AuthenticationAggregation aggregation =
+                identityLoader.loadByUid(userUid);
 
-                AuthenticatedPrincipal principal =
-                    principalMapper.map(aggregation);
+            AuthenticatedPrincipal principal =
+                principalMapper.map(aggregation);
 
-                Authentication authentication =
-                    authenticationTokenFactory.create(principal);
+            Authentication authentication =
+                authenticationTokenFactory.create(principal);
 
-                SecurityContextHolder
-                    .getContext()
-                    .setAuthentication(authentication);
-            }
+            SecurityContextHolder
+                .getContext()
+                .setAuthentication(authentication);
 
         } catch (JwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
