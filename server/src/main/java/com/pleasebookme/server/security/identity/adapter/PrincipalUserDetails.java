@@ -10,13 +10,16 @@ import java.util.Collection;
 
 public class PrincipalUserDetails implements UserDetails {
     private final AuthenticatedPrincipal principal;
+    private final String passwordHash;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public PrincipalUserDetails(
         AuthenticatedPrincipal authenticatedPrincipal,
+        String passwordHash,
         Collection<? extends GrantedAuthority> authorities
     ) {
         this.principal = authenticatedPrincipal;
+        this.passwordHash = passwordHash;
         this.authorities = authorities;
     }
 
@@ -36,7 +39,7 @@ public class PrincipalUserDetails implements UserDetails {
 
     @Override
     public @Nullable String getPassword() {
-        return null;
+        return passwordHash;
     }
 
     @Override

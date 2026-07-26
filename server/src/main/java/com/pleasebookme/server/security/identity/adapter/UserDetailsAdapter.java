@@ -14,6 +14,18 @@ public class UserDetailsAdapter {
     ) {
         return new PrincipalUserDetails(
             principal,
+            null,
+            grantedAuthorityAdapter.adapt(principal)
+        );
+    }
+
+    public PrincipalUserDetails adapt(
+        AuthenticatedPrincipal principal,
+        String passwordHash
+    ) {
+        return new PrincipalUserDetails(
+            principal,
+            passwordHash,
             grantedAuthorityAdapter.adapt(principal)
         );
     }
