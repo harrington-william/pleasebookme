@@ -1,13 +1,14 @@
 package com.pleasebookme.server.auth.refreshtoken.dto;
 
 import com.pleasebookme.server.auth.refreshtoken.entity.RefreshTokenEntity;
+import com.pleasebookme.server.auth.refreshtoken.enums.RefreshOwner;
 
 import java.math.BigInteger;
 import java.time.Instant;
 
 public record RefreshTokenResponse(
     BigInteger refreshTokenId,
-    String owner,
+    RefreshOwner owner,
     BigInteger userId,
     BigInteger widgetId,
     String deviceName,
