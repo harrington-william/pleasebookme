@@ -41,10 +41,6 @@ public class RefreshTokenEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "widget_id")
-    private WidgetEntity widget;
-
     @Column(name = "device_name")
     private String deviceName;
 

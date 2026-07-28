@@ -18,8 +18,6 @@ public record RefreshTokenRequest(
     @Size(max = 255)
     RefreshOwner owner,
 
-    BigInteger widgetId,
-
     @Size(max = 255)
     String deviceName,
 
