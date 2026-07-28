@@ -1,0 +1,1 @@
+ALTER TABLE widget.widgets DROP COLUMN service_id;
