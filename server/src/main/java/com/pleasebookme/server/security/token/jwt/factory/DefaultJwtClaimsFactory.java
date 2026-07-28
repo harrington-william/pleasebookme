@@ -1,6 +1,7 @@
-package com.pleasebookme.server.security.token.jwt.claims;
+package com.pleasebookme.server.security.token.jwt.factory;
 
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
+import com.pleasebookme.server.security.token.jwt.claims.JwtClaims;
 import com.pleasebookme.server.security.token.jwt.config.JwtProperties;
 import com.pleasebookme.server.security.token.jwt.enums.JwtTokenType;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class DefaultJwtClaimsFactory implements JwtClaimsFactory {
             principal.actorType(),
 
             // Subject
-            principal.userUid(),
+            principal.subject(),
             principal.tenantUid(),
             UUID.randomUUID(),
 
@@ -41,7 +42,7 @@ public class DefaultJwtClaimsFactory implements JwtClaimsFactory {
             principal.actorType(),
 
             // Subject
-            principal.userUid(),
+            principal.subject(),
             principal.tenantUid(),
             UUID.randomUUID(),
 

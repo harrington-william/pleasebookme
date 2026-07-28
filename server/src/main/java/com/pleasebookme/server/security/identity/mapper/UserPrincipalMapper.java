@@ -4,7 +4,7 @@ import com.pleasebookme.server.auth.permission.entity.PermissionEntity;
 import com.pleasebookme.server.auth.role.entity.RoleEntity;
 import com.pleasebookme.server.security.identity.aggregation.AuthenticationAggregation;
 import com.pleasebookme.server.security.identity.enums.AuthenticatedActorType;
-import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
+import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 public class UserPrincipalMapper implements PrincipalMapper<AuthenticationAggregation> {
 
     @Override
-    public AuthenticatedPrincipal map(AuthenticationAggregation aggregation) {
+    public UserPrincipal map(AuthenticationAggregation aggregation) {
 
-        return new AuthenticatedPrincipal(
+        return new UserPrincipal(
             AuthenticatedActorType.USER,
 
             aggregation.user().getUserUid(),

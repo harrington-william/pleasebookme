@@ -1,8 +1,8 @@
 package com.pleasebookme.server.security.token.filter;
 
-import com.pleasebookme.server.security.identity.aggregation.AuthenticationAggregation;
-import com.pleasebookme.server.security.identity.loader.IdentityLoader;
-import com.pleasebookme.server.security.identity.mapper.PrincipalMapper;
+import com.pleasebookme.server.security.identity.loader.user.UserIdentityLoader;
+import com.pleasebookme.server.security.identity.loader.widget.WidgetIdentityLoader;
+import com.pleasebookme.server.security.identity.mapper.UserPrincipalMapper;
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
 import com.pleasebookme.server.security.token.authentication.AuthenticationTokenFactory;
 import com.pleasebookme.server.security.token.jwt.claims.JwtClaims;
@@ -19,14 +19,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtEngine jwtEngine;
-    private final IdentityLoader identityLoader;
-    private final PrincipalMapper<AuthenticationAggregation> principalMapper;
+    private final UserIdentityLoader userIdentityLoader;
+    private final WidgetIdentityLoader widgetIdentityLoader;
+    private final UserPrincipalMapper userPrincipalMapper;
     private final AuthenticationTokenFactory authenticationTokenFactory;
 
     @Override
@@ -45,19 +45,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Get token
         String token = authHeader.substring(7);
 
         try {
             JwtClaims claims = jwtEngine.verify(token);
 
-            UUID userUid = claims.subject();
+            // Create principal
+            AuthenticatedPrincipal principal = switch (claims.actorType()) {
+                case USER -> userPrincipalMapper.map(
+                    userIdentityLoader.loadByUid(claims.subject())
+                );
 
-            AuthenticationAggregation aggregation =
-                identityLoader.loadByUid(userUid);
+                case WIDGET -> widgetIdentityLoader.loadByUid(claims.subject());
 
-            AuthenticatedPrincipal principal =
-                principalMapper.map(aggregation);
+                default -> throw new JwtException(
+                    "Unsupported actor type: " + claims.actorType()
+                );
+            };
 
             Authentication authentication =
                 authenticationTokenFactory.create(principal);

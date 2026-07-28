@@ -1,6 +1,6 @@
 package com.pleasebookme.server.security.identity.adapter;
 
-import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
+import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ public class UserDetailsAdapter {
     private final GrantedAuthorityAdapter grantedAuthorityAdapter;
 
     public PrincipalUserDetails adapt(
-        AuthenticatedPrincipal principal
+        UserPrincipal principal
     ) {
         return new PrincipalUserDetails(
             principal,
@@ -20,7 +20,7 @@ public class UserDetailsAdapter {
     }
 
     public PrincipalUserDetails adapt(
-        AuthenticatedPrincipal principal,
+        UserPrincipal principal,
         String passwordHash
     ) {
         return new PrincipalUserDetails(

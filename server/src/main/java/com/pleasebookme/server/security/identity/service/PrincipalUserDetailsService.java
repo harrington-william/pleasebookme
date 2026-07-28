@@ -4,9 +4,9 @@ import com.pleasebookme.server.auth.password.entity.UserPasswordEntity;
 import com.pleasebookme.server.auth.password.service.UserPasswordService;
 import com.pleasebookme.server.security.identity.adapter.UserDetailsAdapter;
 import com.pleasebookme.server.security.identity.aggregation.AuthenticationAggregation;
-import com.pleasebookme.server.security.identity.loader.IdentityLoader;
+import com.pleasebookme.server.security.identity.loader.user.UserIdentityLoader;
 import com.pleasebookme.server.security.identity.mapper.UserPrincipalMapper;
-import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
+import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,7 +19,7 @@ import java.math.BigInteger;
 @RequiredArgsConstructor
 public class PrincipalUserDetailsService implements UserDetailsService {
     private final UserPasswordService userPasswordService;
-    private final IdentityLoader identityLoader;
+    private final UserIdentityLoader userIdentityLoader;
     private final UserPrincipalMapper userPrincipalMapper;
     private final UserDetailsAdapter userDetailsAdapter;
 
@@ -28,9 +28,9 @@ public class PrincipalUserDetailsService implements UserDetailsService {
         throws UsernameNotFoundException {
 
         AuthenticationAggregation aggregation =
-            identityLoader.loadByUsername(username);
+            userIdentityLoader.loadByUsername(username);
 
-        AuthenticatedPrincipal principal =
+        UserPrincipal principal =
             userPrincipalMapper.map(aggregation);
 
         // Load password

@@ -1,4 +1,4 @@
-package com.pleasebookme.server.security.identity.loader;
+package com.pleasebookme.server.security.identity.loader.user;
 
 import com.pleasebookme.server.auth.permission.entity.PermissionEntity;
 import com.pleasebookme.server.auth.role.entity.RoleEntity;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DefaultIdentityLoader implements IdentityLoader {
+public class DefaultUserUserIdentityLoader implements UserIdentityLoader {
     private final UserRepository userRepository;
     private final MembershipRepository membershipRepository;
     private final ProfileRepository profileRepository;

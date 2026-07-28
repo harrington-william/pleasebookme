@@ -3,6 +3,7 @@ package com.pleasebookme.server.global.handler;
 import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenExpiredException;
 import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenRevokedException;
 import com.pleasebookme.server.security.token.jwt.exception.TokenExpiredException;
+import com.pleasebookme.server.security.token.jwt.exception.WidgetOriginMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -1453,5 +1454,21 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(WidgetOriginMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetOriginMismatchException(
+        WidgetOriginMismatchException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 }

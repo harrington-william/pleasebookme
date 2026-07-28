@@ -1,7 +1,7 @@
 package com.pleasebookme.server.security.identity.adapter;
 
 import com.pleasebookme.server.auth.enums.AccountStatus;
-import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
+import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,21 +9,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 public class PrincipalUserDetails implements UserDetails {
-    private final AuthenticatedPrincipal principal;
+    private final UserPrincipal principal;
     private final String passwordHash;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public PrincipalUserDetails(
-        AuthenticatedPrincipal authenticatedPrincipal,
+        UserPrincipal userPrincipal,
         String passwordHash,
         Collection<? extends GrantedAuthority> authorities
     ) {
-        this.principal = authenticatedPrincipal;
+        this.principal = userPrincipal;
         this.passwordHash = passwordHash;
         this.authorities = authorities;
     }
 
-    public AuthenticatedPrincipal getAuthenticatedPrincipal() {
+    public UserPrincipal getUserPrincipal() {
         return principal;
     }
 

@@ -1,18 +1,17 @@
 package com.pleasebookme.server.security.token.refresh;
 
 import com.pleasebookme.server.auth.refreshtoken.entity.RefreshTokenEntity;
-import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenExpiredException;
-import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenNotFoundException;
-import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenRevokedException;
+import com.pleasebookme.server.auth.refreshtoken.enums.RefreshOwner;
 import com.pleasebookme.server.auth.refreshtoken.repository.RefreshTokenRepository;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.security.identity.aggregation.AuthenticationAggregation;
-import com.pleasebookme.server.security.identity.loader.IdentityLoader;
-import com.pleasebookme.server.security.identity.mapper.PrincipalMapper;
-import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
+import com.pleasebookme.server.security.identity.loader.user.UserIdentityLoader;
+import com.pleasebookme.server.security.identity.mapper.UserPrincipalMapper;
+import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import com.pleasebookme.server.security.token.jwt.config.JwtProperties;
 import com.pleasebookme.server.security.token.jwt.engine.JwtEngine;
-import com.pleasebookme.server.service.auth.dto.LoginResponse;
+import com.pleasebookme.server.security.token.refresh.verifier.RefreshTokenVerifier;
+import com.pleasebookme.server.service.auth.dto.RefreshResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,34 +24,20 @@ public class TokenRefresher {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProperties jwtProperties;
     private final JwtEngine jwtEngine;
-    private final IdentityLoader identityLoader;
-    private final PrincipalMapper<AuthenticationAggregation> principalMapper;
+    private final UserIdentityLoader userIdentityLoader;
+    private final RefreshTokenVerifier refreshTokenVerifier;
+    private final UserPrincipalMapper principalMapper;
 
     @Transactional
-    public LoginResponse refresh(String refreshToken) {
-        RefreshTokenEntity token =
-            refreshTokenRepository.findBySecret(refreshToken)
-                .orElseThrow(() ->
-                    new RefreshTokenNotFoundException(
-                        "Invalid refresh token"
-                    )
-                );
-
-        if (token.getRevokedAt() != null) {
-            throw new RefreshTokenRevokedException("Token has been revoked");
-        }
-
-        if (token.getExpiresAt().isBefore(Instant.now())) {
-            throw new RefreshTokenExpiredException("Token has expired");
-        }
+    public RefreshResponse refresh(String refreshToken) {
+        RefreshTokenEntity token = refreshTokenVerifier.verify(refreshToken);
 
         // Temporary reject requests not coming from a USER
         // Other type of origin such as widget will be supported later
         if (
             token.getOwner() == null ||
-            !token.getOwner().equals("USER")
+            token.getOwner() != RefreshOwner.USER
         ) {
-
             throw new RuntimeException("Unsupported owner type");
         }
 
@@ -62,7 +47,7 @@ public class TokenRefresher {
 
         token.setRevokedAt(Instant.now());
 
-        AuthenticatedPrincipal principal = loadPrincipal(user.getUsername());
+        UserPrincipal principal = loadPrincipal(user.getUsername());
 
         // Issue tokens
         String newAccessToken = jwtEngine.issueAccessToken(principal);
@@ -70,21 +55,22 @@ public class TokenRefresher {
 
         RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
             .secret(newRefreshToken)
-            .owner("USER")
+            .owner(RefreshOwner.USER)
             .user(user)
             .deviceName(deviceName)
             .createdAt(Instant.now())
-            // Check expires
-            .expiresAt(Instant.now().plus(jwtProperties.refreshTokenLifeTime()))
+            .expiresAt(Instant.now().plusSeconds(
+                jwtProperties.refreshTokenLifeTime().toSeconds()
+            ))
             .build();
 
         refreshTokenRepository.save(refreshTokenEntity);
 
-        return new LoginResponse(newAccessToken, newRefreshToken);
+        return new RefreshResponse(newAccessToken, newRefreshToken);
     }
 
-    private AuthenticatedPrincipal loadPrincipal(String username) {
-        AuthenticationAggregation aggregation = identityLoader.loadByUsername(username);
+    private UserPrincipal loadPrincipal(String username) {
+        AuthenticationAggregation aggregation = userIdentityLoader.loadByUsername(username);
 
         return principalMapper.map(aggregation);
     }

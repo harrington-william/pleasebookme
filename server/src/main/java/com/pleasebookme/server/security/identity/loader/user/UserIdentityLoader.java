@@ -1,10 +1,10 @@
-package com.pleasebookme.server.security.identity.loader;
+package com.pleasebookme.server.security.identity.loader.user;
 
 import com.pleasebookme.server.security.identity.aggregation.AuthenticationAggregation;
 
 import java.util.UUID;
 
-public interface IdentityLoader {
+public interface UserIdentityLoader {
     AuthenticationAggregation loadByUsername(String username);
 
     AuthenticationAggregation loadByEmail(String email);

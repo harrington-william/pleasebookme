@@ -9,7 +9,6 @@ import java.util.UUID;
 public record JwtClaims(
     AuthenticatedActorType actorType,
 
-    // User UUID
     UUID subject,
 
     UUID tenant,
