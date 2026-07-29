@@ -12,9 +12,6 @@ public record WidgetRequest(
     @NotNull
     BigInteger tenantId,
 
-    @NotNull
-    BigInteger serviceId,
-
     @NotBlank
     String name,
 

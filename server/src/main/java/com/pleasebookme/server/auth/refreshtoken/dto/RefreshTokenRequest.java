@@ -1,5 +1,6 @@
 package com.pleasebookme.server.auth.refreshtoken.dto;
 
+import com.pleasebookme.server.auth.refreshtoken.enums.RefreshOwner;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,9 +16,7 @@ public record RefreshTokenRequest(
     String secret,
 
     @Size(max = 255)
-    String owner,
-
-    BigInteger widgetId,
+    RefreshOwner owner,
 
     @Size(max = 255)
     String deviceName,

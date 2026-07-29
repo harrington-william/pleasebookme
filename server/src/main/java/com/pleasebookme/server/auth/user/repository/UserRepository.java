@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, BigInteger> {
@@ -15,9 +16,13 @@ public interface UserRepository extends JpaRepository<UserEntity, BigInteger> {
 
     Optional<UserEntity> findByPhone(String phone);
 
+    Optional<UserEntity> findByUserUid(UUID uid);
+
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
 
     boolean existsByPhone(String phone);
+
+    boolean existsByUserUid(UUID uid);
 }
