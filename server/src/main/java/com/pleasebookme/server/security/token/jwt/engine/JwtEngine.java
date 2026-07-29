@@ -1,13 +1,12 @@
 package com.pleasebookme.server.security.token.jwt.engine;
 
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
-import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import com.pleasebookme.server.security.token.jwt.claims.JwtClaims;
 
 public interface JwtEngine {
-    String issueAccessToken(UserPrincipal principal);
+    String issueAccessToken(AuthenticatedPrincipal principal);
 
-    String issueRefreshToken(UserPrincipal principal);
+    String issueRefreshToken(AuthenticatedPrincipal principal);
 
     JwtClaims verify(String token);
 }

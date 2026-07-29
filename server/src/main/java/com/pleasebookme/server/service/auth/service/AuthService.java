@@ -1,14 +1,13 @@
 package com.pleasebookme.server.service.auth.service;
 
-import com.pleasebookme.server.service.auth.dto.LoginRequest;
-import com.pleasebookme.server.service.auth.dto.LoginResponse;
-import com.pleasebookme.server.service.auth.dto.RefreshResponse;
-import com.pleasebookme.server.service.auth.dto.RegisterRequest;
+import com.pleasebookme.server.service.auth.dto.*;
 
 public interface AuthService {
-    LoginResponse login(LoginRequest loginRequest);
+    LoginResponse login(LoginRequest request);
 
-    LoginResponse register(RegisterRequest registerRequest);
+    LoginResponse register(RegisterRequest request);
 
-    RefreshResponse refreshToken(String refreshToken);
+    RefreshResponse refreshToken(String token);
+
+    WidgetBootstrapResponse bootstrapWidget(WidgetBootstrapRequest request);
 }

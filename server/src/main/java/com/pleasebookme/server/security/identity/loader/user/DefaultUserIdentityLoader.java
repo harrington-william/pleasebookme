@@ -14,7 +14,6 @@ import com.pleasebookme.server.organization.profile.exception.ProfileNotFoundExc
 import com.pleasebookme.server.organization.profile.repository.ProfileRepository;
 import com.pleasebookme.server.security.identity.aggregation.AuthenticationAggregation;
 import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
-import com.pleasebookme.server.tenant.tenants.exception.TenantNotFoundException;
 import com.pleasebookme.server.tenant.tenants.repository.TenantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DefaultUserUserIdentityLoader implements UserIdentityLoader {
+public class DefaultUserIdentityLoader implements UserIdentityLoader {
     private final UserRepository userRepository;
     private final MembershipRepository membershipRepository;
     private final ProfileRepository profileRepository;
@@ -80,9 +79,7 @@ public class DefaultUserUserIdentityLoader implements UserIdentityLoader {
 
         TenantEntity tenant = tenantRepository
             .findByOrganizationOrganizationId(organization.getOrganizationId())
-            .orElseThrow(() -> new TenantNotFoundException(
-                "Tenant not found for user: " + user.getUserId()
-            ));
+            .orElse(null);
 
         // Handle roles
         Set<RoleEntity> roles = Set.copyOf(user.getRoles());

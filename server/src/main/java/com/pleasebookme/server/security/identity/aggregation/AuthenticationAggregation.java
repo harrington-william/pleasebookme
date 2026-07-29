@@ -17,6 +17,7 @@ public record AuthenticationAggregation(
 
     OrganizationEntity organization,
 
+    // Null until the user's organization has an active plan
     TenantEntity tenant,
 
     ProfileEntity profile,

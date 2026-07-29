@@ -4,6 +4,7 @@ import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenExpiredEx
 import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenRevokedException;
 import com.pleasebookme.server.security.token.jwt.exception.TokenExpiredException;
 import com.pleasebookme.server.security.token.jwt.exception.WidgetOriginMismatchException;
+import com.pleasebookme.server.widget.widgets.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,7 +30,10 @@ import com.pleasebookme.server.auth.role.exception.RoleNotFoundException;
 import com.pleasebookme.server.auth.rolepermission.exception.DuplicateRolePermissionException;
 import com.pleasebookme.server.auth.rolepermission.exception.RolePermissionNotFoundException;
 import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
+import com.pleasebookme.server.auth.user.exception.UserEmailAlreadyExistException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
+import com.pleasebookme.server.auth.user.exception.UserPhoneNumberAlreadyExistException;
+import com.pleasebookme.server.auth.user.exception.UsernameAlreadyExistException;
 import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleException;
 import com.pleasebookme.server.auth.userrole.exception.UserRoleNotFoundException;
 import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException;
@@ -89,8 +93,6 @@ import com.pleasebookme.server.tenant.tenants.exception.DuplicateTenantException
 import com.pleasebookme.server.tenant.tenants.exception.TenantNotFoundException;
 import com.pleasebookme.server.widget.widgetorigin.exception.DuplicateWidgetOriginException;
 import com.pleasebookme.server.widget.widgetorigin.exception.WidgetOriginNotFoundException;
-import com.pleasebookme.server.widget.widgets.exception.DuplicateWidgetException;
-import com.pleasebookme.server.widget.widgets.exception.WidgetNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -131,6 +133,54 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateUserException(
         DuplicateUserException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistException.class)
+    public ResponseEntity<ApiErrorResponse> handleUsernameAlreadyExistException(
+        UsernameAlreadyExistException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UserEmailAlreadyExistException.class)
+    public ResponseEntity<ApiErrorResponse> handleUserEmailAlreadyExistException(
+        UserEmailAlreadyExistException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UserPhoneNumberAlreadyExistException.class)
+    public ResponseEntity<ApiErrorResponse> handleUserPhoneNumberAlreadyExistException(
+        UserPhoneNumberAlreadyExistException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
@@ -1470,5 +1520,54 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+
+    @ExceptionHandler(WidgetNotActiveException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetNotActiveException(
+        WidgetNotActiveException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(WidgetExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetExpiredException(
+        WidgetExpiredException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(WidgetBadCredentialsException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetBadCredentialsException(
+        WidgetBadCredentialsException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

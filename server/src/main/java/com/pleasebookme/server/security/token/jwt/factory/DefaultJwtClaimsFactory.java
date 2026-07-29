@@ -22,7 +22,6 @@ public class DefaultJwtClaimsFactory implements JwtClaimsFactory {
         return new JwtClaims(
             principal.actorType(),
 
-            // Subject
             principal.subject(),
             principal.tenantUid(),
             UUID.randomUUID(),
@@ -41,7 +40,6 @@ public class DefaultJwtClaimsFactory implements JwtClaimsFactory {
         return new JwtClaims(
             principal.actorType(),
 
-            // Subject
             principal.subject(),
             principal.tenantUid(),
             UUID.randomUUID(),

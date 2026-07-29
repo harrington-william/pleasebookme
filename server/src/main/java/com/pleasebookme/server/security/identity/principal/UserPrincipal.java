@@ -17,7 +17,7 @@ public record UserPrincipal(
     @NotNull
     AuthenticatedActorType actorType,
 
-    UUID userUid,
+    UUID subject,
     UUID tenantUid,
     BigInteger organizationId,
     BigInteger membershipId,
@@ -38,11 +38,6 @@ public record UserPrincipal(
     Map<String, Object> attributes
 
 ) implements AuthenticatedPrincipal, Serializable {
-    @Override
-    public UUID subject() {
-        return userUid;
-    }
-
     public boolean hasRole(String role) {
         return roles.contains(role);
     }

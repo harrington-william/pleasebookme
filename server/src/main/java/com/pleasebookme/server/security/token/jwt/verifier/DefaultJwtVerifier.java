@@ -34,6 +34,8 @@ public class DefaultJwtVerifier implements JwtVerifier {
         isTokenExpired(claims);
         validateTokenType(claims);
 
+        String tenantClaim = claims.get("tenant", String.class);
+
         return new JwtClaims(
             AuthenticatedActorType.valueOf(
                 claims.get(
@@ -43,12 +45,7 @@ public class DefaultJwtVerifier implements JwtVerifier {
             ),
 
             UUID.fromString(claims.getSubject()),
-            UUID.fromString(
-                claims.get(
-                    "tenant",
-                    String.class
-                )
-            ),
+            tenantClaim != null ? UUID.fromString(tenantClaim) : null,
 
             UUID.fromString(claims.getId()),
             JwtTokenType.valueOf(

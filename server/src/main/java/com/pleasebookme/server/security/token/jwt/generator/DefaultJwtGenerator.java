@@ -31,7 +31,7 @@ public class DefaultJwtGenerator implements JwtGenerator {
 
             .claim(
                 "tenant",
-                claims.tenant().toString()
+                claims.tenant() != null ? claims.tenant().toString() : null
             )
             .claim(
                 "actor_type",
