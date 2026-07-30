@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-read command
+read -p "Command (up / down): " command
 
 if [ "$command" == "up" ]
 then
@@ -9,3 +9,6 @@ then
 else
     docker compose -f ./infrastructure/docker/compose.yml down
 fi
+
+echo ""
+echo "Compose $command successfully"

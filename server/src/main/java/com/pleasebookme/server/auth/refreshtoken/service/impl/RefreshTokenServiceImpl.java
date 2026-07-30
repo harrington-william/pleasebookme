@@ -31,15 +31,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         UserEntity user = userRepository.findById(request.userId())
             .orElseThrow(() -> new UserNotFoundException("User not found: " + request.userId()));
 
-        WidgetEntity widget = request.widgetId() != null
-            ? WidgetEntity.builder().widgetId(request.widgetId()).build()
-            : null;
-
         RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
             .secret(request.secret())
             .owner(request.owner())
             .user(user)
-            .widget(widget)
             .deviceName(request.deviceName())
             .oauthClientId(request.oauthClientId())
             .expiresAt(request.expiresAt())
@@ -72,14 +67,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         UserEntity user = userRepository.findById(request.userId())
             .orElseThrow(() -> new UserNotFoundException("User not found: " + request.userId()));
 
-        WidgetEntity widget = request.widgetId() != null
-            ? WidgetEntity.builder().widgetId(request.widgetId()).build()
-            : null;
-
         refreshToken.setSecret(request.secret());
         refreshToken.setOwner(request.owner());
         refreshToken.setUser(user);
-        refreshToken.setWidget(widget);
         refreshToken.setDeviceName(request.deviceName());
         refreshToken.setOauthClientId(request.oauthClientId());
         refreshToken.setExpiresAt(request.expiresAt());

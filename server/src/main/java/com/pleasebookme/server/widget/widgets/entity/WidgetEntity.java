@@ -1,6 +1,5 @@
 package com.pleasebookme.server.widget.widgets.entity;
 
-import com.pleasebookme.server.core.service.entity.ServiceEntity;
 import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
 import com.pleasebookme.server.widget.enums.WidgetStatus;
 import com.pleasebookme.server.widget.enums.WidgetType;
@@ -40,10 +39,6 @@ public class WidgetEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)
     private TenantEntity tenant;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id", nullable = false)
-    private ServiceEntity service;
 
     @Column(name = "name", nullable = false)
     private String name;

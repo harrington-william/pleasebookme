@@ -1,7 +1,5 @@
 package com.pleasebookme.server.widget.widgets.service.impl;
 
-import com.pleasebookme.server.core.service.entity.ServiceEntity;
-import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.core.service.repository.ServiceRepository;
 import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
 import com.pleasebookme.server.tenant.tenants.exception.TenantNotFoundException;
@@ -23,7 +21,6 @@ import java.util.List;
 public class WidgetServiceImpl implements WidgetService {
     private final WidgetRepository widgetRepository;
     private final TenantRepository tenantRepository;
-    private final ServiceRepository serviceRepository;
 
     @Override
     public WidgetEntity createWidget(WidgetRequest request) {
@@ -36,14 +33,8 @@ public class WidgetServiceImpl implements WidgetService {
                 "Tenant not found: " + request.tenantId()
             ));
 
-        ServiceEntity service = serviceRepository.findById(request.serviceId())
-            .orElseThrow(() -> new ServiceNotFoundException(
-                "Service not found: " + request.serviceId()
-            ));
-
         WidgetEntity.WidgetEntityBuilder widget = WidgetEntity.builder()
             .tenant(tenant)
-            .service(service)
             .name(request.name())
             .publicKey(request.publicKey())
             .secretKey(request.secretKey())
@@ -82,13 +73,7 @@ public class WidgetServiceImpl implements WidgetService {
                 "Tenant not found: " + request.tenantId()
             ));
 
-        ServiceEntity service = serviceRepository.findById(request.serviceId())
-            .orElseThrow(() -> new ServiceNotFoundException(
-                "Service not found: " + request.serviceId()
-            ));
-
         widget.setTenant(tenant);
-        widget.setService(service);
         widget.setName(request.name());
         widget.setPublicKey(request.publicKey());
         widget.setSecretKey(request.secretKey());

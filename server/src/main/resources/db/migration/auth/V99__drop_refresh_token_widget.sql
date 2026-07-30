@@ -1,0 +1,1 @@
+ALTER TABLE auth.refresh_tokens DROP COLUMN widget_id;

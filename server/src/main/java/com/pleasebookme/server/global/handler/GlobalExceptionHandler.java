@@ -1,5 +1,20 @@
 package com.pleasebookme.server.global.handler;
 
+import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenExpiredException;
+import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenRevokedException;
+import com.pleasebookme.server.security.token.jwt.exception.TokenExpiredException;
+import com.pleasebookme.server.security.token.jwt.exception.WidgetOriginMismatchException;
+import com.pleasebookme.server.widget.widgets.exception.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.pleasebookme.server.audit.actor.exception.AuditActorNotFoundException;
+import com.pleasebookme.server.audit.actor.exception.DuplicateAuditActorException;
+import com.pleasebookme.server.audit.change.exception.AuditChangeNotFoundException;
+import com.pleasebookme.server.audit.event.exception.AuditEventNotFoundException;
+import com.pleasebookme.server.audit.resource.exception.AuditResourceNotFoundException;
 import com.pleasebookme.server.auth.account.exception.AccountNotFoundException;
 import com.pleasebookme.server.auth.account.exception.DuplicateAccountException;
 import com.pleasebookme.server.auth.apikey.exception.ApiKeyNotFoundException;
@@ -8,21 +23,19 @@ import com.pleasebookme.server.auth.password.exception.DuplicateUserPasswordExce
 import com.pleasebookme.server.auth.password.exception.UserPasswordNotFoundException;
 import com.pleasebookme.server.auth.permission.exception.DuplicatePermissionException;
 import com.pleasebookme.server.auth.permission.exception.PermissionNotFoundException;
+import com.pleasebookme.server.auth.refreshtoken.exception.DuplicateRefreshTokenException;
+import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenNotFoundException;
 import com.pleasebookme.server.auth.role.exception.DuplicateRoleException;
 import com.pleasebookme.server.auth.role.exception.RoleNotFoundException;
 import com.pleasebookme.server.auth.rolepermission.exception.DuplicateRolePermissionException;
 import com.pleasebookme.server.auth.rolepermission.exception.RolePermissionNotFoundException;
-import com.pleasebookme.server.auth.refreshtoken.exception.DuplicateRefreshTokenException;
-import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenNotFoundException;
 import com.pleasebookme.server.auth.user.exception.DuplicateUserException;
+import com.pleasebookme.server.auth.user.exception.UserEmailAlreadyExistException;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
+import com.pleasebookme.server.auth.user.exception.UserPhoneNumberAlreadyExistException;
+import com.pleasebookme.server.auth.user.exception.UsernameAlreadyExistException;
 import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleException;
 import com.pleasebookme.server.auth.userrole.exception.UserRoleNotFoundException;
-import com.pleasebookme.server.audit.actor.exception.AuditActorNotFoundException;
-import com.pleasebookme.server.audit.actor.exception.DuplicateAuditActorException;
-import com.pleasebookme.server.audit.change.exception.AuditChangeNotFoundException;
-import com.pleasebookme.server.audit.event.exception.AuditEventNotFoundException;
-import com.pleasebookme.server.audit.resource.exception.AuditResourceNotFoundException;
 import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException;
 import com.pleasebookme.server.core.availability.exception.AvailabilityNotFoundException;
 import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
@@ -41,6 +54,7 @@ import com.pleasebookme.server.customer.source.exception.CustomerSourceNotFoundE
 import com.pleasebookme.server.customer.tag.exception.CustomerTagNotFoundException;
 import com.pleasebookme.server.customer.tag.exception.DuplicateCustomerTagException;
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
+import com.pleasebookme.server.global.response.ApiErrorResponse;
 import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
 import com.pleasebookme.server.notification.channel.exception.DuplicateNotificationChannelException;
@@ -52,6 +66,10 @@ import com.pleasebookme.server.notification.preferences.exception.NotificationPr
 import com.pleasebookme.server.notification.queue.exception.NotificationQueueNotFoundException;
 import com.pleasebookme.server.notification.template.exception.DuplicateNotificationTemplateException;
 import com.pleasebookme.server.notification.template.exception.NotificationTemplateNotFoundException;
+import com.pleasebookme.server.organization.membership.exception.DuplicateMembershipException;
+import com.pleasebookme.server.organization.membership.exception.MembershipNotFoundException;
+import com.pleasebookme.server.organization.membershiprole.exception.DuplicateMembershipRoleException;
+import com.pleasebookme.server.organization.membershiprole.exception.MembershipRoleNotFoundException;
 import com.pleasebookme.server.organization.organizations.exception.DuplicateOrganizationException;
 import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
 import com.pleasebookme.server.organization.profile.exception.DuplicateProfileException;
@@ -75,14 +93,8 @@ import com.pleasebookme.server.tenant.tenants.exception.DuplicateTenantException
 import com.pleasebookme.server.tenant.tenants.exception.TenantNotFoundException;
 import com.pleasebookme.server.widget.widgetorigin.exception.DuplicateWidgetOriginException;
 import com.pleasebookme.server.widget.widgetorigin.exception.WidgetOriginNotFoundException;
-import com.pleasebookme.server.widget.widgets.exception.DuplicateWidgetException;
-import com.pleasebookme.server.widget.widgets.exception.WidgetNotFoundException;
-import com.pleasebookme.server.global.response.ApiErrorResponse;
+
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -121,6 +133,54 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateUserException(
         DuplicateUserException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistException.class)
+    public ResponseEntity<ApiErrorResponse> handleUsernameAlreadyExistException(
+        UsernameAlreadyExistException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UserEmailAlreadyExistException.class)
+    public ResponseEntity<ApiErrorResponse> handleUserEmailAlreadyExistException(
+        UserEmailAlreadyExistException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UserPhoneNumberAlreadyExistException.class)
+    public ResponseEntity<ApiErrorResponse> handleUserPhoneNumberAlreadyExistException(
+        UserPhoneNumberAlreadyExistException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
@@ -1332,5 +1392,182 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MembershipNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleMembershipNotFoundException(
+        MembershipNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateMembershipException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateMembershipException(
+        DuplicateMembershipException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(MembershipRoleNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleMembershipRoleNotFoundException(
+        MembershipRoleNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateMembershipRoleException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateMembershipRoleException(
+        DuplicateMembershipRoleException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleTokenExpiredException(
+        TokenExpiredException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleRefreshTokenExpiredException(
+        RefreshTokenExpiredException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(RefreshTokenRevokedException.class)
+    public ResponseEntity<ApiErrorResponse> handleRefreshTokenRevokedException(
+        RefreshTokenRevokedException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(WidgetOriginMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetOriginMismatchException(
+        WidgetOriginMismatchException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+
+    @ExceptionHandler(WidgetNotActiveException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetNotActiveException(
+        WidgetNotActiveException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(WidgetExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetExpiredException(
+        WidgetExpiredException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(WidgetBadCredentialsException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetBadCredentialsException(
+        WidgetBadCredentialsException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

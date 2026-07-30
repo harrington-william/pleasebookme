@@ -2,9 +2,6 @@ spring:
   application:
     name: server
 
-  client:
-    frontend-url: http://localhost:3000
-
   docker:
     compose:
       file: "../infrastructure/docker/compose.yml"
@@ -47,15 +44,6 @@ spring:
       name: "${SPRING_SECURITY_USERNAME}"
       password: "${SPRING_SECURITY_PASSWORD}"
 
-    jwt:
-      issuer: pleasebookme
-
-      secret: ${JWT_SECRET}
-
-      access-expiration: 900
-
-      refresh-expiration: 2592000
-
     oauth2:
       client:
         registration:
@@ -76,3 +64,27 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
+
+security:
+  jwt:
+    issuer: pleasebookme
+
+    audience: pleasebookme-api
+
+    algorithm: HS256
+
+    secret: ${JWT_SECRET}
+
+    access-token-life-time: PT15M
+
+    refresh-token-life-time: P30D
+
+app:
+  client:
+    frontend-url: http://localhost:3000
+
+  widget:
+    frontend-url: http://localhost:3001
+
+  internal:
+    frontend-url: http://localhost:3002

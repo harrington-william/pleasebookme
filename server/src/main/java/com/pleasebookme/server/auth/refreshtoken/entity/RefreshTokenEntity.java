@@ -1,5 +1,6 @@
 package com.pleasebookme.server.auth.refreshtoken.entity;
 
+import com.pleasebookme.server.auth.refreshtoken.enums.RefreshOwner;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.widget.widgets.entity.WidgetEntity;
 import jakarta.persistence.*;
@@ -31,16 +32,14 @@ public class RefreshTokenEntity {
     @Column(name = "secret", nullable = false)
     private String secret;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "owner")
-    private String owner;
+    private RefreshOwner owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "widget_id")
-    private WidgetEntity widget;
 
     @Column(name = "device_name")
     private String deviceName;

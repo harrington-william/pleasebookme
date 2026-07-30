@@ -1,5 +1,6 @@
 @AGENTS.md
 @SERVER_AGENTS.md
+@SECURITY.md
 @CODING_CONVENTIONS.md
 
 # Context Rules

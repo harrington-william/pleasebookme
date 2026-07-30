@@ -1,0 +1,9 @@
+INSERT INTO auth.roles (name)
+VALUES
+    ('PLATFORM_OWNER'),
+    ('PLATFORM_MANAGER'),
+    ('USER'),
+    ('ORGANIZATION_OWNER'),
+    ('ORGANIZATION_MANAGER'),
+    ('STAFF')
+;
