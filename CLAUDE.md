@@ -10,11 +10,11 @@
 # Business Name: **Please Book Me**
 # Current Phase: We are currently building PLATFORM V1. The first ever production-grade product.
 
----
+---$$
 
 # Business Overview
 
-Please Book Me is a **booking infrastructure** designed to provide reusable reservation capabilities for small-to-medium service businesses. Rather than focusing on building custom enterprise websites, the primary objective is to create a centralized reservation platform that exposes standardized booking capabilities through APIs, embedded widgets, management dashboards, and future developer integrations.
+Please Book Me is a **booking infrastructure** designed to provide reusable reservation capabilities for small-to-medium service businesses. Rather than focusing on building custom enterprise websites, the primary objective is to create a centralized reservation$$ platform that exposes standardized booking capabilities through APIs, embedded widgets, management dashboards, and future developer integrations.
 
 Many businesses in Vietnam that already rely on social media but do not yet have a proper website, booking system, or normalized operational workflow. Specifically, many maturing businesses spend a massive amount of money on building social media channels, Facebook Ads, and Google ads. However, they do not have any public interactable website, which allow their customer to maneuver with. For example, a small barbershop spend a lot of money on his TikTok channel, but users can not schedule appointment or check for the barbershop info such as services, story, and updates.
 
