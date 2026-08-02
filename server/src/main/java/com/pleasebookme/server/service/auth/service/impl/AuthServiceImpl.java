@@ -166,7 +166,6 @@ public class AuthServiceImpl implements AuthService {
 
         UserPasswordEntity userPasswordEntity = UserPasswordEntity.builder()
             .user(user)
-            .raw(request.password())
             .hash(passwordEncoder.encode(request.password()))
             .createdAt(now)
             .updatedAt(now)

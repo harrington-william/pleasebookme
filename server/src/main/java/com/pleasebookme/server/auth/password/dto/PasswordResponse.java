@@ -14,7 +14,7 @@ public record PasswordResponse(
     public static PasswordResponse from(UserPasswordEntity userPassword) {
         return new PasswordResponse(
             userPassword.getUserId(),
-            userPassword.getRaw(),
+            userPassword.getHash(),
             userPassword.getCreatedAt(),
             userPassword.getUpdatedAt()
         );

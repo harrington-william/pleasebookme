@@ -11,6 +11,9 @@ import com.pleasebookme.server.integration.calendar.entity.DestinationCalendarEn
 import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
 import com.pleasebookme.server.integration.calendar.repository.DestinationCalendarRepository;
 import com.pleasebookme.server.integration.calendar.service.DestinationCalendarService;
+import com.pleasebookme.server.integration.oauthconnection.entity.OAuthConnectionEntity;
+import com.pleasebookme.server.integration.oauthconnection.exception.OAuthConnectionNotFoundException;
+import com.pleasebookme.server.integration.oauthconnection.repository.OAuthConnectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ public class DestinationCalendarServiceImpl implements DestinationCalendarServic
     private final DestinationCalendarRepository destinationCalendarRepository;
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
+    private final OAuthConnectionRepository oauthConnectionRepository;
 
     @Override
     public DestinationCalendarEntity createDestinationCalendar(DestinationCalendarRequest request) {
@@ -32,11 +36,17 @@ public class DestinationCalendarServiceImpl implements DestinationCalendarServic
         ServiceEntity service = serviceRepository.findById(request.serviceId())
             .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + request.serviceId()));
 
+        OAuthConnectionEntity oauthConnection = oauthConnectionRepository.findById(request.oauthConnectionId())
+            .orElseThrow(() -> new OAuthConnectionNotFoundException(
+                "OAuth connection not found: " + request.oauthConnectionId()
+            ));
+
         DestinationCalendarEntity destinationCalendar = DestinationCalendarEntity.builder()
             .integrationType(request.integrationType())
             .externalId(request.externalId())
             .user(user)
             .service(service)
+            .oauthConnection(oauthConnection)
             .build();
 
         return destinationCalendarRepository.save(destinationCalendar);
@@ -68,10 +78,16 @@ public class DestinationCalendarServiceImpl implements DestinationCalendarServic
         ServiceEntity service = serviceRepository.findById(request.serviceId())
             .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + request.serviceId()));
 
+        OAuthConnectionEntity oauthConnection = oauthConnectionRepository.findById(request.oauthConnectionId())
+            .orElseThrow(() -> new OAuthConnectionNotFoundException(
+                "OAuth connection not found: " + request.oauthConnectionId()
+            ));
+
         destinationCalendar.setIntegrationType(request.integrationType());
         destinationCalendar.setExternalId(request.externalId());
         destinationCalendar.setUser(user);
         destinationCalendar.setService(service);
+        destinationCalendar.setOauthConnection(oauthConnection);
 
         return destinationCalendarRepository.save(destinationCalendar);
     }

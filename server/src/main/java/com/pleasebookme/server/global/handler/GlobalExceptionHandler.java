@@ -56,7 +56,11 @@ import com.pleasebookme.server.customer.tag.exception.DuplicateCustomerTagExcept
 import com.pleasebookme.server.global.exception.ResourceNotFoundException;
 import com.pleasebookme.server.global.response.ApiErrorResponse;
 import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
+import com.pleasebookme.server.integration.drive.exception.DestinationDriveNotFoundException;
+import com.pleasebookme.server.integration.oauthconnection.exception.DuplicateOAuthConnectionException;
+import com.pleasebookme.server.integration.oauthconnection.exception.OAuthConnectionNotFoundException;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
+import com.pleasebookme.server.integration.syncjob.exception.SyncJobNotFoundException;
 import com.pleasebookme.server.notification.channel.exception.DuplicateNotificationChannelException;
 import com.pleasebookme.server.notification.channel.exception.NotificationChannelNotFoundException;
 import com.pleasebookme.server.notification.delivery.exception.NotificationDeliveryNotFoundException;
@@ -1553,6 +1557,70 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(OAuthConnectionNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleOAuthConnectionNotFoundException(
+        OAuthConnectionNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateOAuthConnectionException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateOAuthConnectionException(
+        DuplicateOAuthConnectionException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(SyncJobNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleSyncJobNotFoundException(
+        SyncJobNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DestinationDriveNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleDestinationDriveNotFoundException(
+        DestinationDriveNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(WidgetBadCredentialsException.class)

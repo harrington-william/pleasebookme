@@ -12,6 +12,7 @@ public record DestinationSheetsResponse(
     String externalId,
     BigInteger userId,
     BigInteger serviceId,
+    BigInteger oauthConnectionId,
     Instant createdAt,
     Instant updatedAt
 ) {
@@ -22,6 +23,7 @@ public record DestinationSheetsResponse(
             destinationSheets.getExternalId(),
             destinationSheets.getUser().getUserId(),
             destinationSheets.getService().getServiceId(),
+            destinationSheets.getOauthConnection().getOauthConnectionId(),
             destinationSheets.getCreatedAt(),
             destinationSheets.getUpdatedAt()
         );
