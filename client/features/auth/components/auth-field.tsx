@@ -6,20 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-/**
- * Label + input + error, styled to the Obsidian input spec.
- *
- * The base shadcn Input is a compact 32px control intended for dense data UI.
- * Auth forms are the opposite context — low density, high stakes — so this
- * wrapper applies the spec from DESIGN.md "Components → Input Fields":
- * 10px radius, inset background (the canvas colour, darker than the panel it
- * sits on), and a 2px primary focus ring.
- *
- * `dark:bg-background` is not redundant: the base Input ships a
- * `dark:bg-input/30` rule, and since <html> always carries `dark`, that rule
- * would otherwise win over a plain `bg-background`.
- */
-
 export const authInputClassName = cn(
   "h-auto w-full rounded-lg border border-border bg-background px-md py-sm text-body-md text-foreground",
   "placeholder:text-muted-foreground/50",

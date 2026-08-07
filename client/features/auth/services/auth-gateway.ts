@@ -1,5 +1,6 @@
 import type {
   AuthTokens,
+  GoogleSignInRequest,
   LoginRequest,
   RegisterRequest,
 } from "@/features/auth/types/auth";
@@ -37,6 +38,26 @@ export async function loginOnPlatform(
 ): Promise<AuthTokens> {
   const response = await platformClient().post<AuthTokens>(
     `${AUTH_BASE}/login`,
+    payload
+  );
+  return response.data;
+}
+
+/**
+ * POST /api/v1/auth/google → 200 { accessToken, refreshToken }
+ *
+ * Exchanges a Google ID token for a platform session. permitAll on the server,
+ * so no Bearer header — the ID token IS the credential being presented.
+ *
+ * Google-ness ends here: the platform resolves the identity to a user (linking
+ * or provisioning as needed) and then rejoins the exact same pipeline that
+ * username/password login uses, returning the same token pair.
+ */
+export async function signInWithGoogleOnPlatform(
+  payload: GoogleSignInRequest
+): Promise<AuthTokens> {
+  const response = await platformClient().post<AuthTokens>(
+    `${AUTH_BASE}/google`,
     payload
   );
   return response.data;

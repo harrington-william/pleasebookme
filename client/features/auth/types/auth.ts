@@ -52,6 +52,24 @@ export interface RefreshRequest {
 }
 
 /**
+ * POST /api/v1/auth/google → 200, returns LoginResponse.
+ *
+ * Source: server/.../service/auth/dto/GoogleSignInRequest.java
+ *
+ * This is Google SIGN-IN (authentication) — "who is this user". It is a
+ * different concern from Google delegated authorization ("may we act on this
+ * user's Google Calendar"), which lives in features/integrations/google.
+ * The two share nothing on the frontend; do not merge them.
+ *
+ * `idToken` is the JWT credential minted by Google Identity Services in the
+ * browser. The platform verifies its signature, issuer and audience, then
+ * discards it — it is never stored.
+ */
+export interface GoogleSignInRequest {
+  idToken: string;
+}
+
+/**
  * The platform's ApiErrorResponse shape, produced by GlobalExceptionHandler
  * for every *typed* domain exception.
  *

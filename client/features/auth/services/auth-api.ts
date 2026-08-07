@@ -6,6 +6,7 @@ import { toRegisterRequest } from "@/features/auth/schemas/auth-schema";
 import {
   AuthRequestError,
   normalizeAuthError,
+  normalizeGoogleSignInError,
 } from "@/features/auth/services/auth-errors";
 import type { SessionActor } from "@/features/auth/types/auth";
 import { bffClient } from "@/lib/axios";
@@ -54,6 +55,27 @@ export async function loginWithCredentials(
     return response.data;
   } catch (error) {
     throw new AuthRequestError(normalizeAuthError(error));
+  }
+}
+
+/**
+ * Exchanges a Google ID token for a platform session.
+ *
+ * `idToken` comes from Google Identity Services in the browser (see
+ * use-google-identity.ts). It is forwarded straight to the BFF and never
+ * stored client-side — the resulting platform session lands in httpOnly
+ * cookies like any other sign-in.
+ */
+export async function signInWithGoogle(
+  idToken: string
+): Promise<SessionSummary> {
+  try {
+    const response = await bffClient.post<SessionSummary>("/auth/google", {
+      idToken,
+    });
+    return response.data;
+  } catch (error) {
+    throw new AuthRequestError(normalizeGoogleSignInError(error));
   }
 }
 

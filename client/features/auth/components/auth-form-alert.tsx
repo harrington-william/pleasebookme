@@ -1,13 +1,5 @@
 import { TriangleAlert } from "lucide-react";
 
-/**
- * Form-level failure message (bad credentials, duplicate account, platform
- * unreachable) — as opposed to a field-level validation error.
- *
- * `role="alert"` so assistive tech announces it when it appears after submit.
- * Styled per DESIGN.md "Chips/Badges": a 10% tint of the semantic colour with
- * the solid colour for text, keeping the surface quiet rather than alarming.
- */
 export function AuthFormAlert({ message }: { message: string }) {
   return (
     <div

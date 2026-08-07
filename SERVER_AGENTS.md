@@ -5,15 +5,32 @@
 # Stack
 
 - Java 21, Spring Boot 4.1, Gradle Kotlin DSL (`server/build.gradle.kts`)
-- Jackson 3 — import from `tools.jackson.databind.*`, NOT `com.fasterxml.jackson.*`
+- Jackson 3 — **databind and core** import from `tools.jackson.databind.*` / `tools.jackson.core.*`, NOT `com.fasterxml.jackson.*`. **Annotations are the exception**: `jackson-annotations` is still the 2.x artifact (`com.fasterxml.jackson.core:jackson-annotations:2.21`), so `@JsonProperty`/`@JsonIgnoreProperties`/etc. import from `com.fasterxml.jackson.annotation.*`. Verified against `./gradlew dependencies --configuration compileClasspath` — `tools.jackson.core:jackson-databind:3.1.4` and `com.fasterxml.jackson.core:jackson-annotations:2.21` coexist by design. Don't "fix" an annotation import to `tools.jackson`; that package doesn't exist for annotations.
 - Hibernate ORM via `spring-boot-starter-data-jpa`, Jakarta Persistence (`jakarta.persistence.*`)
 - Flyway (`flyway-database-postgresql`) owns the schema. Hibernate `ddl-auto` is never used to generate/alter schema — entities are written to match existing `V*__*.sql` migrations exactly, never the other way around.
 - No extra ORM libraries (e.g. no hypersistence-utils) — native Postgres enum/JSON mapping is done with plain Hibernate 6.2+ annotations (see below).
+- **Redis** via `spring-boot-starter-data-redis` (Lettuce). Pooling is enabled in `application.yaml`, which **requires `org.apache.commons:commons-pool2` on the classpath** — the starter does not bring it transitively, and without it the context fails at startup with `NoClassDefFoundError: GenericObjectPoolConfig` on the `redisConnectionFactory` bean.
+- **`RestClient.Builder` is NOT an injectable bean here.** `spring-boot-starter-webclient` supplies `WebClient.Builder`; there is no `RestClient.Builder` auto-configuration on this classpath. Use the static `RestClient.builder()` factory instead (see `DefaultGoogleTokenClient`). Injecting `RestClient.Builder` compiles fine and fails at runtime with `No qualifying bean of type 'RestClient$Builder'`.
+
+# Infrastructure
+
+- `infrastructure/docker/compose.yml` runs `postgres:16`, `redis:7.4-alpine`, and `pgadmin4`. Spring Boot's docker-compose integration starts/stops it automatically (`spring.docker.compose.enabled: true`, `lifecycle-management: start-and-stop`, file path `../infrastructure/docker/compose.yml`).
+- **Two separate `.env` files, both gitignored**: `infrastructure/docker/.env` is read by docker compose (interpolates `${REDIS_PASSWORD}` etc. into `compose.yml`); `server/.env` is read by `build.gradle.kts` and injected into `bootRun`/`test` as environment variables. Keys shared by both (e.g. `REDIS_PASSWORD`) **must be kept in sync by hand** — a mismatch surfaces as `WRONGPASS` at runtime, not at startup.
+- Redis is password-protected via `--requirepass`, bound to `127.0.0.1` only, `--appendonly yes`, and `--maxmemory-policy noeviction`. The eviction policy is deliberate: the default `allkeys-lru` would silently evict OAuth state entries under memory pressure, turning a valid consent callback into "invalid state" for a real user. Failing writes loudly beats silently dropping security state.
+- The redis service carries the label `org.springframework.boot.ignore: "true"`. Without it, `spring-boot-docker-compose` auto-detects the container and injects `RedisConnectionDetails` that **override** `application.yaml` — and since the plain `redis` image exposes no password environment variable, that auto-detected connection has no password and fails. The label keeps `application.yaml` as the single source of truth and makes local behave like production.
+
+# CORS
+
+- Configured in `security/config/WebConfig.java` from `CorsProperties` (`app.cors.*`, validated at startup).
+- **Two registrations are required, not one.** `WebMvcConfigurer.addCorsMappings` alone is not enough: Spring Security's filter chain runs *before* the DispatcherServlet, so a preflight never reaches the MVC layer. `WebConfig` therefore also exposes a `CorsConfigurationSource` bean, and `SecurityConfig` calls `.cors(Customizer.withDefaults())` to consult it. Omitting that one line in `SecurityConfig` makes the entire CORS configuration inert.
+- Verified behaviour: an allowed origin gets a 200 preflight with full `Access-Control-*` headers; a disallowed origin gets 403 with no `Access-Control-Allow-Origin`.
 
 # Migrations
 
 - Authored with comments in `database/init/<domain>/`, then mirrored comment-free into `server/src/main/resources/db/migration/<domain>/` on request.
 - SQL conventions: `BIGSERIAL` PKs, named FK/index constraints, single-line FK/index formatting, zero comments in the Flyway copy.
+- **Current applied schema version: v125.**
+- **Renumbering a migration below the applied high-water mark breaks the boot.** A previous session renumbered `V112 → V119` while `120/121/122` were already applied, which left a *pending* migration below the current version. Flyway's `validate` rejects that with `Detected resolved migration not applied to database: 119` and the application refuses to start — the failure surfaces as an opaque `entityManagerFactory` bean-creation error, several `Caused by` levels above the real cause. Fixed by renumbering to `V125` (above the mark). Before renumbering anything, check `SELECT MAX(version::numeric) FROM flyway_schema_history WHERE success` and keep pending migrations strictly above it. Since the migration had never been applied, no `flyway_schema_history` rewrite was needed; had it been applied, the ledger would have had to be edited by hand too.
 
 # Package structure
 
@@ -29,7 +46,15 @@ global/
   exception/, handler/, response/, utils/
 security/
   authorization/, config/, identity/, oauth/, permission/, policy/, token/
+  crypto/           <- TokenCipher/AesGcmTokenCipher + config/, exception/
+  identity/context/ <- CurrentPrincipalProvider (read the principal back out)
+  oauth/google/     <- config/, identity/, verifier/, authorization/, client/, exception/
+service/
+  auth/             <- AuthService, GoogleSignInService, UserProvisioningService
+  integration/      <- GoogleConnectService, GoogleAccessTokenProvider, controller/
 ```
+
+`service/` is the orchestration layer, distinct from the bounded contexts. `service/auth/` and `service/integration/` hold cross-domain business flows (login, register, Google sign-in, Google consent) that coordinate several repositories and the `security/` infrastructure; the bounded-context packages hold per-table CRUD. When adding a flow that spans domains, it belongs under `service/<area>/`, not inside one domain's `service/`.
 
 Other top-level bounded contexts mirror the schemas: `analytics`, `audit`, `billing`, `core`, `customer`, `feature` (appointment/auth/notification/slot/workspace), `integration`, `notification`, `organization`, `resource`, `tenant`, `webhook`, `widget`.
 
@@ -41,7 +66,7 @@ Other top-level bounded contexts mirror the schemas: `analytics`, `audit`, `bill
 
 `core/` subdomains observed so far: `schedule/`, `attendee/`, `booking/`, `outofoffice/`, `availability/`, `service/`, `bookingpolicy/`, `selectedslot/`, `enums/` — all now implemented (`ScheduleEntity`, `AvailabilityEntity`, `ServiceEntity`, `BookingEntity`, `BookingPolicyEntity`, `AttendeeEntity`, `SelectedSlotEntity`, `OutOfOfficeEntity`), completing the `core` bounded context. `core/enums/` has `BookingMode` and `BookingStatus`, both wired up as the native-enum-backed `core.booking_mode`/`core.booking_status` Postgres types on `BookingPolicyEntity.bookingMode`/`BookingEntity.status` respectively (unused by `ServiceEntity` — its `period_type` is a plain `VARCHAR`, not a native enum; see below).
 
-`integration/` subdomains observed so far: `calendar/`, `sheets/`, `enums/` (`IntegrationType` — `integration`-schema-scoped native Postgres enum, shared by both `destination_calendars` and `destination_sheets`).
+`integration/` subdomains: `calendar/`, `sheets/`, `drive/`, `oauthconnection/`, `syncjob/`, `oauthstate/`, `enums/` (`IntegrationType`, `OAuthProvider`, `OAuthConnectionStatus`, `SyncJobStatus`, `SyncJobType` — all `integration`-schema-scoped native Postgres enums). `oauthstate/` is the odd one out: it has **no entity, no repository and no table** — it is Redis-backed (`model/OAuthState`, `store/OAuthStateStore`, `store/RedisOAuthStateStore`), chosen over a Postgres table because `GETDEL` gives single-use consumption in one atomic command and TTL expiry removes the need for a cleanup job entirely. Don't add a migration for it.
 
 `resource/` subdomains — all now implemented: `type/` (`ResourceTypeEntity`), `resources/` (`ResourceEntity`), `pricing/` (`ResourcePricingEntity`), `assignment/` (`ResourceAssignmentEntity`), `calendar/` (`ResourceCalendarEntity`), `maintenance/` (`ResourceMaintenanceEntity`), `attribute/` (`ResourceAttributesEntity`, plus an `id/` folder for its `@EmbeddedId` class — see composite-key note below), `overrides/` (`ResourceOverrideEntity`). `assignment/` briefly had its own `id/` folder with a `ResourceAssignmentId` `@EmbeddedId` stub, deleted once the migration showed it didn't fit a composite key — see the `ResourceAssignmentEntity` note below.
 
@@ -210,3 +235,69 @@ Established with `UserController`/`UserService`/`UserServiceImpl` — the first 
 - **`MembershipEntity` CRUD (`organization/membership/`)** and **`MembershipRoleEntity` CRUD (`organization/membershiprole/`)** — closes out the `organization` bounded context CRUD layer (`organizations`/`profiles` were already done; these two were the entity-only gap flagged in `AGENTS.md`'s "Permission seed coverage" note). `MembershipEntity` is a standard surrogate-PK entity with two required FKs, both real lookups since `OrganizationRepository`/`UserRepository` already existed: `organization_id` → `OrganizationRepository`, `user_id` → `UserRepository`. `uq_memberships_user_organization` on `(user_id, organization_id)` backs `existsByUserUserIdAndOrganizationOrganizationId` on `MembershipRepository` (nested-path traversal through both associations into their PK, same shape as `ProfileRepository`'s own composite check), checked in `createMembership` before either FK is resolved, throwing `DuplicateMembershipException` on a hit. `accepted` (`BOOLEAN NOT NULL DEFAULT false`) is unannotated-but-guarded on `MembershipRequest`, same `@Builder.Default`-backed-optional pattern as everywhere else — no other scalar columns on this table. Both `created_at`/`updated_at` present, so the standard `update` verb is included (re-resolves both FKs, full-replace semantics) and does not re-check the unique constraint, consistent with the `ServiceEntity`/`SelectedSlotEntity`/`NotificationPreferenceEntity` precedent.
 - **`MembershipRoleEntity` CRUD** follows the `UserRoleEntity`/`RolePermissionEntity` composite-PK precedent exactly (repository is `JpaRepository<MembershipRoleEntity, MembershipRoleId>`, no custom finder methods — `findById`/`existsById`/`delete` all take a constructed `new MembershipRoleId(membershipId, roleId)`). Two FKs resolved via real repositories: `membership_id` → the just-built `MembershipRepository`, `role_id` → the already-real `RoleRepository`. `create` checks `existsById` before resolving either FK, throwing `DuplicateMembershipRoleException` on a hit — mandatory per the shared/derived-PK rule, same as `UserRoleServiceImpl`. **No `update` verb** — same reasoning as `UserRoleEntity`/`RolePermissionEntity`: the table has nothing but its composite key and an immutable `@CreationTimestamp` (`assigned_at`), so there's no mutable field to update; only `create`/`getById`/`getAll`/`delete`. Controller exposes the composite key as two path segments (`/api/v1/membership-roles/{membershipId}/{roleId}`).
 - **`organization` bounded context CRUD layer now fully implemented** — all four `organization` tables (`organizations`, `profiles`, `memberships`, `membership_roles`) have complete controller/service/repository/DTO/exception stacks, not just entities. Per `AGENTS.md`'s standing note, `MEMBERSHIP.*`/`MEMBERSHIPROLE.*` permission rows can now be added to a future seed migration since real endpoints exist to gate — this CRUD pass doesn't touch the permission seed migrations itself, that's a separate follow-up.
+
+# Google OAuth2 — two distinct flows
+
+The server implements **two** unrelated Google integrations. Conflating them is the single easiest mistake to make in this area, so they are kept in separate packages with separate entry points.
+
+| | Sign-In (authentication) | Delegated authorization |
+|---|---|---|
+| Question answered | who is this user? | may we act on their behalf? |
+| Flow | ID token, posted by the browser | authorization code + redirect |
+| Entry point | `POST /api/v1/auth/google` | `POST /api/v1/integrations/google/connect` |
+| Google Cloud setting | Authorized **JavaScript origin** | Authorized **redirect URI** |
+| Client secret used | no | yes |
+| Produces | platform JWT pair | encrypted row in `integration.oauth_connections` |
+| Token stored | none — verified then discarded | access + refresh, AES-256-GCM |
+| Orchestration | `service/auth/DefaultGoogleSignInService` | `service/integration/DefaultGoogleConnectService` |
+
+Both share `security/oauth/google/verifier/GoogleTokenVerifier` — the delegated flow reuses it to read the `id_token` that comes back alongside the access token, which is how the callback identifies which Google account granted consent.
+
+Full architectural narrative for both flows lives in `SECURITY.md` sections 11–13. What follows is the server-side implementation detail.
+
+## Endpoints
+
+```
+POST   /api/v1/auth/google                              permitAll   sign-in
+POST   /api/v1/integrations/google/connect              Bearer      returns authorizationUrl
+GET    /api/v1/integrations/google/callback             permitAll   302 back to dashboard
+GET    /api/v1/integrations/google/connections          Bearer      owner-scoped list
+DELETE /api/v1/integrations/google/connections/{uid}    Bearer      revoke at Google, then mark REVOKED
+```
+
+`/api/v1/integrations/google/callback` is in `SecurityConfig`'s `permitAll` list alongside `/api/v1/auth/**`. It must be: a top-level browser navigation from Google carries no `Authorization` header, so identity comes from the `state` parameter instead.
+
+## Conventions this area deliberately breaks
+
+- **The callback returns `ResponseEntity<Void>` with a 302, not a bare DTO.** Every other controller in the codebase returns a DTO plus `@ResponseStatus`. Here the caller is a browser mid-navigation, not an API client, so it must be redirected back to the dashboard with a `?google=connected|denied|invalid_state|error` outcome. `complete()` therefore never throws to the controller — it catches everything and converts it to a redirect URI.
+- **`/connect` returns a URL for the client to navigate to, rather than issuing a 302.** The initiating call is an XHR with a Bearer header; `fetch` follows redirects transparently, so a 302 would make the browser try to *fetch* Google's consent page cross-origin and fail CORS. The navigation must be a deliberate `window.location` assignment client-side.
+- **`OAuthConnection` CRUD is intentionally incomplete.** `POST`, `PUT` and list-all were removed from `/api/v1/oauth-connections`, along with their service methods and the `OAuthConnectionRequest` DTO (deleted outright — it carried client-suppliable `accessToken`/`refreshToken`). Only owner-scoped read and delete remain. This extends the existing "omit a verb the entity's shape doesn't support" (`UserRole`) and "omit a verb the domain's business policy forbids" (`audit`) precedents to a third case: **omit a verb whose existence is a security hole**. A row here holds live Google credentials, so the consent flow is the only sanctioned writer. Do not restore these endpoints for CRUD-completeness symmetry.
+- **No `@Transactional` on the callback**, despite it writing to the database after a network call. The write is a single row and `SimpleJpaRepository.save()` is already transactional, so the Google round-trip sits outside any transaction by construction. Adding an outer `@Transactional` would hold a Hikari connection open across a third-party HTTP call for no benefit.
+- **Controllers must use `CurrentPrincipalProvider`, never `@AuthenticationPrincipal`.** `AuthenticationTokenFactory` stores `PrincipalUserDetails` (a wrapper) for users, so `@AuthenticationPrincipal UserPrincipal` binds to null silently. See `SECURITY.md` section 6.
+
+## Google API details that bite
+
+- Scope URIs need `www.`: `https://www.googleapis.com/auth/calendar`, not `https://googleapis.com/auth/calendar`. The latter returns `invalid_scope` at the consent screen.
+- `drive.file` is used rather than full `drive` — full Drive access triggers Google's annual CASA third-party security assessment.
+- Google returns granted scopes as a **space-delimited string**, not an array. Split before writing to the `TEXT[]` column.
+- Google **omits `refresh_token`** on some re-consents. The column is `NOT NULL`, so only overwrite when one actually arrives; the stored token stays valid.
+- `expires_in` is **relative seconds**, not a timestamp.
+- `redirect_uri` must match **byte for byte** across the authorization request, the token exchange, and the Console entry.
+- `client-authentication-method: client_secret_basic` means credentials go in the HTTP Basic header **only**. Also sending them in the form body returns `invalid_client`.
+- Google's `iss` claim is sometimes `accounts.google.com` (no scheme). Spring's default claim converter parses `iss` as a `java.net.URL` and throws; `GoogleOAuthConfig` overrides that one claim to stay a raw String and accepts both spellings.
+- The consent screen lets users **untick individual scopes**, so granted ≠ requested. Persist what was granted.
+
+## Token encryption
+
+`security/crypto/TokenCipher` + `AesGcmTokenCipher`: AES-256-GCM, fresh 12-byte IV per encryption prepended to the ciphertext, 128-bit tag, Base64 output. Keys come from `security.token-encryption.{current-version,keys}` and are validated at startup — wrong length or bad Base64 fails the boot, not the first request.
+
+`decrypt(ciphertext, keyVersion)` takes the version as a parameter rather than reading it from the payload, which is what makes `oauth_connections.token_key_version` functional: rotation is a config change (add key 2, set current to 2), existing rows keep decrypting with the version recorded against them, and no re-encryption sweep is needed.
+
+`TokenEncryptionException` is deliberately **not** wired into `GlobalExceptionHandler` — a decrypt failure is a server fault and cipher details must not reach a client, so it falls through to a generic 500.
+
+## Test coverage
+
+57 tests, all Mockito-based with no database and no network:
+`AesGcmTokenCipherTest` (13), `DefaultGoogleConnectServiceTest` (11), `DefaultGoogleAccessTokenProviderTest` (7), `DefaultCurrentPrincipalProviderTest` (6), `RedisOAuthStateStoreTest` (6), `DefaultGoogleSignInServiceTest` (5), `DefaultGoogleTokenVerifierTest` (4), `PkceGeneratorTest` (4), `ServerApplicationTests` (1, full context load).
+
+**Not covered:** a real consent round-trip against Google. Everything up to and including the token-endpoint call is mocked, so `GoogleTokenResponse` has never deserialised an actual Google payload.

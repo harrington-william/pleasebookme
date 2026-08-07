@@ -2,6 +2,7 @@ package com.pleasebookme.server.service.auth.controller;
 
 import com.pleasebookme.server.service.auth.dto.*;
 import com.pleasebookme.server.service.auth.service.AuthService;
+import com.pleasebookme.server.service.auth.service.GoogleSignInService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final GoogleSignInService googleSignInService;
 
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
@@ -36,5 +38,10 @@ public class AuthController {
     @PostMapping("/widget/bootstrap")
     public WidgetBootstrapResponse bootstrapWidget(@Valid @RequestBody WidgetBootstrapRequest request) {
         return authService.bootstrapWidget(request);
+    }
+
+    @PostMapping("/google")
+    public LoginResponse signInWithGoogle(@Valid @RequestBody GoogleSignInRequest request) {
+        return googleSignInService.signIn(request.idToken());
     }
 }

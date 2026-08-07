@@ -70,8 +70,10 @@ Why:
 1. **httpOnly cookies.** Platform JWTs are written as httpOnly cookies by the
    route handlers, so browser JavaScript can never read them. This is the main
    reason for the indirection.
-2. **No CORS.** `SecurityConfig` on the server configures no CORS at all. Since
-   the browser only ever talks to its own origin, that never becomes a problem.
+2. **No CORS to negotiate.** The server now *does* configure CORS
+   (`security/config/WebConfig.java`, allowing `localhost:3000/3001/3002`), but
+   the browser still only ever talks to its own origin, so preflights never
+   enter the picture for this app.
 3. **One error shape.** Route handlers normalize the platform's inconsistent
    error responses before they reach components.
 
@@ -163,13 +165,20 @@ components/
   background/                        Our own shared visual primitives
 features/<domain>/
   components/                        UI, "use client" where interactive
+  hooks/                             client-only hooks
   schemas/                           zod schemas + form→wire mappers
   services/                          <domain>-api.ts     browser → BFF
                                      <domain>-gateway.ts server → Spring
                                      <domain>-errors.ts  error normalization
   types/                             wire contract mirroring server DTOs
-lib/                                 cross-cutting: axios, env, session, jwt
+lib/                                 cross-cutting: axios, env, session, jwt,
+                                     api-error, authenticated-platform-request
 ```
+
+Nested feature domains are allowed where the backend has one:
+`features/integrations/google/` mirrors the server's `integration` bounded
+context and is deliberately NOT inside `features/auth/`, which owns the platform
+session only.
 
 - Feature types live in `features/<domain>/types/`, not a root `types/`.
 - Pages stay thin so behaviour is reusable and testable independently of routing.
@@ -202,9 +211,9 @@ Gaps the client currently works around (**remove the workaround when fixed**):
    the token does not carry them.
 4. **No logout/revocation endpoint.** Sign-out is local only; the refresh token
    stays valid server-side for its full 30 days.
-5. **Google OAuth2 is not wired.** Dependencies and `application.yaml` exist,
-   but `security/oauth/google/` is empty and `SecurityConfig` never calls
-   `.oauth2Login()`.
+
+Google OAuth2 **is** now fully implemented on both sides — see the dedicated
+section below.
 
 ## Reserved features
 
@@ -212,12 +221,135 @@ Where the backend is not ready, the UI is built but visibly inert, so the
 finished flow is reviewable now and switches on without a redesign later. Each
 carries a comment naming the exact backend blocker.
 
-Currently reserved: Google sign-in (both screens, gated on
-`NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED`), `/api/auth/refresh` (works, nothing calls
-it automatically yet), `/api/auth/me`, and the `/forgot-password` link.
+Currently reserved: `/api/auth/refresh` (works, but nothing calls it
+automatically — `withAccessToken` calls it on demand instead), `/api/auth/me`,
+and the `/forgot-password` link.
 
 Do not "finish" these by inventing client-side behaviour. Implement the backend
 first.
+
+## Authenticated platform calls
+
+`lib/authenticated-platform-request.ts` → `withAccessToken(call, options)`.
+
+Every Bearer-authenticated call to the platform must go through it. It reads the
+access-token cookie, runs `call`, and on a 401/403 refreshes **once** and
+retries. Without it, any feature works perfectly in a quick manual test (tokens
+are fresh right after login) and then starts failing ~15 minutes into a real
+session — the access token lives `PT15M` while the session is renewable for 30
+days.
+
+- Throws `SessionExpiredError` when there is no session, the refresh fails, or
+  the retry still 401s. Route Handlers map that to a 401; Server Components
+  `redirect("/login")`.
+- **`allowSessionWrite: false` is required from a Server Component.**
+  `cookies().set()` is illegal during render, so a rotated pair cannot be
+  persisted there. The refreshed token is still used for that request; the next
+  mutation through a Route Handler persists a fresh pair properly.
+
+## Google OAuth2 — two unrelated flows
+
+The single most important thing to understand: **there are two Google flows and
+they share nothing on the frontend.** Conflating them is the easiest mistake to
+make in this area.
+
+| | **Sign-In** (authentication) | **Delegated authorization** |
+|---|---|---|
+| Question | who is this user? | may we act on their behalf? |
+| Endpoint | `POST /api/v1/auth/google` | `/api/v1/integrations/google/*` |
+| Auth | `permitAll` — the ID token *is* the credential | Bearer |
+| Mechanism | ID token from Google Identity Services, posted | authorization code + browser redirect |
+| Google Console field | Authorized **JavaScript origin** | Authorized **redirect URI** |
+| Client secret used | no | yes (server-side only) |
+| Produces | a platform session (our cookies) | encrypted row in `integration.oauth_connections` |
+| Frontend code | `features/auth/` | `features/integrations/google/` |
+
+They live in separate feature folders on purpose: `features/auth/` owns the
+platform *session*; `features/integrations/google/` owns a *post-login*
+integration that maps onto the backend's own `integration` bounded context.
+
+### Flow 1 — Google Sign-In
+
+```
+browser (GIS) ──idToken──▶ POST /api/auth/google ──▶ POST /api/v1/auth/google
+                              (BFF route)                    (Spring)
+                                   │                              │
+                                   ◀── { accessToken, refreshToken } ──
+                                   │
+                          httpOnly cookies, no tokens in the response body
+```
+
+- `features/auth/hooks/use-google-identity.ts` injects
+  `https://accounts.google.com/gsi/client` once per document and calls
+  `initialize` + `renderButton`.
+- **An ID token can only come from Google's own rendered button** — there is no
+  API that mints one from an arbitrary click. So `google-auth-button.tsx` keeps
+  our styled control as the *visible* layer and stacks Google's real button on
+  top at `opacity-0`, sized to match via `ResizeObserver`. Google's button takes
+  a pixel width and will not stretch, which is why the width is measured rather
+  than guessed. The visible layer is `aria-hidden` so the control is not
+  announced twice.
+- `auto_select: false` — never sign a returning user in on page load. A silent
+  session change is surprising, and on a shared machine it is wrong.
+- The ID token is never stored. The platform verifies signature, issuer and
+  audience, resolves/links/provisions the user, then discards it.
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID` must equal the server's `GOOGLE_CLIENT_ID`
+  byte for byte — the platform validates the token's `aud` claim against it, so
+  a mismatch fails every sign-in with `invalid_audience`.
+- Errors here use `normalizeGoogleSignInError`, **not** `normalizeAuthError`:
+  the platform registers typed handlers for this path (`InvalidGoogleIdToken`
+  → 401, `GoogleAccountEmailNotVerified` → 409), so its message body is
+  meaningful and should be shown verbatim rather than overwritten with
+  "incorrect username or password".
+
+### Flow 2 — Delegated authorization (Calendar / Sheets / Drive)
+
+```
+1. click  ──▶ POST /api/integrations/google/connect  ──▶ POST /connect (Bearer)
+                                                          │
+                          ◀── { authorizationUrl } ───────┘   PKCE + state
+                                                              stored in Redis
+                                                              (10 min, single use)
+2. window.location.assign(authorizationUrl)   ← a REAL navigation, never fetch
+3. user consents on Google's own UI
+4. Google redirects the BROWSER to Spring directly:
+      GET {API origin}/api/v1/integrations/google/callback?code=…&state=…
+   (no Next.js route is involved — there is nothing to build here)
+5. Spring exchanges the code, verifies identity, encrypts + stores tokens,
+   then 302s back to {frontend}{redirectAfter}?google=<outcome>
+6. GoogleConnectionOutcomeBanner reads ?google=, strips it, and refreshes
+```
+
+Non-obvious rules, each of which will bite if ignored:
+
+- **`POST /connect` returns JSON, not a redirect, deliberately.** The caller is
+  an XHR; `fetch` follows redirects transparently, so a 302 would make the
+  browser try to *fetch* Google's consent page cross-origin and fail. It must
+  be a deliberate `window.location.assign`. If you find yourself debugging CORS
+  here, the real bug is that something is fetching the URL instead of
+  navigating to it.
+- **Always pass `redirectAfter: "/dashboard/settings/integrations"` explicitly.**
+  The server's `DEFAULT_REDIRECT_AFTER` is `/settings/integrations` — *without*
+  the `/dashboard` prefix — which would land outside `proxy.ts`'s protected
+  prefix on a route that does not exist. Never rely on the server default. This
+  is enforced in `app/api/integrations/google/connect/route.ts`, not in the
+  browser, so a caller cannot forget it.
+- **No Next.js callback route exists, by design.** Step 4 hits Spring directly.
+  The frontend only ever sees the aftermath as a `?google=` parameter. No
+  authorization code, state value, or Google token ever reaches frontend code
+  at any point in this flow.
+- **`scopes` on `OAuthConnectionSummary` are raw granted scope URIs from
+  Google**, not `GoogleScope` enum names, and include the three base scopes
+  (`openid`/`email`/`profile`) the server always requests. Map them for display
+  with `labelForScopeUri`.
+- The consent screen lets users untick individual scopes, so granted ≠
+  requested. The UI says so, and the list renders what was actually granted.
+- Disconnect revokes at Google *first*, then marks the row `REVOKED`. It is not
+  a local-only action, which is why the button has an inline confirm step
+  (`window.confirm` is banned project-wide).
+- The five outcomes are `connected`, `denied`, `invalid_state`, `missing_code`,
+  `error`. `denied` is a neutral user choice, not a failure — do not style it
+  as an error.
 
 ## Environment
 
@@ -232,6 +364,60 @@ first.
 
 Copy `.env.example` → `.env` to get started. `.gitignore` ignores `.env*` but
 un-ignores `.env.example`.
+
+## Google OAuth2 — local setup & open gaps
+
+### Redirect URI
+
+The redirect URI must point at the **Spring** callback, never a Next.js URL.
+Set in `server/.env`:
+
+```
+GOOGLE_REDIRECT_URI=http://localhost:8080/api/v1/integrations/google/callback
+```
+
+It must stay identical to `GoogleIntegrationController`'s mapping
+(`@RequestMapping("/api/v1/integrations/google")` + `@GetMapping("/callback")`).
+`GoogleAuthorizationUrlBuilder` sends this value as `redirect_uri` on the
+authorization request and `DefaultGoogleTokenClient.exchangeAuthorizationCode`
+sends it again on the token exchange; Google requires both to match the
+registered value byte for byte, so if that mapping ever moves, this must move
+with it.
+
+There is deliberately **no Next.js route at the redirect URI**. The Spring
+callback is `permitAll`, owns the code exchange, and redirects back to the
+frontend itself — a Next.js hop would duplicate it and have nothing to call.
+
+### Google Cloud Console (cannot be verified from the codebase)
+
+Console → Credentials → your OAuth client:
+
+- **Authorized redirect URIs** must contain the exact URL above. A trailing
+  slash difference fails with `redirect_uri_mismatch`.
+- **Authorized JavaScript origins** must contain `http://localhost:3000` — a
+  *different* field, required by flow 1 (Sign-In), not flow 2.
+
+### `oauthConnectionId` wire type — plan doc was wrong
+
+`GOOGLE_OAUTH_FLOW.md` §2 predicted `BigInteger` serializes as a JSON *string*.
+It does not: the server registers no custom Jackson number handling (no
+`ObjectMapper` bean, no `jackson:` block in `application.yaml`), so Spring
+Boot's defaults apply and it serializes as a **number**. Typed as `number` in
+`google-connection.ts`. Nothing in the UI reads it — every operation is keyed by
+`oauthConnectionUid` — so if this ever does change, the blast radius is one line.
+
+### Still-open gaps (not blockers)
+
+- **No scope enforcement at call time.** Granted scopes are persisted but
+  nothing checks them before a Calendar/Sheets call. Belongs in the consumer,
+  once one exists.
+- **No concurrency guard on connect.** Two simultaneous consents for the same
+  Google account both attempt the upsert; the unique constraint prevents a
+  duplicate row but the loser surfaces as a raw 500 rather than being retried.
+- **`GET /connections` has no BFF route**, deliberately — the page's Server
+  Component calls the gateway directly. Add one only if something client-side
+  needs to refetch without a full `router.refresh()`; don't build it
+  speculatively.
 
 ## Before you commit
 

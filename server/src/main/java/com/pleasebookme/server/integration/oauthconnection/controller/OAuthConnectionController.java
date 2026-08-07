@@ -1,46 +1,32 @@
 package com.pleasebookme.server.integration.oauthconnection.controller;
 
-import com.pleasebookme.server.integration.oauthconnection.dto.OAuthConnectionRequest;
 import com.pleasebookme.server.integration.oauthconnection.dto.OAuthConnectionResponse;
 import com.pleasebookme.server.integration.oauthconnection.service.OAuthConnectionService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
-import java.util.List;
 
+// Deliberately not a full CRUD surface. An oauth_connection row holds live
+// Google credentials, so it may only be written by the consent flow in
+// GoogleIntegrationController - never from a client-supplied request body.
+// POST/PUT would let a caller inject forged tokens, and a list-all endpoint
+// would expose every user's connections, so all three were removed.
 @RestController
 @RequestMapping("/api/v1/oauth-connections")
 @RequiredArgsConstructor
 public class OAuthConnectionController {
     private final OAuthConnectionService oauthConnectionService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public OAuthConnectionResponse createOAuthConnection(@Valid @RequestBody OAuthConnectionRequest request) {
-        return OAuthConnectionResponse.from(oauthConnectionService.createOAuthConnection(request));
-    }
-
     @GetMapping("/{oauthConnectionId}")
     public OAuthConnectionResponse getOAuthConnection(@PathVariable BigInteger oauthConnectionId) {
         return OAuthConnectionResponse.from(oauthConnectionService.getOAuthConnectionById(oauthConnectionId));
-    }
-
-    @GetMapping
-    public List<OAuthConnectionResponse> getOAuthConnections() {
-        return oauthConnectionService.getAllOAuthConnections().stream()
-            .map(OAuthConnectionResponse::from)
-            .toList();
-    }
-
-    @PutMapping("/{oauthConnectionId}")
-    public OAuthConnectionResponse updateOAuthConnection(
-        @PathVariable BigInteger oauthConnectionId,
-        @Valid @RequestBody OAuthConnectionRequest request
-    ) {
-        return OAuthConnectionResponse.from(oauthConnectionService.updateOAuthConnection(oauthConnectionId, request));
     }
 
     @DeleteMapping("/{oauthConnectionId}")

@@ -26,15 +26,25 @@ const clientEnvSchema = z.object({
   appName: z.string().min(1).default("PleaseBookMe"),
   appUrl: z.url().default("http://localhost:3000"),
   /**
-   * Reserved feature flag. The Spring Boot server has the OAuth2 dependencies
-   * and application.yaml registration in place, but no redirect/callback flow
-   * (security/oauth/google/ is empty, SecurityConfig never calls oauth2Login).
-   * Until that exists, the Google buttons render visibly disabled.
+   * Gates the Google sign-in buttons and the Google integrations page.
+   * The backend implements both Google flows now (POST /api/v1/auth/google and
+   * /api/v1/integrations/google/*), so this is normally true.
    */
   googleOAuthEnabled: z
     .string()
     .optional()
     .transform((value) => value === "true" || value === "1"),
+
+  /**
+   * Google OAuth client ID — public by design; Google Identity Services needs
+   * it in the browser to mint an ID token.
+   *
+   * Must equal the server's GOOGLE_CLIENT_ID exactly: the platform validates
+   * the ID token's `aud` claim against it, so a mismatch fails every sign-in
+   * with invalid_audience. Optional here so the app still boots with Google
+   * disabled; the button reports the misconfiguration rather than crashing.
+   */
+  googleClientId: z.string().optional().default(""),
 });
 
 function readClientEnv() {
@@ -42,6 +52,7 @@ function readClientEnv() {
     appName: process.env.NEXT_PUBLIC_APP_NAME,
     appUrl: process.env.NEXT_PUBLIC_APP_URL,
     googleOAuthEnabled: process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED,
+    googleClientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   });
 
   if (!parsed.success) {

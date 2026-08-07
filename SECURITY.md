@@ -75,8 +75,11 @@ AuthenticatedPrincipal	Canonical authenticated identity
 GrantedAuthorityAdapter	Convert business roles into Spring authorities
 UserDetailsAdapter	Adapt business identity into Spring UserDetails
 PrincipalUserDetails	Spring Security adapter
+CurrentPrincipalProvider	Read the principal back out of the SecurityContext
 
 Each component performs exactly one responsibility.
+
+The first seven components run during authentication, building the principal and handing it to the framework. CurrentPrincipalProvider runs afterwards, on every subsequent request, and is the only sanctioned way for code outside the security package to ask "who is calling?" — see SecurityContext Integration.
 
 4. Authentication Pipeline
 
@@ -281,7 +284,17 @@ Widget does not go through PrincipalUserDetails at all. UsernamePasswordAuthenti
 
 AuthenticationTokenFactory is the single component responsible for this decision. It accepts any AuthenticatedPrincipal and switches on the concrete sealed type — UserPrincipal produces a UsernamePasswordAuthenticationToken via UserDetailsAdapter/PrincipalUserDetails as described above, WidgetPrincipal produces a PreAuthenticatedAuthenticationToken directly. Because AuthenticatedPrincipal is sealed, this switch is exhaustive: adding a new actor type without adding its branch here is a compile error, not a silent gap.
 
-The SecurityContext therefore stores framework-specific objects, and the concrete shape of that object differs by actor type — a UserDetails-wrapping token for User, a bare-principal token for Widget. However, the business layer never interacts with those objects directly. Instead, infrastructure components extract the underlying AuthenticatedPrincipal before entering business services. Code that reads the principal back out of Authentication.getPrincipal() must handle both shapes (PrincipalUserDetails.getUserPrincipal() for User, or the AuthenticatedPrincipal directly for Widget) — there is no single unwrap path yet, since no code outside the security package has needed to do this extraction so far.
+The SecurityContext therefore stores framework-specific objects, and the concrete shape of that object differs by actor type — a UserDetails-wrapping token for User, a bare-principal token for Widget. However, the business layer never interacts with those objects directly. Instead, infrastructure components extract the underlying AuthenticatedPrincipal before entering business services.
+
+CurrentPrincipalProvider (`security/identity/context/`) is that single unwrap path. It reads SecurityContextHolder and normalises both shapes back to AuthenticatedPrincipal:
+
+- `find()` returns `Optional<AuthenticatedPrincipal>`; empty when there is no authentication, when it is not authenticated, or when it is an AnonymousAuthenticationToken.
+- `require()` returns the principal or throws UnauthenticatedException (401).
+- `requireUser()` narrows to UserPrincipal, throwing ForbiddenActorException (403) when the caller is a Widget or any future non-user actor.
+
+This closes a gap that was open while Widget was the only other actor and no code outside the security package had needed the extraction. It matters more than it looks: because AuthenticationTokenFactory stores PrincipalUserDetails (a wrapper) rather than UserPrincipal itself for users, the obvious `@AuthenticationPrincipal UserPrincipal` parameter binding silently injects null. Controllers must use CurrentPrincipalProvider rather than `@AuthenticationPrincipal`. GoogleIntegrationController is the first consumer.
+
+Note the deliberate asymmetry between the two failure modes. Absence of any principal is a 401 — the caller may retry with credentials. A present-but-wrong actor type is a 403 — a widget token is a valid credential that will never be sufficient for a user-scoped operation, so retrying is pointless.
 
 Consequently, business code remains completely unaware of Spring Security.
 
@@ -397,12 +410,194 @@ Not Yet Implemented
 
 WidgetPrincipal currently has no scopes or authority set — a widget authenticates successfully but AuthenticationTokenFactory grants it an empty GrantedAuthority collection. A capability model (e.g. reusing the auth.permissions slug vocabulary as a fixed, non-RBAC scope set per widget) is expected but not yet built. The widget bootstrap flow (the endpoint that exchanges public_key/secret_key plus an Origin header for a JWT, i.e. the actual caller of WidgetIdentityLoader.loadByPublicKey) also does not exist yet — only the JWT-verification path (loadByUid, used by JwtAuthenticationFilter) is wired up end to end.
 
-11. Future Evolution
+11. Google Sign-In (Authentication)
+
+Google Sign-In is the third authentication mechanism, after Username/Password and Widget. It answers "who is this actor?" and produces the same canonical UserPrincipal every other mechanism produces. It grants the platform no access to any Google API — that is a separate concern, described in section 12.
+
+Flow Shape: ID Token, Not Authorization Code
+
+The client obtains a signed ID token from Google Identity Services in the browser and posts it to the server. There is no redirect, no authorization code, no client secret, and no token exchange. The ID token is verified once, converted to an internal identity, and discarded — it is never stored.
+
+This is deliberately the simpler of the two Google flows. Sign-in needs only a trustworthy assertion of who the user is; it does not need ongoing access to anything.
+
+```bash
+Browser (Google Identity Services)
+        │  id_token
+        ▼
+POST /api/v1/auth/google
+        │
+        ▼
+GoogleTokenVerifier
+        │  GoogleIdentity(sub, email, emailVerified, name, pictureUrl)
+        ▼
+DefaultGoogleSignInService  ── three-way account resolution
+        │
+        ▼
+UserIdentityLoader → UserPrincipalMapper → JwtEngine
+        │
+        ▼
+LoginResponse(accessToken, refreshToken)
+```
+
+Token Verification
+
+DefaultGoogleTokenVerifier wraps a NimbusJwtDecoder configured in GoogleOAuthConfig against Google's JWKS endpoint. Four validations run on every token: RS256 signature against the key matching the token's `kid`, timestamp (`exp`/`nbf`), issuer, and audience.
+
+Two details are easy to get wrong and are handled explicitly:
+
+- Google's `iss` claim is sometimes the schemeless string `accounts.google.com` and sometimes `https://accounts.google.com`. Spring's default claim converter tries to parse `iss` as a `java.net.URL` and throws on the schemeless form. GoogleOAuthConfig overrides the converter for that one claim to keep it a raw String, and accepts both spellings.
+- The audience must equal the configured `client-id`. Without this check, an ID token minted for any other Google application would be accepted, letting an attacker authenticate as any user of the platform using a token issued to an unrelated app.
+
+Account Resolution
+
+DefaultGoogleSignInService resolves the Google identity to a platform user in three ordered steps:
+
+1. Look up `auth.accounts` by (provider = GOOGLE, provider_account_id = sub). A hit is a returning user; nothing is written.
+2. Otherwise look up `auth.users` by email. A hit links the Google account to the existing user by inserting an `auth.accounts` row — but only if `email_verified` is true.
+3. Otherwise provision a new user through UserProvisioningService (the same component `register()` uses), then link.
+
+Step 2's `email_verified` gate is a critical control, not a formality. Without it, anyone able to create a Google account bearing a victim's email address — including via a domain they control that Google has not verified — could take over that platform account by signing in with Google. A false value produces GoogleAccountEmailNotVerifiedException (409) and writes nothing.
+
+Google never returns a phone number, so `auth.users.phone` was made nullable (V124) to support this path.
+
+After resolution, the flow rejoins the standard pipeline unchanged: UserIdentityLoader, UserPrincipalMapper, JwtEngine, and a persisted refresh token. Google-ness ends at account resolution.
+
+12. Google Delegated Authorization (OAuth2 Authorization Code Flow)
+
+This is a fundamentally different concern from section 11 and the distinction should not be blurred. Sign-In answers "who is this user?" Delegated authorization answers "may this platform act on the user's behalf against Google Calendar, Sheets, and Drive, and for how long?" It produces no principal, issues no platform JWT, and touches no part of the identity pipeline. Its output is a long-lived, encrypted credential stored in `integration.oauth_connections`.
+
+A user may be signed in with a password and still connect Google. The two are orthogonal.
+
+Why the Backend Owns the Redirect
+
+The registered `redirect_uri` points at the backend (`/api/v1/integrations/google/callback`), not the dashboard. The authorization code transits the browser either way — that is inherent to the flow — but a backend-owned callback removes one hop where the code could land in browser history, a frontend server log, or an error-reporting breadcrumb. It also lets exchange, verification, encryption, and persistence happen in one place, and keeps CORS out of the callback entirely, since a top-level browser navigation is not a cross-origin XHR.
+
+Note this requires an Authorized **redirect URI** in Google Cloud Console. That is a different setting from the Authorized **JavaScript origin** that Google Sign-In needs; both exist on the same OAuth client.
+
+Components
+
+```
+security/oauth/google/
+  authorization/   PkceGenerator, PkceChallenge, GoogleScope, GoogleAuthorizationUrlBuilder
+  client/          GoogleTokenClient, DefaultGoogleTokenClient, dto/GoogleTokenResponse
+  verifier/        GoogleTokenVerifier          (shared with Sign-In)
+integration/oauthstate/
+  model/OAuthState, store/OAuthStateStore, store/RedisOAuthStateStore
+service/integration/
+  GoogleConnectService / DefaultGoogleConnectService
+  GoogleAccessTokenProvider / DefaultGoogleAccessTokenProvider
+  GoogleIntegrationController
+```
+
+Phase 1 — Initiate
+
+`POST /api/v1/integrations/google/connect`, authenticated, carrying a Bearer token.
+
+CurrentPrincipalProvider.requireUser() identifies the caller — this is the only point in the whole flow where the platform learns whose Google account is being connected. The service then generates a 256-bit opaque state token and a PKCE verifier/challenge pair, writes `{userUid, codeVerifier, requestedScopes, redirectAfter}` into Redis under `oauth:state:<token>` with a 10-minute TTL and `NX`, and returns the Google authorization URL as JSON.
+
+The endpoint returns a URL rather than a 302 on purpose. The initiating call is an XHR carrying an Authorization header; `fetch` follows redirects transparently, so a 302 would make the browser attempt to *fetch* Google's consent page cross-origin, which fails CORS and the user never sees the consent screen. The navigation has to be a deliberate `window.location` assignment by the client.
+
+Three authorization parameters carry non-obvious weight:
+
+- `access_type=offline` — without it Google returns no refresh token and the integration dies in one hour.
+- `prompt=consent` — forces a refresh token on *every* consent, not only the first for a given account. Without it, a user reconnecting receives no refresh token and the NOT NULL column has nothing to write.
+- `include_granted_scopes=true` — incremental authorization, so connecting Sheets later yields a token valid for Calendar and Sheets both.
+
+Scopes are requested as GoogleScope enum values (CALENDAR, SHEETS, DRIVE_FILE), never as raw URIs supplied by the client. A caller therefore cannot ask Google for a scope the platform has not deliberately allow-listed. `openid`, `email`, and `profile` are always appended, because `openid` is what makes Google return the `id_token` the callback needs to identify the granting account.
+
+DRIVE_FILE is `drive.file`, not full `drive`, by deliberate choice: full Drive access triggers Google's annual CASA third-party security assessment, a real cost and delay, while `drive.file` covers files the application itself creates.
+
+Phase 2 — Consent
+
+Entirely between the browser and Google. The consent screen lets the user untick individual scopes, so what is granted is not necessarily what was requested. Everything downstream treats the granted set as authoritative.
+
+Phase 3 — Callback
+
+`GET /api/v1/integrations/google/callback`, permitAll, reached by top-level browser navigation and therefore carrying no Authorization header. Identity comes from `state` alone.
+
+```
+1. error=access_denied            → 302 …?google=denied            [stop]
+2. Redis GETDEL oauth:state:<state>
+     empty                        → 302 …?google=invalid_state     [stop]
+3. POST Google token endpoint     (outside any transaction)
+     code, code_verifier, redirect_uri, client credentials in Basic header
+4. GoogleTokenVerifier.verify(id_token) → sub, email
+5. TokenCipher.encrypt(access_token), TokenCipher.encrypt(refresh_token)
+6. upsert integration.oauth_connections on (user_id, GOOGLE, sub)
+7. 302 → {frontend}{redirectAfter}?google=connected
+```
+
+Step 2 is the security core of the flow, and `GETDEL` does three jobs in one atomic command. It is the CSRF defence: an attacker cannot forge a state they never received, so a callback bearing an unknown state is rejected. It is the replay defence: the key is deleted as it is read, so a second callback with the same state finds nothing. And it is the identity lookup, since the state is what binds this callback to the user who initiated it. Forged, expired, and replayed states are indistinguishable from the outside and all rejected identically.
+
+PKCE binds the authorization code to the initiating request. Even if a code were intercepted, it cannot be redeemed without the `code_verifier`, which never left the server.
+
+Every failure path ends in a 302 back to the dashboard with a `?google=` outcome, never a JSON error body. A browser sitting on a JSON 500 is a dead end for a human user, so `complete()` catches everything and converts it to a redirect.
+
+`redirectAfter` is client-supplied and feeds that 302, which makes it an open-redirect vector. Only relative, non protocol-relative paths are honoured; `https://evil.com` and `//evil.com` both fall back to the default.
+
+Three persistence details are easy to get wrong:
+
+- Google returns granted scopes as a single space-delimited **string**, not an array. It is split before being written to the `TEXT[]` column, and merged with any previously granted scopes so a narrow response cannot silently revoke capability.
+- Google omits `refresh_token` on some re-consents. The column is NOT NULL and the stored token remains valid, so it is only overwritten when a new one actually arrives.
+- `expires_in` is relative seconds, not a timestamp.
+
+There is deliberately no explicit `@Transactional` around the callback. The write is a single row, and `SimpleJpaRepository.save()` is already transactional, so the Google network round-trip sits outside any transaction by construction rather than by careful annotation placement — no database connection is held open across a call to a third party.
+
+Phase 4 — Using and Refreshing
+
+GoogleAccessTokenProvider is the only component permitted to return a decrypted Google token. Every future consumer — calendar sync, sheets export — goes through it, so expiry, refresh, and revocation are handled in exactly one place.
+
+```
+load connection → reject unless status = ACTIVE
+token_expires_at > now + 60s ?
+   yes → decrypt(access_token, token_key_version) → return
+   no  → refresh via refresh_token
+           200            → re-encrypt, update expiry + last_refreshed_at
+           invalid_grant  → status = REVOKED, revoked_at = now, throw
+stamp last_used_at
+```
+
+The 60-second skew is not padding: a token with three seconds of validity left is already expired by the time the API call it was fetched for actually lands.
+
+`invalid_grant` is treated as terminal and distinguished from every other failure. It means the user revoked access, changed their password, or the grant expired — re-consent is required and retrying is futile. A transient 5xx from Google must *not* mark the connection revoked, so GoogleTokenRefreshException carries an `invalidGrant` flag rather than collapsing both into one error.
+
+Disconnect
+
+Revocation is sent to Google first, then the local row is marked REVOKED. Deleting only the local row would leave a live grant sitting in the user's Google account with no way for the platform to reach it again. Revocation failure is logged but non-fatal, since an already-revoked token answers 400 and the local state must still be updated.
+
+`disconnect` returns the same exception for "this connection is not yours" as for "this connection does not exist", so the endpoint cannot be used to probe which connection UIDs are real.
+
+Who May Write a Connection
+
+`integration.oauth_connections` rows hold live Google credentials, so the consent flow is the only sanctioned writer. The generic CRUD surface at `/api/v1/oauth-connections` had its POST, PUT, and list-all endpoints removed, along with the request DTO that carried client-suppliable `accessToken`/`refreshToken` values. Left in place, POST would have allowed any authenticated user to inject forged credential rows, and the unscoped list-all would have exposed every user's connections. Only an owner-scoped read and a delete remain.
+
+13. Token Encryption at Rest
+
+`integration.oauth_connections.access_token` and `refresh_token` are ciphertext. A Google refresh token is effectively a long-lived password to the user's calendar and files; unlike a platform JWT it cannot be rotated by expiry, and it is valuable in a database dump, a backup, or a WAL archive long after any breach.
+
+TokenCipher / AesGcmTokenCipher (`security/crypto/`) implement AES-256-GCM. A fresh 12-byte IV is generated per encryption and prepended to the ciphertext — GCM fails catastrophically on IV reuse, so this is not optional. The 128-bit authentication tag means tampering is detected on decrypt rather than yielding garbage plaintext.
+
+Keys are configured as a version-to-key map with a designated current version, and validated at startup: a key that is not valid Base64 or not exactly 32 bytes fails the boot rather than the first request.
+
+`decrypt` takes the key version as a parameter rather than reading it from the payload, which is what makes the `token_key_version` column do real work. Rotation is a configuration change — add key 2, set current to 2 — after which new writes use the new key while existing rows keep decrypting with the version recorded against them. No re-encryption sweep is required, and no downtime.
+
+TokenEncryptionException is deliberately not mapped in GlobalExceptionHandler. A decryption failure is a server fault, and surfacing cipher details to a client is an information leak, so it falls through to a generic 500.
+
+14. Future Evolution
 
 This identity architecture serves as the foundation for all future authentication mechanisms within the platform.
 
-JWT-based authentication and Widget authentication are both now implemented on top of it, per the sections above.
+JWT-based authentication, Widget authentication, and Google Sign-In are all now implemented on top of it, per the sections above.
 
 JWT did not replace AuthenticatedPrincipal — it is a mechanism for reconstructing the same canonical authenticated identity on every request, verified once per request by JwtAuthenticationFilter and handed to the same AuthenticationTokenFactory/SecurityContextHolder integration regardless of actor type.
 
+Google Sign-In likewise did not introduce a new actor type. It produces the same UserPrincipal that Username/Password produces and rejoins the standard pipeline at UserIdentityLoader — which is why it required no change to AuthenticatedPrincipal's permits list, no new IdentityLoader, and no new branch in AuthenticationTokenFactory. A new *credential type* is not the same thing as a new *actor type*, and only the latter costs anything architecturally.
+
 Remaining future work follows the same shape: API Keys and Service Accounts are added by introducing a new IdentityLoader (and only an AuthenticationAggregate/PrincipalMapper pair if the actor's identity genuinely requires a multi-table join), adding the new concrete type to AuthenticatedPrincipal's permits list, and adding its branch to AuthenticationTokenFactory's switch — the compiler enforces that the last two steps aren't skipped. Regardless of whether authentication originates from Username/Password, JWT, OAuth, API Keys, or Widget Tokens, the remainder of the platform continues to operate exclusively on AuthenticatedPrincipal.
+
+Known gaps in the Google delegated-authorization flow, in priority order:
+
+- **Unverified end to end.** Every component is unit tested against mocks, and the application boots with the full wiring, but no real consent round-trip has been performed. The likeliest failure point is GoogleTokenResponse deserialisation — Jackson 3 databind is paired with 2.x annotations (`com.fasterxml.jackson.annotation`) on this classpath, which is confirmed, but an actual Google payload has never been parsed.
+- **No scope enforcement at call time.** Granted scopes are persisted, but nothing yet checks them before a Calendar or Sheets call. That check belongs in the consumer, once one exists.
+- **No concurrency guard on connect.** Two simultaneous consents for the same Google account would both attempt the upsert; the unique constraint on (user_id, provider, provider_account_id) prevents a duplicate row, but the loser currently surfaces as a raw 500 rather than being retried.
+- **No proactive refresh.** Tokens refresh lazily when GoogleAccessTokenProvider is called. A connection unused past its refresh-token lifetime will simply fail on next use rather than being kept warm.

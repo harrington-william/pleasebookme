@@ -1,22 +1,14 @@
 package com.pleasebookme.server.integration.oauthconnection.service;
 
-import com.pleasebookme.server.integration.oauthconnection.dto.OAuthConnectionRequest;
 import com.pleasebookme.server.integration.oauthconnection.entity.OAuthConnectionEntity;
 
 import java.math.BigInteger;
-import java.util.List;
 
+// create/update/getAll were removed alongside their endpoints: writing an
+// oauth_connection means writing live Google credentials, which only the
+// consent flow is allowed to do.
 public interface OAuthConnectionService {
-    OAuthConnectionEntity createOAuthConnection(OAuthConnectionRequest request);
-
     OAuthConnectionEntity getOAuthConnectionById(BigInteger oauthConnectionId);
-
-    List<OAuthConnectionEntity> getAllOAuthConnections();
-
-    OAuthConnectionEntity updateOAuthConnection(
-        BigInteger oauthConnectionId,
-        OAuthConnectionRequest request
-    );
 
     void deleteOAuthConnection(BigInteger oauthConnectionId);
 }

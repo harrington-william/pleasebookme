@@ -4,15 +4,6 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Primary action for the auth forms.
- *
- * Not built on components/ui/button.tsx: that button is sized for dense
- * application chrome (32px tall, small radius) whereas the auth screens call
- * for a full-width 10px-radius control per DESIGN.md. Wrapping and overriding
- * most of the shared button's variants would obscure more than it reuses.
- */
-
 type AuthSubmitButtonProps = {
   isSubmitting: boolean;
   children: ReactNode;

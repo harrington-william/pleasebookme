@@ -61,6 +61,13 @@ import com.pleasebookme.server.integration.oauthconnection.exception.DuplicateOA
 import com.pleasebookme.server.integration.oauthconnection.exception.OAuthConnectionNotFoundException;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
 import com.pleasebookme.server.integration.syncjob.exception.SyncJobNotFoundException;
+import com.pleasebookme.server.security.oauth.google.exception.InvalidGoogleIdTokenException;
+import com.pleasebookme.server.security.oauth.google.exception.GoogleTokenExchangeException;
+import com.pleasebookme.server.security.oauth.google.exception.GoogleTokenRefreshException;
+import com.pleasebookme.server.security.identity.context.exception.ForbiddenActorException;
+import com.pleasebookme.server.security.identity.context.exception.UnauthenticatedException;
+import com.pleasebookme.server.service.integration.exception.OAuthConnectionAccessDeniedException;
+import com.pleasebookme.server.service.auth.exception.GoogleAccountEmailNotVerifiedException;
 import com.pleasebookme.server.notification.channel.exception.DuplicateNotificationChannelException;
 import com.pleasebookme.server.notification.channel.exception.NotificationChannelNotFoundException;
 import com.pleasebookme.server.notification.delivery.exception.NotificationDeliveryNotFoundException;
@@ -1623,6 +1630,38 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InvalidGoogleIdTokenException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidGoogleIdTokenException(
+        InvalidGoogleIdTokenException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(GoogleAccountEmailNotVerifiedException.class)
+    public ResponseEntity<ApiErrorResponse> handleGoogleAccountEmailNotVerifiedException(
+        GoogleAccountEmailNotVerifiedException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(WidgetBadCredentialsException.class)
     public ResponseEntity<ApiErrorResponse> handleWidgetBadCredentialsException(
         WidgetBadCredentialsException exception,
@@ -1637,5 +1676,88 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<ApiErrorResponse> handleUnauthenticatedException(
+        UnauthenticatedException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ForbiddenActorException.class)
+    public ResponseEntity<ApiErrorResponse> handleForbiddenActorException(
+        ForbiddenActorException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(OAuthConnectionAccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleOAuthConnectionAccessDeniedException(
+        OAuthConnectionAccessDeniedException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(GoogleTokenExchangeException.class)
+    public ResponseEntity<ApiErrorResponse> handleGoogleTokenExchangeException(
+        GoogleTokenExchangeException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_GATEWAY);
+    }
+
+    @ExceptionHandler(GoogleTokenRefreshException.class)
+    public ResponseEntity<ApiErrorResponse> handleGoogleTokenRefreshException(
+        GoogleTokenRefreshException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(
+            error,
+            exception.isInvalidGrant() ? HttpStatus.CONFLICT : HttpStatus.BAD_GATEWAY
+        );
     }
 }
