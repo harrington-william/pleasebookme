@@ -68,6 +68,7 @@ import com.pleasebookme.server.security.identity.context.exception.ForbiddenActo
 import com.pleasebookme.server.security.identity.context.exception.UnauthenticatedException;
 import com.pleasebookme.server.service.integration.exception.OAuthConnectionAccessDeniedException;
 import com.pleasebookme.server.service.auth.exception.GoogleAccountEmailNotVerifiedException;
+import com.pleasebookme.server.service.auth.exception.InvalidSessionHandoffException;
 import com.pleasebookme.server.notification.channel.exception.DuplicateNotificationChannelException;
 import com.pleasebookme.server.notification.channel.exception.NotificationChannelNotFoundException;
 import com.pleasebookme.server.notification.delivery.exception.NotificationDeliveryNotFoundException;
@@ -1660,6 +1661,22 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidSessionHandoffException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidSessionHandoffException(
+        InvalidSessionHandoffException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(WidgetBadCredentialsException.class)

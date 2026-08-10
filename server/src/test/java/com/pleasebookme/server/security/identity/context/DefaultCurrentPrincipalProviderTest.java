@@ -88,7 +88,9 @@ class DefaultCurrentPrincipalProviderTest {
 
         assertThatThrownBy(provider::requireUser)
             .isInstanceOf(ForbiddenActorException.class)
-            .hasMessageContaining("requires a user actor");
+            // Naming the rejected actor type is the point: this lands in a log
+            // where "forbidden" alone would not say which credential was used.
+            .hasMessageContaining("WIDGET");
     }
 
     @Test

@@ -98,6 +98,10 @@ public class GoogleOAuthConfig {
             );
         };
 
-        return new DelegatingOAuth2TokenValidator<>(timestampValidator, issuerValidator, audienceValidator);
+        return new DelegatingOAuth2TokenValidator<>(
+            timestampValidator,
+            issuerValidator,
+            audienceValidator
+        );
     }
 }

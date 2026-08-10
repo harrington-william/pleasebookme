@@ -1,5 +1,6 @@
 package com.pleasebookme.server.integration.oauthstate.store;
 
+import com.pleasebookme.server.integration.oauthstate.model.OAuthFlowMode;
 import com.pleasebookme.server.integration.oauthstate.model.OAuthState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,10 +38,11 @@ class RedisOAuthStateStoreTest {
 
     private static OAuthState sampleState() {
         return new OAuthState(
+            OAuthFlowMode.CONNECT,
             UUID.randomUUID(),
             "verifier-abc",
             List.of("openid", "https://www.googleapis.com/auth/calendar"),
-            "/settings/integrations"
+            "/dashboard/settings/integrations"
         );
     }
 
@@ -89,10 +91,11 @@ class RedisOAuthStateStoreTest {
         Optional<OAuthState> resolved = store.consume("tok");
 
         assertThat(resolved).isPresent();
+        assertThat(resolved.get().mode()).isEqualTo(OAuthFlowMode.CONNECT);
         assertThat(resolved.get().userUid()).isEqualTo(original.userUid());
         assertThat(resolved.get().codeVerifier()).isEqualTo("verifier-abc");
         assertThat(resolved.get().requestedScopes()).containsExactlyElementsOf(original.requestedScopes());
-        assertThat(resolved.get().redirectAfter()).isEqualTo("/settings/integrations");
+        assertThat(resolved.get().redirectAfter()).isEqualTo("/dashboard/settings/integrations");
 
         // GETDEL, not GET: consumption must delete in the same round trip.
         verify(valueOperations).getAndDelete("oauth:state:tok");
@@ -118,5 +121,24 @@ class RedisOAuthStateStoreTest {
         when(valueOperations.getAndDelete("oauth:state:tok")).thenReturn("{not-json");
 
         assertThat(store.consume("tok")).isEmpty();
+    }
+
+    @Test
+    void consume_payloadWrittenBeforeModeExisted_stillResolvesAsAConnect() {
+        // A state issued by the previous deploy has no mode field. It must still
+        // finish, which is why the callback branches on SIGN_UP_AND_CONNECT
+        // rather than on CONNECT.
+        String legacyJson = """
+            {"userUid":"%s","codeVerifier":"verifier-abc",\
+            "requestedScopes":["openid"],"redirectAfter":"/dashboard/settings/integrations"}\
+            """.formatted(UUID.randomUUID());
+
+        when(valueOperations.getAndDelete("oauth:state:tok")).thenReturn(legacyJson);
+
+        Optional<OAuthState> resolved = store.consume("tok");
+
+        assertThat(resolved).isPresent();
+        assertThat(resolved.get().mode()).isNull();
+        assertThat(resolved.get().userUid()).isNotNull();
     }
 }

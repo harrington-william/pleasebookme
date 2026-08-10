@@ -39,8 +39,7 @@ public class GoogleIntegrationController {
         );
     }
 
-    // Unauthenticated by design: this is a top-level browser navigation from
-    // Google carries no Authorization header. Identity comes from state.
+    // Google carries no Authorization header. Identity comes from state
     // Redirect user to dashboard instead of return a DTO
     @GetMapping("/callback")
     public ResponseEntity<Void> callback(

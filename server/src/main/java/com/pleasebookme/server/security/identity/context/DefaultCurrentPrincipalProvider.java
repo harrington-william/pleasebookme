@@ -12,11 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-// The single unwrap path from Spring Security's Authentication back to the
-// business identity. AuthenticationTokenFactory stores two different shapes:
-// UserPrincipal wrapped in PrincipalUserDetails (UsernamePasswordAuthenticationToken),
-// and WidgetPrincipal bare (PreAuthenticatedAuthenticationToken). Callers outside
-// the security package should never have to know which one they are looking at.
 @Component
 public class DefaultCurrentPrincipalProvider implements CurrentPrincipalProvider {
 

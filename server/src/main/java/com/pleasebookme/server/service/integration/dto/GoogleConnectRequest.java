@@ -7,6 +7,6 @@ import java.util.List;
 public record GoogleConnectRequest(
     List<GoogleScope> scopes,
 
-    // redirect in the service; anything suspicious falls back to the default.
+    // Redirect in the service, anything suspicious falls back to the default
     String redirectAfter
 ) {}

@@ -4,9 +4,9 @@ import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.user.repository.UserRepository;
 import com.pleasebookme.server.integration.enums.OAuthConnectionStatus;
-import com.pleasebookme.server.integration.enums.OAuthProvider;
 import com.pleasebookme.server.integration.oauthconnection.entity.OAuthConnectionEntity;
 import com.pleasebookme.server.integration.oauthconnection.repository.OAuthConnectionRepository;
+import com.pleasebookme.server.integration.oauthstate.model.OAuthFlowMode;
 import com.pleasebookme.server.integration.oauthstate.model.OAuthState;
 import com.pleasebookme.server.integration.oauthstate.store.OAuthStateStore;
 import com.pleasebookme.server.security.crypto.TokenCipher;
@@ -19,11 +19,13 @@ import com.pleasebookme.server.security.oauth.google.client.GoogleTokenClient;
 import com.pleasebookme.server.security.oauth.google.client.dto.GoogleTokenResponse;
 import com.pleasebookme.server.security.oauth.google.identity.GoogleIdentity;
 import com.pleasebookme.server.security.oauth.google.verifier.GoogleTokenVerifier;
+import com.pleasebookme.server.service.auth.service.GoogleOnboardingService;
 import com.pleasebookme.server.service.integration.dto.GoogleConnectRequest;
 import com.pleasebookme.server.service.integration.dto.GoogleConnectResponse;
 import com.pleasebookme.server.service.integration.dto.OAuthConnectionSummaryResponse;
 import com.pleasebookme.server.service.integration.exception.OAuthConnectionAccessDeniedException;
 import com.pleasebookme.server.service.integration.service.GoogleConnectService;
+import com.pleasebookme.server.service.integration.service.GoogleConnectionWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +42,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class DefaultGoogleConnectService implements GoogleConnectService {
     private static final Duration STATE_TTL = Duration.ofMinutes(10);
-    private static final String DEFAULT_REDIRECT_AFTER = "/settings/integrations";
+    private static final String DEFAULT_REDIRECT_AFTER = "/dashboard/settings/integrations";
+
+    private static final String DEFAULT_ONBOARDING_REDIRECT_AFTER = "/google/complete";
 
     private final OAuthStateStore oauthStateStore;
     private final PkceGenerator pkceGenerator;
@@ -52,6 +56,9 @@ public class DefaultGoogleConnectService implements GoogleConnectService {
     private final UserRepository userRepository;
     private final OAuthConnectionRepository oauthConnectionRepository;
 
+    private final GoogleConnectionWriter googleConnectionWriter;
+    private final GoogleOnboardingService googleOnboardingService;
+
     @Value("${app.client.frontend-url}")
     private String frontendUrl;
 
@@ -60,29 +67,27 @@ public class DefaultGoogleConnectService implements GoogleConnectService {
         UserPrincipal principal,
         GoogleConnectRequest request
     ) {
-        List<GoogleScope> requested =
-            request == null || request.scopes() == null || request.scopes().isEmpty()
-                ? Arrays.asList(GoogleScope.values())
-                : request.scopes();
+        return new GoogleConnectResponse(authorize(
+            OAuthFlowMode.CONNECT,
+            principal.subject(),
+            request == null ? null : request.scopes(),
+            safeRedirectAfter(
+                request == null ? null : request.redirectAfter(),
+                DEFAULT_REDIRECT_AFTER
+            )
+        ));
+    }
 
-        List<String> scopeUris = new ArrayList<>(GoogleScope.baseScopes());
-        requested.stream().map(GoogleScope::uri).forEach(scopeUris::add);
+    @Override
+    public GoogleConnectResponse initiateOnboarding(String redirectAfter) {
+        return new GoogleConnectResponse(authorize(
+            // Nobody is logged in yet
+            OAuthFlowMode.SIGN_UP_AND_CONNECT,
 
-        PkceChallenge pkce = pkceGenerator.generate();
-
-        String state = oauthStateStore.issue(
-            new OAuthState(
-                principal.subject(),
-                pkce.verifier(),
-                scopeUris,
-                safeRedirectAfter(request == null ? null : request.redirectAfter())
-            ),
-            STATE_TTL
-        );
-
-        return new GoogleConnectResponse(
-            authorizationUrlBuilder.build(state, pkce, scopeUris)
-        );
+            null,
+            null,
+            safeRedirectAfter(redirectAfter, DEFAULT_ONBOARDING_REDIRECT_AFTER)
+        ));
     }
 
     @Override
@@ -91,13 +96,17 @@ public class DefaultGoogleConnectService implements GoogleConnectService {
         String state,
         String error
     ) {
-        if (error != null && !error.isBlank()) {
-            log.info("Google consent was not granted: {}", error);
-            return redirect(DEFAULT_REDIRECT_AFTER, "denied");
-        }
-
         Optional<OAuthState> resolved = oauthStateStore.consume(state);
 
+        if (error != null && !error.isBlank()) {
+            log.info("Google consent was not granted: {}", error);
+            return redirect(
+                resolved.map(OAuthState::redirectAfter).orElse(DEFAULT_REDIRECT_AFTER),
+                "denied"
+            );
+        }
+
+        // This could be expired, already-used, or revoked -> Indistinguishable
         if (resolved.isEmpty()) {
             log.warn("Rejected Google callback with an unknown or already-used state");
             return redirect(DEFAULT_REDIRECT_AFTER, "invalid_state");
@@ -119,7 +128,18 @@ public class DefaultGoogleConnectService implements GoogleConnectService {
 
             GoogleIdentity identity = googleTokenVerifier.verify(tokens.idToken());
 
-            persist(oauthState, tokens, identity);
+            if (oauthState.mode() == OAuthFlowMode.SIGN_UP_AND_CONNECT) {
+                String handoff = googleOnboardingService.finalizeOnboarding(tokens, identity);
+                return redirect(oauthState.redirectAfter(), "connected", handoff);
+            }
+
+            UserEntity user = userRepository
+                .findByUserUid(oauthState.userUid())
+                .orElseThrow(() -> new UserNotFoundException(
+                    "User not found: " + oauthState.userUid()
+                ));
+
+            googleConnectionWriter.persist(user, tokens, identity);
 
             return redirect(oauthState.redirectAfter(), "connected");
         } catch (RuntimeException exception) {
@@ -168,71 +188,34 @@ public class DefaultGoogleConnectService implements GoogleConnectService {
         oauthConnectionRepository.save(connection);
     }
 
-    private void persist(
-        OAuthState oauthState,
-        GoogleTokenResponse tokens,
-        GoogleIdentity identity
+    private String authorize(
+        OAuthFlowMode mode,
+        UUID userUid,
+        List<GoogleScope> requestedScopes,
+        String redirectAfter
     ) {
-        UserEntity user = userRepository
-            .findByUserUid(oauthState.userUid())
-            .orElseThrow(() -> new UserNotFoundException(
-                "User not found: " + oauthState.userUid()
-            ));
+        List<GoogleScope> requested =
+            requestedScopes == null || requestedScopes.isEmpty()
+                ? Arrays.asList(GoogleScope.values())
+                : requestedScopes;
 
-        OAuthConnectionEntity connection = oauthConnectionRepository
-            .findByUserUserIdAndProviderAndProviderAccountId(
-                user.getUserId(),
-                OAuthProvider.GOOGLE,
-                identity.sub()
-            )
-            .orElseGet(() -> OAuthConnectionEntity.builder()
-                .user(user)
-                .provider(OAuthProvider.GOOGLE)
-                .providerAccountId(identity.sub())
-                .build()
-            );
+        List<String> scopeUris = new ArrayList<>(GoogleScope.baseScopes());
+        requested.stream().map(GoogleScope::uri).forEach(scopeUris::add);
 
-        short keyVersion = tokenCipher.currentKeyVersion();
+        PkceChallenge pkce = pkceGenerator.generate();
 
-        connection.setProviderEmail(identity.email());
-        connection.setAccessToken(tokenCipher.encrypt(tokens.accessToken()));
+        String state = oauthStateStore.issue(
+            new OAuthState(
+                mode,
+                userUid,
+                pkce.verifier(),
+                scopeUris,
+                redirectAfter
+            ),
+            STATE_TTL
+        );
 
-        // Google omits refresh_token on some re-consents. The column is NOT NULL
-        // and the existing token stays valid, so only overwrite when one arrives.
-        if (tokens.refreshToken() != null && !tokens.refreshToken().isBlank()) {
-            connection.setRefreshToken(tokenCipher.encrypt(tokens.refreshToken()));
-        }
-
-        connection.setTokenKeyVersion(keyVersion);
-        connection.setTokenExpiresAt(expiresAt(tokens));
-        connection.setScopes(mergedScopes(connection, tokens));
-        connection.setStatus(OAuthConnectionStatus.ACTIVE);
-        connection.setRevokedAt(null);
-        connection.setLastRefreshedAt(Instant.now());
-
-        oauthConnectionRepository.save(connection);
-    }
-
-    private String[] mergedScopes(
-        OAuthConnectionEntity connection,
-        GoogleTokenResponse tokens
-    ) {
-        // include_granted_scopes=true means Google returns the union already, but
-        // merging locally keeps previously granted scopes if a response is narrow.
-        Set<String> scopes = new LinkedHashSet<>();
-
-        if (connection.getScopes() != null) {
-            scopes.addAll(Arrays.asList(connection.getScopes()));
-        }
-
-        scopes.addAll(tokens.grantedScopes());
-
-        return scopes.toArray(String[]::new);
-    }
-
-    private Instant expiresAt(GoogleTokenResponse tokens) {
-        long expiresIn = tokens.expiresIn() != null ? tokens.expiresIn() : 3600L;
-        return Instant.now().plusSeconds(expiresIn);
+        return authorizationUrlBuilder.build(state, pkce, scopeUris);
     }
 
     private UserEntity extractUser(UserPrincipal principal) {
@@ -243,17 +226,17 @@ public class DefaultGoogleConnectService implements GoogleConnectService {
             ));
     }
 
-    // Only relative, non protocol-relative paths are honoured. Without this a
-    // caller could pass an absolute URL and turn the callback into an open
-    // redirect that carries the connection outcome to an attacker's site.
-    private String safeRedirectAfter(String redirectAfter) {
+    private String safeRedirectAfter(
+        String redirectAfter,
+        String fallback
+    ) {
         if (
             redirectAfter == null ||
             redirectAfter.isBlank() ||
             !redirectAfter.startsWith("/") ||
             redirectAfter.startsWith("//")
         ) {
-            return DEFAULT_REDIRECT_AFTER;
+            return fallback;
         }
 
         return redirectAfter;
@@ -263,11 +246,23 @@ public class DefaultGoogleConnectService implements GoogleConnectService {
         String path,
         String outcome
     ) {
-        return UriComponentsBuilder
+        return redirect(path, outcome, null);
+    }
+
+    private URI redirect(
+        String path,
+        String outcome,
+        String handoff
+    ) {
+        UriComponentsBuilder builder = UriComponentsBuilder
             .fromUriString(frontendUrl)
-            .path(safeRedirectAfter(path))
-            .queryParam("google", outcome)
-            .build()
-            .toUri();
+            .path(safeRedirectAfter(path, DEFAULT_REDIRECT_AFTER))
+            .queryParam("google", outcome);
+
+        if (handoff != null && !handoff.isBlank()) {
+            builder.queryParam("handoff", handoff);
+        }
+
+        return builder.build().toUri();
     }
 }

@@ -4,9 +4,9 @@ import com.pleasebookme.server.auth.enums.AccountStatus;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.repository.UserRepository;
 import com.pleasebookme.server.integration.enums.OAuthConnectionStatus;
-import com.pleasebookme.server.integration.enums.OAuthProvider;
 import com.pleasebookme.server.integration.oauthconnection.entity.OAuthConnectionEntity;
 import com.pleasebookme.server.integration.oauthconnection.repository.OAuthConnectionRepository;
+import com.pleasebookme.server.integration.oauthstate.model.OAuthFlowMode;
 import com.pleasebookme.server.integration.oauthstate.model.OAuthState;
 import com.pleasebookme.server.integration.oauthstate.store.OAuthStateStore;
 import com.pleasebookme.server.security.crypto.TokenCipher;
@@ -20,8 +20,10 @@ import com.pleasebookme.server.security.oauth.google.client.GoogleTokenClient;
 import com.pleasebookme.server.security.oauth.google.client.dto.GoogleTokenResponse;
 import com.pleasebookme.server.security.oauth.google.identity.GoogleIdentity;
 import com.pleasebookme.server.security.oauth.google.verifier.GoogleTokenVerifier;
+import com.pleasebookme.server.service.auth.service.GoogleOnboardingService;
 import com.pleasebookme.server.service.integration.dto.GoogleConnectRequest;
 import com.pleasebookme.server.service.integration.exception.OAuthConnectionAccessDeniedException;
+import com.pleasebookme.server.service.integration.service.GoogleConnectionWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +37,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigInteger;
 import java.net.URI;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.when;
 class DefaultGoogleConnectServiceTest {
 
     private static final UUID USER_UID = UUID.randomUUID();
+    private static final String INTEGRATIONS_PATH = "/dashboard/settings/integrations";
 
     @Mock private OAuthStateStore oauthStateStore;
     @Mock private PkceGenerator pkceGenerator;
@@ -65,6 +67,8 @@ class DefaultGoogleConnectServiceTest {
     @Mock private TokenCipher tokenCipher;
     @Mock private UserRepository userRepository;
     @Mock private OAuthConnectionRepository oauthConnectionRepository;
+    @Mock private GoogleConnectionWriter googleConnectionWriter;
+    @Mock private GoogleOnboardingService googleOnboardingService;
 
     private DefaultGoogleConnectService service;
     private UserEntity user;
@@ -84,6 +88,12 @@ class DefaultGoogleConnectServiceTest {
         );
     }
 
+    private static OAuthState connectState(String redirectAfter) {
+        return new OAuthState(
+            OAuthFlowMode.CONNECT, USER_UID, "verifier", List.of("openid"), redirectAfter
+        );
+    }
+
     @BeforeEach
     void setUp() {
         service = new DefaultGoogleConnectService(
@@ -94,7 +104,9 @@ class DefaultGoogleConnectServiceTest {
             googleTokenVerifier,
             tokenCipher,
             userRepository,
-            oauthConnectionRepository
+            oauthConnectionRepository,
+            googleConnectionWriter,
+            googleOnboardingService
         );
         ReflectionTestUtils.setField(service, "frontendUrl", "http://localhost:3000");
 
@@ -106,8 +118,12 @@ class DefaultGoogleConnectServiceTest {
         when(authorizationUrlBuilder.build(anyString(), any(), any()))
             .thenReturn("https://accounts.google.com/o/oauth2/v2/auth?state=state-token");
         when(userRepository.findByUserUid(USER_UID)).thenReturn(Optional.of(user));
-        when(tokenCipher.encrypt(anyString())).thenAnswer(i -> "enc(" + i.getArgument(0) + ")");
-        when(tokenCipher.currentKeyVersion()).thenReturn((short) 1);
+    }
+
+    private OAuthState capturedState() {
+        ArgumentCaptor<OAuthState> stateCaptor = ArgumentCaptor.forClass(OAuthState.class);
+        verify(oauthStateStore).issue(stateCaptor.capture(), any());
+        return stateCaptor.getValue();
     }
 
     @Test
@@ -118,6 +134,7 @@ class DefaultGoogleConnectServiceTest {
         verify(oauthStateStore).issue(stateCaptor.capture(), eq(Duration.ofMinutes(10)));
 
         OAuthState state = stateCaptor.getValue();
+        assertThat(state.mode()).isEqualTo(OAuthFlowMode.CONNECT);
         assertThat(state.userUid()).isEqualTo(USER_UID);
         assertThat(state.codeVerifier()).isEqualTo("verifier");
         // openid is what makes Google return an id_token, which the callback needs.
@@ -130,10 +147,7 @@ class DefaultGoogleConnectServiceTest {
     void initiate_withNoScopes_requestsEveryAllowListedScope() {
         service.initiate(principal(), new GoogleConnectRequest(null, null));
 
-        ArgumentCaptor<OAuthState> stateCaptor = ArgumentCaptor.forClass(OAuthState.class);
-        verify(oauthStateStore).issue(stateCaptor.capture(), any());
-
-        assertThat(stateCaptor.getValue().requestedScopes())
+        assertThat(capturedState().requestedScopes())
             .contains(
                 GoogleScope.CALENDAR.uri(),
                 GoogleScope.SHEETS.uri(),
@@ -148,20 +162,50 @@ class DefaultGoogleConnectServiceTest {
             new GoogleConnectRequest(null, "https://evil.example.com/steal")
         );
 
-        ArgumentCaptor<OAuthState> stateCaptor = ArgumentCaptor.forClass(OAuthState.class);
-        verify(oauthStateStore).issue(stateCaptor.capture(), any());
-
-        assertThat(stateCaptor.getValue().redirectAfter()).isEqualTo("/settings/integrations");
+        assertThat(capturedState().redirectAfter()).isEqualTo(INTEGRATIONS_PATH);
     }
 
     @Test
     void initiate_protocolRelativeRedirectAfter_isAlsoRejected() {
         service.initiate(principal(), new GoogleConnectRequest(null, "//evil.example.com"));
 
-        ArgumentCaptor<OAuthState> stateCaptor = ArgumentCaptor.forClass(OAuthState.class);
-        verify(oauthStateStore).issue(stateCaptor.capture(), any());
+        assertThat(capturedState().redirectAfter()).isEqualTo(INTEGRATIONS_PATH);
+    }
 
-        assertThat(stateCaptor.getValue().redirectAfter()).isEqualTo("/settings/integrations");
+    @Test
+    void initiateOnboarding_bindsNoUserAndRequestsEveryScope() {
+        service.initiateOnboarding("/google/complete");
+
+        OAuthState state = capturedState();
+        assertThat(state.mode()).isEqualTo(OAuthFlowMode.SIGN_UP_AND_CONNECT);
+        // Nobody is logged in yet; the user is resolved from the Google identity.
+        assertThat(state.userUid()).isNull();
+        // This is the user's only consent screen, so ask for everything.
+        assertThat(state.requestedScopes())
+            .contains(
+                "openid",
+                GoogleScope.CALENDAR.uri(),
+                GoogleScope.SHEETS.uri(),
+                GoogleScope.DRIVE_FILE.uri()
+            );
+        assertThat(state.redirectAfter()).isEqualTo("/google/complete");
+    }
+
+    @Test
+    void initiateOnboarding_withNoRedirect_fallsBackToAPublicRouteNotTheDashboard() {
+        service.initiateOnboarding(null);
+
+        // The callback returns before any session cookie exists, so a /dashboard
+        // fallback would be bounced by the frontend's route guard and the handoff
+        // code silently discarded.
+        assertThat(capturedState().redirectAfter()).isEqualTo("/google/complete");
+    }
+
+    @Test
+    void initiateOnboarding_absoluteRedirectAfter_isRejectedToPreventOpenRedirect() {
+        service.initiateOnboarding("https://evil.example.com/steal");
+
+        assertThat(capturedState().redirectAfter()).isEqualTo("/google/complete");
     }
 
     @Test
@@ -170,7 +214,21 @@ class DefaultGoogleConnectServiceTest {
 
         assertThat(redirect.toString()).contains("google=denied");
         verify(googleTokenClient, never()).exchangeAuthorizationCode(anyString(), anyString());
-        verify(oauthConnectionRepository, never()).save(any());
+        verify(googleConnectionWriter, never()).persist(any(), any(), any());
+    }
+
+    @Test
+    void complete_deniedConsent_stillSpendsTheStateAndReturnsWhereTheUserCameFrom() {
+        // Google sends state on error callbacks too. It has to be consumed so it
+        // cannot be replayed, and it carries the only record of the origin page.
+        when(oauthStateStore.consume("state-token"))
+            .thenReturn(Optional.of(connectState("/google/complete")));
+
+        URI redirect = service.complete(null, "state-token", "access_denied");
+
+        verify(oauthStateStore).consume("state-token");
+        assertThat(redirect.toString())
+            .isEqualTo("http://localhost:3000/google/complete?google=denied");
     }
 
     @Test
@@ -181,96 +239,108 @@ class DefaultGoogleConnectServiceTest {
 
         assertThat(redirect.toString()).contains("google=invalid_state");
         verify(googleTokenClient, never()).exchangeAuthorizationCode(anyString(), anyString());
-        verify(oauthConnectionRepository, never()).save(any());
+        verify(googleConnectionWriter, never()).persist(any(), any(), any());
     }
 
     @Test
-    void complete_happyPath_persistsEncryptedTokensAndGrantedScopes() {
-        when(oauthStateStore.consume("state-token")).thenReturn(Optional.of(new OAuthState(
-            USER_UID, "verifier", List.of("openid"), "/settings/integrations"
-        )));
+    void complete_connectMode_resolvesTheStatesUserAndWritesTheConnection() {
+        when(oauthStateStore.consume("state-token"))
+            .thenReturn(Optional.of(connectState(INTEGRATIONS_PATH)));
+        GoogleTokenResponse tokens = tokens(
+            "1//refresh", "openid https://www.googleapis.com/auth/calendar"
+        );
         when(googleTokenClient.exchangeAuthorizationCode("auth-code", "verifier"))
-            .thenReturn(tokens(
-                "1//refresh",
-                "openid https://www.googleapis.com/auth/calendar"
-            ));
-        when(googleTokenVerifier.verify("id.token.here"))
-            .thenReturn(new GoogleIdentity("google-sub", "jane@gmail.com", true, "Jane", null));
-        when(oauthConnectionRepository.findByUserUserIdAndProviderAndProviderAccountId(
-            any(), eq(OAuthProvider.GOOGLE), eq("google-sub")
-        )).thenReturn(Optional.empty());
+            .thenReturn(tokens);
+        GoogleIdentity identity =
+            new GoogleIdentity("google-sub", "jane@gmail.com", true, "Jane", null);
+        when(googleTokenVerifier.verify("id.token.here")).thenReturn(identity);
 
         URI redirect = service.complete("auth-code", "state-token", null);
 
         assertThat(redirect.toString())
-            .isEqualTo("http://localhost:3000/settings/integrations?google=connected");
-
-        ArgumentCaptor<OAuthConnectionEntity> captor =
-            ArgumentCaptor.forClass(OAuthConnectionEntity.class);
-        verify(oauthConnectionRepository).save(captor.capture());
-
-        OAuthConnectionEntity saved = captor.getValue();
-        assertThat(saved.getProviderAccountId()).isEqualTo("google-sub");
-        assertThat(saved.getProviderEmail()).isEqualTo("jane@gmail.com");
-        assertThat(saved.getStatus()).isEqualTo(OAuthConnectionStatus.ACTIVE);
-        assertThat(saved.getTokenKeyVersion()).isEqualTo((short) 1);
-        // Never stored in the clear.
-        assertThat(saved.getAccessToken()).isEqualTo("enc(ya29.access)");
-        assertThat(saved.getRefreshToken()).isEqualTo("enc(1//refresh)");
-        // Space-delimited scope string is split, not stored as one blob.
-        assertThat(saved.getScopes())
-            .containsExactlyInAnyOrder("openid", "https://www.googleapis.com/auth/calendar");
-        assertThat(saved.getTokenExpiresAt()).isAfter(Instant.now().plusSeconds(3500));
+            .isEqualTo("http://localhost:3000" + INTEGRATIONS_PATH + "?google=connected");
+        verify(googleConnectionWriter).persist(user, tokens, identity);
+        verify(googleOnboardingService, never()).finalizeOnboarding(any(), any());
     }
 
     @Test
-    void complete_reconsentWithoutRefreshToken_keepsTheStoredOne() {
-        OAuthConnectionEntity existing = OAuthConnectionEntity.builder()
-            .user(user)
-            .provider(OAuthProvider.GOOGLE)
-            .providerAccountId("google-sub")
-            .accessToken("enc(old-access)")
-            .refreshToken("enc(original-refresh)")
-            .scopes(new String[]{"openid"})
-            .build();
-
+    void complete_signUpMode_onboardsAndCarriesAHandoffCodeBack() {
         when(oauthStateStore.consume("state-token")).thenReturn(Optional.of(new OAuthState(
-            USER_UID, "verifier", List.of("openid"), "/settings/integrations"
+            OAuthFlowMode.SIGN_UP_AND_CONNECT,
+            // No user yet - this is the whole point of the mode.
+            null,
+            "verifier",
+            List.of("openid"),
+            "/google/complete"
         )));
-        // Google omits refresh_token on some re-consents.
+        GoogleTokenResponse tokens = tokens("1//refresh", "openid");
+        when(googleTokenClient.exchangeAuthorizationCode("auth-code", "verifier"))
+            .thenReturn(tokens);
+        GoogleIdentity identity =
+            new GoogleIdentity("google-sub", "jane@gmail.com", true, "Jane", null);
+        when(googleTokenVerifier.verify("id.token.here")).thenReturn(identity);
+        when(googleOnboardingService.finalizeOnboarding(tokens, identity))
+            .thenReturn("handoff-code");
+
+        URI redirect = service.complete("auth-code", "state-token", null);
+
+        assertThat(redirect.toString())
+            .isEqualTo("http://localhost:3000/google/complete?google=connected&handoff=handoff-code");
+        // Onboarding owns the whole write, inside one transaction.
+        verify(googleConnectionWriter, never()).persist(any(), any(), any());
+        verify(userRepository, never()).findByUserUid(any());
+    }
+
+    @Test
+    void complete_stateWrittenBeforeModeExisted_takesTheConnectPath() {
+        // A null mode means the state predates the field. It still has a userUid,
+        // so it must finish as a connect rather than trying to onboard.
+        when(oauthStateStore.consume("state-token")).thenReturn(Optional.of(new OAuthState(
+            null, USER_UID, "verifier", List.of("openid"), INTEGRATIONS_PATH
+        )));
         when(googleTokenClient.exchangeAuthorizationCode(anyString(), anyString()))
-            .thenReturn(tokens(null, "openid https://www.googleapis.com/auth/spreadsheets"));
+            .thenReturn(tokens("1//refresh", "openid"));
         when(googleTokenVerifier.verify(anyString()))
             .thenReturn(new GoogleIdentity("google-sub", "jane@gmail.com", true, "Jane", null));
-        when(oauthConnectionRepository.findByUserUserIdAndProviderAndProviderAccountId(
-            any(), eq(OAuthProvider.GOOGLE), eq("google-sub")
-        )).thenReturn(Optional.of(existing));
 
-        service.complete("auth-code", "state-token", null);
+        URI redirect = service.complete("auth-code", "state-token", null);
 
-        ArgumentCaptor<OAuthConnectionEntity> captor =
-            ArgumentCaptor.forClass(OAuthConnectionEntity.class);
-        verify(oauthConnectionRepository).save(captor.capture());
-
-        assertThat(captor.getValue().getRefreshToken()).isEqualTo("enc(original-refresh)");
-        assertThat(captor.getValue().getAccessToken()).isEqualTo("enc(ya29.access)");
-        // Previously granted scopes survive a narrower response.
-        assertThat(captor.getValue().getScopes())
-            .contains("openid", "https://www.googleapis.com/auth/spreadsheets");
+        assertThat(redirect.toString()).contains("google=connected");
+        verify(googleConnectionWriter).persist(eq(user), any(), any());
+        verify(googleOnboardingService, never()).finalizeOnboarding(any(), any());
     }
 
     @Test
     void complete_exchangeFailure_redirectsWithErrorInsteadOfThrowing() {
-        when(oauthStateStore.consume("state-token")).thenReturn(Optional.of(new OAuthState(
-            USER_UID, "verifier", List.of("openid"), "/settings/integrations"
-        )));
+        when(oauthStateStore.consume("state-token"))
+            .thenReturn(Optional.of(connectState(INTEGRATIONS_PATH)));
         when(googleTokenClient.exchangeAuthorizationCode(anyString(), anyString()))
             .thenThrow(new RuntimeException("boom"));
 
         URI redirect = service.complete("auth-code", "state-token", null);
 
         assertThat(redirect.toString()).contains("google=error");
-        verify(oauthConnectionRepository, never()).save(any());
+        verify(googleConnectionWriter, never()).persist(any(), any(), any());
+    }
+
+    @Test
+    void complete_onboardingFailure_redirectsWithErrorAndNoHandoff() {
+        when(oauthStateStore.consume("state-token")).thenReturn(Optional.of(new OAuthState(
+            OAuthFlowMode.SIGN_UP_AND_CONNECT, null, "verifier", List.of("openid"), "/google/complete"
+        )));
+        when(googleTokenClient.exchangeAuthorizationCode(anyString(), anyString()))
+            .thenReturn(tokens("1//refresh", "openid"));
+        when(googleTokenVerifier.verify(anyString()))
+            .thenReturn(new GoogleIdentity("google-sub", "jane@gmail.com", true, "Jane", null));
+        // e.g. provisioning blew up on a NOT NULL column.
+        when(googleOnboardingService.finalizeOnboarding(any(), any()))
+            .thenThrow(new RuntimeException("provisioning failed"));
+
+        URI redirect = service.complete("auth-code", "state-token", null);
+
+        assertThat(redirect.toString())
+            .isEqualTo("http://localhost:3000/google/complete?google=error");
+        assertThat(redirect.toString()).doesNotContain("handoff");
     }
 
     @Test
