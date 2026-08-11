@@ -3,6 +3,7 @@ package com.pleasebookme.server.integration.sheets.entity;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.core.service.entity.ServiceEntity;
 import com.pleasebookme.server.integration.enums.IntegrationType;
+import com.pleasebookme.server.integration.oauthconnection.entity.OAuthConnectionEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -46,6 +47,10 @@ public class DestinationSheetsEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false)
     private ServiceEntity service;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "oauth_connection_id", nullable = false)
+    private OAuthConnectionEntity oauthConnection;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

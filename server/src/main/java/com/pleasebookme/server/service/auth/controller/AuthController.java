@@ -2,6 +2,9 @@ package com.pleasebookme.server.service.auth.controller;
 
 import com.pleasebookme.server.service.auth.dto.*;
 import com.pleasebookme.server.service.auth.service.AuthService;
+import com.pleasebookme.server.service.auth.service.GoogleOnboardingService;
+import com.pleasebookme.server.service.auth.service.GoogleSignInService;
+import com.pleasebookme.server.service.integration.service.GoogleConnectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final GoogleSignInService googleSignInService;
+    private final GoogleOnboardingService googleOnboardingService;
+    private final GoogleConnectService googleConnectService;
 
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
@@ -36,5 +42,28 @@ public class AuthController {
     @PostMapping("/widget/bootstrap")
     public WidgetBootstrapResponse bootstrapWidget(@Valid @RequestBody WidgetBootstrapRequest request) {
         return authService.bootstrapWidget(request);
+    }
+
+    @PostMapping("/google")
+    public LoginResponse signInWithGoogle(@Valid @RequestBody GoogleSignInRequest request) {
+        return googleSignInService.signIn(request.idToken());
+    }
+
+    @PostMapping("/google/authorize")
+    public GoogleAuthorizeResponse authorizeGoogleOnboarding(
+        @RequestBody(required = false) GoogleAuthorizeRequest request
+    ) {
+        return new GoogleAuthorizeResponse(
+            googleConnectService
+                .initiateOnboarding(request == null ? null : request.redirectAfter())
+                .authorizationUrl()
+        );
+    }
+
+    @PostMapping("/google/handoff")
+    public LoginResponse exchangeGoogleHandoff(
+        @Valid @RequestBody GoogleHandoffRequest request
+    ) {
+        return googleOnboardingService.exchangeHandoff(request.code());
     }
 }

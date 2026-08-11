@@ -9,10 +9,24 @@ spring:
       lifecycle-management: start-and-stop
 
   datasource:
-    url: jdbc:postgresql://localhost:${DB_PORT}/${POSTGRES_DB}
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      timeout: 2s
+      connect-timeout: 2s
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 16
+          max-idle: 8
+          min-idle: 2
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -50,13 +64,16 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
             scope:
               - openid
               - profile
               - email
-              - https://googleapis.com
-              - https://googleapis.com
-              - https://googleapis.com
+              - https://www.googleapis.com/auth/calendar
+              - https://www.googleapis.com/auth/spreadsheets
+              - https://www.googleapis.com/auth/drive.file
 
         provider:
           google:
@@ -79,6 +96,12 @@ security:
 
     refresh-token-life-time: P30D
 
+  token-encryption:
+    current-version: ${TOKEN_ENCRYPTION_CURRENT_VERSION}
+
+    keys:
+      1: ${TOKEN_ENCRYPTION_KEY_V1}
+
 app:
   client:
     frontend-url: http://localhost:3000
@@ -88,3 +111,28 @@ app:
 
   internal:
     frontend-url: http://localhost:3002
+
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:3001
+      - http://localhost:3002
+
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+
+    allowed-headers:
+      - Authorization
+      - Content-Type
+
+    exposed-headers:
+      - Location
+
+    allow-credentials: true
+
+    max-age: PT30M

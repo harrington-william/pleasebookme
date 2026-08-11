@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
     ports:
-      - "${DB_PORT}:5432"
+      - "${POSTGRES_PORT}:5432"
 
     volumes:
       - pleasebookme_data:/var/lib/postgresql/data
@@ -37,6 +37,46 @@ services:
         max-size: "10m"
         max-file: "5"
   
+  redis:
+    image: redis:8.2-alpine
+    container_name: pleasebookme_redis
+    restart: unless-stopped
+
+    command: [
+      "redis-server",
+      "--requirepass", "${REDIS_PASSWORD}",
+      "--appendonly", "yes",
+      "--maxmemory-policy", "noeviction"
+    ]
+
+    ports:
+      - "127.0.0.1:${REDIS_PORT}:6379"
+
+    volumes:
+      - pleasebookme_redis_data:/data
+
+    networks:
+      - pleasebookme_network
+
+    labels:
+      org.springframework.boot.ignore: "true"
+
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "redis-cli -a \"${REDIS_PASSWORD}\" ping | grep -q PONG"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pleasebookme_pgadmin
@@ -68,6 +108,9 @@ services:
 volumes:
   pleasebookme_data:
     name: pleasebookme_data
+
+  pleasebookme_redis_data:
+    name: pleasebookme_redis_data
 
   pgadmin_data:
     name: pleasebookme_pgadmin_data

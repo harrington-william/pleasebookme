@@ -11,10 +11,7 @@ public record AccountResponse(
     String type,
     String provider,
     String providerAccountId,
-    String providerEmail,
-    Instant expiresAt,
-    String tokenType,
-    String scope
+    String providerEmail
 ) {
     public static AccountResponse from(AccountEntity account) {
         return new AccountResponse(
@@ -23,10 +20,7 @@ public record AccountResponse(
             account.getType(),
             account.getProvider(),
             account.getProviderAccountId(),
-            account.getProviderEmail(),
-            account.getExpiresAt(),
-            account.getTokenType(),
-            account.getScope()
+            account.getProviderEmail()
         );
     }
 }

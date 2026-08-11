@@ -23,18 +23,5 @@ public record AccountRequest(
     String providerAccountId,
 
     @Size(max = 255)
-    String providerEmail,
-
-    String accessToken,
-
-    String refreshToken,
-
-    Instant expiresAt,
-
-    String tokenType,
-
-    String scope,
-
-    String idToken
-) {
-}
+    String providerEmail
+) {}
