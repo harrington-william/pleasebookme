@@ -1,26 +1,222 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* 
+ * ---------------------------------------------------------------------------
+ * Obsidian Infrastructure — Design
+ * -------------------------------------------------------------------------
+ */
 
 @theme inline {
+  /* Semantic colors (shadcn contract) */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Obsidian elevation surfaces — see DESIGN.md "Elevation & Depth" */
+  --color-surface: var(--surface);
+  --color-surface-container: var(--surface-container);
+  --color-surface-hover: var(--surface-hover);
+
+  /* Obsidian status accents — see DESIGN.md "Colors → Status" */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Static design scales — typography and the 4px spacing rhythm.
+ * These generate utilities directly (text-headline-lg, gap-md, p-lg, ...). */
+@theme {
+  --text-display: 48px;
+  --text-display--line-height: 56px;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 600;
+
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 600;
+
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 32px;
+  --text-headline-lg-mobile--letter-spacing: -0.01em;
+  --text-headline-lg-mobile--font-weight: 600;
+
+  --text-headline-md: 20px;
+  --text-headline-md--line-height: 28px;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-md--font-weight: 500;
+
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+  --text-body-lg--letter-spacing: 0;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  --text-body-md--letter-spacing: 0;
+  --text-body-md--font-weight: 400;
+
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.02em;
+  --text-label-md--font-weight: 500;
+
+  --text-mono-label: 12px;
+  --text-mono-label--line-height: 16px;
+  --text-mono-label--letter-spacing: 0;
+  --text-mono-label--font-weight: 400;
+
+  /* Strict 4px grid — DESIGN.md "Layout & Spacing" */
+  --spacing-base: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-gutter: 24px;
+
+  --container-max: 1440px;
+}
+
+/* Obsidian Dark is the only theme. Values live on :root so they apply with or
+ * without the `.dark` class, and are mirrored onto `.dark` so shadcn's
+ * `dark:` variants continue to resolve correctly. */
+:root,
+.dark {
+  /* Level 0 — the canvas */
+  --background: #0b0d10;
+  --foreground: #f9fafb;
+
+  /* Level 1 — panels/cards */
+  --card: #12151a;
+  --card-foreground: #f9fafb;
+  --surface: #12151a;
+
+  /* Level 2 — popovers/modals */
+  --popover: #1c1f26;
+  --popover-foreground: #f9fafb;
+  --surface-container: #1c1f26;
+
+  /* Interactive state — brighten, never lift (DESIGN.md "Elevation & Depth") */
+  --surface-hover: #2d333b;
+
+  /* Precision blue, used sparingly for primary actions and focus */
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+
+  --secondary: #1c1f26;
+  --secondary-foreground: #f9fafb;
+
+  --muted: #1c1f26;
+  --muted-foreground: #9ca3af;
+
+  --accent: #1f2329;
+  --accent-foreground: #f9fafb;
+
+  --destructive: #ffb4ab;
+  --destructive-foreground: #690005;
+
+  --success: #4edea3;
+  --warning: #ffb786;
+
+  /* Borders are the primary method of separation */
+  --border: #1f2329;
+  --input: #1f2329;
+  --ring: #3b82f6;
+
+  /* Universal 10px radius */
+  --radius: 0.625rem;
+
+  --sidebar: #12151a;
+  --sidebar-foreground: #f9fafb;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1c1f26;
+  --sidebar-accent-foreground: #f9fafb;
+  --sidebar-border: #1f2329;
+  --sidebar-ring: #3b82f6;
+
+  --chart-1: #3b82f6;
+  --chart-2: #4edea3;
+  --chart-3: #ffb786;
+  --chart-4: #adc6ff;
+  --chart-5: #9ca3af;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* The canvas colour lives on `html`, deliberately NOT on `body`.
+   * GridBackground is a `fixed -z-10` layer inside `body`; if `body` painted
+   * its own background it would cover the grid entirely. Keeping `body`
+   * transparent makes the paint order explicit instead of depending on CSS
+   * background-propagation rules. */
+  html {
+    @apply bg-background font-sans;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Chrome/Safari autofill repaints inputs near-white, which shatters the
+   * dark surface. Repaint them back onto the Obsidian palette. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--foreground);
+    -webkit-box-shadow: 0 0 0 1000px var(--background) inset;
+    caret-color: var(--foreground);
+  }
 }

@@ -10,9 +10,6 @@ public record PasswordRequest(
     BigInteger userId,
 
     @NotBlank
-    String raw,
-
-    @NotBlank
-    String hash
+    String password
 ) {
 }

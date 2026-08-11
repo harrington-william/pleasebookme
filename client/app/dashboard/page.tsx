@@ -1,0 +1,71 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { getSessionActor } from "@/lib/session";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
+
+/**
+ * PLACEHOLDER — not the real dashboard.
+ *
+ * This exists so the auth loop terminates somewhere real: register/login
+ * redirect here, and it proves the session cookie survives the round trip and
+ * is readable server-side. Replace wholesale when the operational dashboard is
+ * built.
+ *
+ * The `redirect` below is a defence-in-depth check, not the primary guard —
+ * proxy.ts already gates this route. Per the Next.js data-security guidance,
+ * route-level interception alone is not sufficient; checks belong close to the
+ * data as well.
+ */
+export default async function DashboardPage() {
+  const actor = await getSessionActor();
+
+  if (!actor) {
+    redirect("/login");
+  }
+
+  return (
+    <main className="mx-auto flex w-full max-w-[720px] flex-grow flex-col justify-center p-md md:p-2xl">
+      <div className="relative z-10 rounded-xl border border-border bg-surface p-lg md:p-xl">
+        <p className="text-label-md tracking-wider text-muted-foreground uppercase">
+          Session established
+        </p>
+
+        <h1 className="mt-xs text-headline-md text-foreground">
+          You are signed in
+        </h1>
+
+        <dl className="mt-lg space-y-sm border-t border-border pt-lg">
+          <div className="flex items-baseline justify-between gap-md">
+            <dt className="text-body-md text-muted-foreground">Actor type</dt>
+            <dd className="font-mono text-mono-label text-foreground">
+              {actor.actorType}
+            </dd>
+          </div>
+          <div className="flex items-baseline justify-between gap-md">
+            <dt className="text-body-md text-muted-foreground">Subject</dt>
+            <dd className="font-mono text-mono-label break-all text-foreground">
+              {actor.subject}
+            </dd>
+          </div>
+          <div className="flex items-baseline justify-between gap-md">
+            <dt className="text-body-md text-muted-foreground">Tenant</dt>
+            <dd className="font-mono text-mono-label text-foreground">
+              {/* Null is expected, not an error: a user has no Tenant until
+                  their organization subscribes to a plan (SECURITY.md). */}
+              {actor.tenantUid ?? "— no active plan"}
+            </dd>
+          </div>
+        </dl>
+
+        <div className="mt-xl">
+          <SignOutButton />
+        </div>
+      </div>
+    </main>
+  );
+}

@@ -36,13 +36,7 @@ public class AccountServiceImpl implements AccountService {
             .user(user)
             .provider(request.provider())
             .providerAccountId(request.providerAccountId())
-            .providerEmail(request.providerEmail())
-            .accessToken(request.accessToken())
-            .refreshToken(request.refreshToken())
-            .expiresAt(request.expiresAt())
-            .tokenType(request.tokenType())
-            .scope(request.scope())
-            .idToken(request.idToken());
+            .providerEmail(request.providerEmail());
 
         if (request.type() != null) account.type(request.type());
 
@@ -76,12 +70,6 @@ public class AccountServiceImpl implements AccountService {
         account.setProvider(request.provider());
         account.setProviderAccountId(request.providerAccountId());
         account.setProviderEmail(request.providerEmail());
-        account.setAccessToken(request.accessToken());
-        account.setRefreshToken(request.refreshToken());
-        account.setExpiresAt(request.expiresAt());
-        account.setTokenType(request.tokenType());
-        account.setScope(request.scope());
-        account.setIdToken(request.idToken());
 
         if (request.type() != null) account.setType(request.type());
 

@@ -9,6 +9,9 @@ import com.pleasebookme.server.core.service.repository.ServiceRepository;
 import com.pleasebookme.server.integration.sheets.dto.DestinationSheetsRequest;
 import com.pleasebookme.server.integration.sheets.entity.DestinationSheetsEntity;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
+import com.pleasebookme.server.integration.oauthconnection.entity.OAuthConnectionEntity;
+import com.pleasebookme.server.integration.oauthconnection.exception.OAuthConnectionNotFoundException;
+import com.pleasebookme.server.integration.oauthconnection.repository.OAuthConnectionRepository;
 import com.pleasebookme.server.integration.sheets.repository.DestinationSheetsRepository;
 import com.pleasebookme.server.integration.sheets.service.DestinationSheetsService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class DestinationSheetsServiceImpl implements DestinationSheetsService {
     private final DestinationSheetsRepository destinationSheetsRepository;
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
+    private final OAuthConnectionRepository oauthConnectionRepository;
 
     @Override
     public DestinationSheetsEntity createDestinationSheets(DestinationSheetsRequest request) {
@@ -32,11 +36,17 @@ public class DestinationSheetsServiceImpl implements DestinationSheetsService {
         ServiceEntity service = serviceRepository.findById(request.serviceId())
             .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + request.serviceId()));
 
+        OAuthConnectionEntity oauthConnection = oauthConnectionRepository.findById(request.oauthConnectionId())
+            .orElseThrow(() -> new OAuthConnectionNotFoundException(
+                "OAuth connection not found: " + request.oauthConnectionId()
+            ));
+
         DestinationSheetsEntity destinationSheets = DestinationSheetsEntity.builder()
             .integrationType(request.integrationType())
             .externalId(request.externalId())
             .user(user)
             .service(service)
+            .oauthConnection(oauthConnection)
             .build();
 
         return destinationSheetsRepository.save(destinationSheets);
@@ -68,10 +78,16 @@ public class DestinationSheetsServiceImpl implements DestinationSheetsService {
         ServiceEntity service = serviceRepository.findById(request.serviceId())
             .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + request.serviceId()));
 
+        OAuthConnectionEntity oauthConnection = oauthConnectionRepository.findById(request.oauthConnectionId())
+            .orElseThrow(() -> new OAuthConnectionNotFoundException(
+                "OAuth connection not found: " + request.oauthConnectionId()
+            ));
+
         destinationSheets.setIntegrationType(request.integrationType());
         destinationSheets.setExternalId(request.externalId());
         destinationSheets.setUser(user);
         destinationSheets.setService(service);
+        destinationSheets.setOauthConnection(oauthConnection);
 
         return destinationSheetsRepository.save(destinationSheets);
     }

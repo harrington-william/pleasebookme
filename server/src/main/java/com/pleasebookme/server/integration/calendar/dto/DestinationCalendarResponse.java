@@ -12,6 +12,7 @@ public record DestinationCalendarResponse(
     String externalId,
     BigInteger userId,
     BigInteger serviceId,
+    BigInteger oauthConnectionId,
     Instant createdAt,
     Instant updatedAt
 ) {
@@ -22,6 +23,7 @@ public record DestinationCalendarResponse(
             destinationCalendar.getExternalId(),
             destinationCalendar.getUser().getUserId(),
             destinationCalendar.getService().getServiceId(),
+            destinationCalendar.getOauthConnection().getOauthConnectionId(),
             destinationCalendar.getCreatedAt(),
             destinationCalendar.getUpdatedAt()
         );

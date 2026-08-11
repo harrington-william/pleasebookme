@@ -35,8 +35,7 @@ public class UserPasswordServiceImpl implements UserPasswordService {
 
         UserPasswordEntity userPassword = UserPasswordEntity.builder()
             .user(user)
-            .raw(request.raw())
-            .hash(request.hash())
+            .hash(request.password())
             .build();
 
         return userPasswordRepository.save(userPassword);
@@ -57,14 +56,13 @@ public class UserPasswordServiceImpl implements UserPasswordService {
     ) {
         UserPasswordEntity userPassword = getUserPasswordById(userId);
 
-        if (userPassword.getRaw().equals(request.raw())) {
+        if (userPassword.getHash().equals(request.password())) {
             throw new DuplicateUserPasswordException(
                 "New password must be different from the current password: " + userId
             );
         }
 
-        userPassword.setRaw(request.raw());
-        userPassword.setHash(request.hash());
+        userPassword.setHash(request.password());
 
         return userPasswordRepository.save(userPassword);
     }

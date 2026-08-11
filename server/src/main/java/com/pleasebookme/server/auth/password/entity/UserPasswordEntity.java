@@ -32,9 +32,6 @@ public class UserPasswordEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @Column(name = "raw", nullable = false)
-    private String raw;
-
     @Column(name = "hash", nullable = false)
     private String hash;
 

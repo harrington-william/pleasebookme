@@ -19,6 +19,9 @@ public record DestinationSheetsRequest(
     BigInteger userId,
 
     @NotNull
-    BigInteger serviceId
+    BigInteger serviceId,
+
+    @NotNull
+    BigInteger oauthConnectionId
 ) {
 }
