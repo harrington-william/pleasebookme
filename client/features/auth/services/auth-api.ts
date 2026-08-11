@@ -8,23 +8,13 @@ import {
   normalizeAuthError,
   normalizeGoogleSignInError,
 } from "@/features/auth/services/auth-errors";
-import type { SessionActor } from "@/features/auth/types/auth";
+import type {
+  GoogleAuthorizeResponse,
+  SessionActor,
+} from "@/features/auth/types/auth";
+import { normalizeApiError } from "@/lib/api-error";
 import { bffClient } from "@/lib/axios";
 
-/**
- * Browser-side auth operations.
- *
- * These call our OWN Next.js route handlers (/api/auth/*), never the Spring
- * Boot platform directly. That indirection is what lets the session live in
- * httpOnly cookies: the tokens are set server-side and this code never sees
- * them.
- *
- * Every function throws AuthRequestError on failure, carrying an already
- * renderable message, so form components can `catch` and display without
- * knowing anything about axios or the platform's error shapes.
- */
-
-/** Identity echoed back by the BFF. Contains no tokens, by design. */
 type SessionSummary = Pick<
   SessionActor,
   "subject" | "actorType" | "tenantUid"
@@ -58,14 +48,6 @@ export async function loginWithCredentials(
   }
 }
 
-/**
- * Exchanges a Google ID token for a platform session.
- *
- * `idToken` comes from Google Identity Services in the browser (see
- * use-google-identity.ts). It is forwarded straight to the BFF and never
- * stored client-side — the resulting platform session lands in httpOnly
- * cookies like any other sign-in.
- */
 export async function signInWithGoogle(
   idToken: string
 ): Promise<SessionSummary> {
@@ -76,6 +58,32 @@ export async function signInWithGoogle(
     return response.data;
   } catch (error) {
     throw new AuthRequestError(normalizeGoogleSignInError(error));
+  }
+}
+
+export async function startGoogleOnboarding(): Promise<GoogleAuthorizeResponse> {
+  try {
+    const response = await bffClient.post<GoogleAuthorizeResponse>(
+      "/auth/google/authorize",
+      {}
+    );
+    return response.data;
+  } catch (error) {
+    throw new AuthRequestError(normalizeApiError(error));
+  }
+}
+
+export async function exchangeGoogleHandoff(
+  code: string
+): Promise<SessionSummary> {
+  try {
+    const response = await bffClient.post<SessionSummary>(
+      "/auth/google/handoff",
+      { code }
+    );
+    return response.data;
+  } catch (error) {
+    throw new AuthRequestError(normalizeApiError(error));
   }
 }
 

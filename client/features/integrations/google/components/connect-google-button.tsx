@@ -15,19 +15,6 @@ import {
 import { ApiRequestError } from "@/lib/api-error";
 import { cn } from "@/lib/utils";
 
-/**
- * Entry point for connecting a Google account.
- *
- * Two-step, deliberately: pick which capabilities to grant, then navigate to
- * Google. Scope selection is exposed now rather than hardcoded to CALENDAR,
- * because Google's consent screen lets users untick individual scopes anyway —
- * so the granted set can already differ from the requested set, and pretending
- * otherwise in the UI would be misleading.
- *
- * A failure here happens BEFORE Google is involved (network error, expired
- * session), so it renders as an ordinary inline error, not as a `?google=`
- * outcome — those only exist on the way back from a real consent screen.
- */
 export function ConnectGoogleButton() {
   const [selected, setSelected] = useState<GoogleScope[]>([...GOOGLE_SCOPES]);
   const [pending, setPending] = useState(false);
@@ -48,12 +35,8 @@ export function ConnectGoogleButton() {
     try {
       const { authorizationUrl } = await startGoogleConnect(selected);
 
-      // A real top-level navigation, NOT a fetch. The browser must actually
-      // land on Google's consent screen; an XHR cannot follow it.
       window.location.assign(authorizationUrl);
 
-      // Intentionally leave `pending` true: the page is navigating away, and
-      // re-enabling the button would invite a double submit in the gap.
     } catch (caught) {
       setError(
         caught instanceof ApiRequestError

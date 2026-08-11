@@ -5,23 +5,12 @@ import {
 } from "@/features/integrations/google/components/google-scope-badge";
 import type { OAuthConnectionSummary } from "@/features/integrations/google/types/google-connection";
 
-/**
- * Presentational list of the caller's Google connections.
- *
- * Fetches nothing of its own — the page's Server Component supplies the data,
- * so a `router.refresh()` after connect/disconnect is enough to keep it
- * accurate without any client-side cache to invalidate.
- */
-
 function formatTimestamp(value: string | null): string {
   if (!value) return "Never";
 
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return "Unknown";
 
-  // Fixed, explicit formatting rather than a relative "3 days ago": a Server
-  // Component renders once and would otherwise show a relative time that
-  // silently goes stale in the browser.
   return parsed.toLocaleString(undefined, {
     dateStyle: "medium",
     timeStyle: "short",

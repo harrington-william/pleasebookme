@@ -43,10 +43,12 @@ export async function POST(request: NextRequest) {
     const result = await withAccessToken((accessToken) =>
       initiateGoogleConnectOnPlatform(accessToken, {
         scopes,
-        // ALWAYS explicit. The server's DEFAULT_REDIRECT_AFTER is
-        // "/settings/integrations" — no /dashboard prefix — which would land
-        // outside proxy.ts's protected prefix and on a route that does not
-        // exist in this app. Never rely on the server default here.
+        // ALWAYS explicit. The server's DEFAULT_REDIRECT_AFTER now matches this
+        // (it was corrected from "/settings/integrations", which lacked the
+        // /dashboard prefix and would have landed outside proxy.ts's protected
+        // prefix on a route that does not exist here). Keep sending it anyway:
+        // this app's routing is not the server's to know, and the two happening
+        // to agree today is not a reason to depend on it.
         redirectAfter: "/dashboard/settings/integrations",
       })
     );

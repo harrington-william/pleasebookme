@@ -4,25 +4,10 @@ import type { ReactNode } from "react";
 import { clientEnv } from "@/lib/env";
 import { cn } from "@/lib/utils";
 
-/**
- * Shared shell for every screen in the auth flow (register, login, and the
- * reserved forgot/reset/verify screens).
- *
- * Extracted because the register and login mocks share an identical wrapper —
- * brand mark, panel, footer link row — and duplicating it across five screens
- * would guarantee drift.
- *
- * The panel uses the Level-2 ambient shadow documented in DESIGN.md
- * ("Elevation & Depth"), not a stock Tailwind shadow: the design system calls
- * for depth via tonal layering and a single large-radius shadow, never a
- * heavy or tight drop shadow.
- */
-
 type AuthCardProps = {
   title: string;
   subtitle: string;
   children: ReactNode;
-  /** Cross-link row rendered under the panel content. */
   footer?: ReactNode;
   className?: string;
 };
@@ -60,10 +45,6 @@ export function AuthCard({
   );
 }
 
-/**
- * "OR" rule separating the credential form from the federated sign-in option.
- * The label sits on the panel colour so the rule appears to pass behind it.
- */
 export function AuthDivider({ label = "OR" }: { label?: string }) {
   return (
     <div className="relative mt-lg flex items-center justify-center">
@@ -77,5 +58,4 @@ export function AuthDivider({ label = "OR" }: { label?: string }) {
   );
 }
 
-/** Brand name, read from public config so it stays consistent app-wide. */
 export const APP_NAME = clientEnv.appName;

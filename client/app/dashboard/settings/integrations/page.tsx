@@ -18,24 +18,7 @@ export const metadata: Metadata = {
   description: "Connect Google Calendar, Sheets and Drive to your workspace.",
 };
 
-/**
- * Google integrations settings.
- *
- * THE URL MATTERS. proxy.ts only session-gates the `/dashboard` prefix, and the
- * server's DEFAULT_REDIRECT_AFTER is "/settings/integrations" — without the
- * /dashboard prefix. Every /connect call from this app therefore passes
- * `redirectAfter: "/dashboard/settings/integrations"` explicitly so the
- * post-consent redirect lands here, inside the protected prefix, on a route
- * that actually exists. See app/api/integrations/google/connect/route.ts.
- *
- * There is no Next.js callback route anywhere in this flow: Google redirects
- * the browser straight to Spring Boot, which handles everything and then 302s
- * back here with `?google=<outcome>`.
- */
 export default async function GoogleIntegrationsPage() {
-  // proxy.ts already gates /dashboard, but per the Next.js data-security guide
-  // route-level interception is not sufficient on its own — re-check here,
-  // close to the data.
   const actor = await getSessionActor();
   if (!actor) {
     redirect("/login");
@@ -47,10 +30,6 @@ export default async function GoogleIntegrationsPage() {
   try {
     connections = await withAccessToken(
       (accessToken) => listGoogleConnectionsOnPlatform(accessToken),
-      // Cookie writes are illegal during a Server Component render, so a token
-      // rotated here cannot be persisted. The refreshed token is still used for
-      // this request; the next mutation through a Route Handler will persist a
-      // fresh pair properly.
       { allowSessionWrite: false }
     );
   } catch (error) {
@@ -58,8 +37,6 @@ export default async function GoogleIntegrationsPage() {
       redirect("/login");
     }
 
-    // A platform hiccup should not blank the page — the connect action below
-    // is still perfectly usable.
     loadError =
       "Could not load your connected accounts. Please refresh to try again.";
   }
@@ -77,7 +54,6 @@ export default async function GoogleIntegrationsPage() {
         </p>
       </header>
 
-      {/* useSearchParams requires a Suspense boundary during prerendering. */}
       <Suspense fallback={null}>
         <GoogleConnectionOutcomeBanner />
       </Suspense>

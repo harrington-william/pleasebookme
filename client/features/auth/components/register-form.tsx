@@ -16,7 +16,7 @@ import {
 } from "@/features/auth/components/auth-card";
 import { AuthField } from "@/features/auth/components/auth-field";
 import { AuthFormAlert } from "@/features/auth/components/auth-form-alert";
-import { GoogleAuthButton } from "@/features/auth/components/google-auth-button";
+import { GoogleOnboardingButton } from "@/features/auth/components/google-onboarding-button";
 import { AuthSubmitButton } from "@/features/auth/components/auth-submit-button";
 import {
   registerFormSchema,
@@ -25,22 +25,6 @@ import {
 import { registerAccount } from "@/features/auth/services/auth-api";
 import { AuthRequestError } from "@/features/auth/services/auth-errors";
 
-/**
- * Account creation screen.
- *
- * Implements design/client/stitch/create_account_dark_pleasebookme, with two
- * deliberate divergences from the mock, both driven by the platform contract:
- *
- *  - A USERNAME field is added. The mock has none, but RegisterRequest requires
- *    `username` and the platform authenticates by it, so an account created
- *    without one could never sign in.
- *
- *  - First/last name are collected separately for UX but joined into the single
- *    `name` column the platform stores (see toRegisterRequest).
- *
- * `confirmPassword` and `terms` are client-side only and never leave the
- * browser — the platform models neither.
- */
 export function RegisterForm() {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -52,7 +36,6 @@ export function RegisterForm() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerFormSchema),
-    // Surface every unmet password rule at once rather than one at a time.
     criteriaMode: "all",
     mode: "onBlur",
     defaultValues: {
@@ -71,8 +54,8 @@ export function RegisterForm() {
 
     try {
       await registerAccount(values);
-      // Registration is a complete auth event: the platform issues tokens
-      // immediately, so the user lands signed in.
+      
+      // Redirect to dashboard
       router.push("/dashboard");
       router.refresh();
     } catch (error) {
@@ -84,7 +67,6 @@ export function RegisterForm() {
     }
   }
 
-  // With criteriaMode "all", every failing rule is collected in `types`.
   const passwordRules = errors.password?.types
     ? Object.values(errors.password.types).flat().filter(Boolean)
     : null;
@@ -127,7 +109,6 @@ export function RegisterForm() {
           />
         </div>
 
-        {/* Not in the mock — required by the platform's RegisterRequest. */}
         <AuthField
           id="username"
           label="Username"
@@ -180,8 +161,6 @@ export function RegisterForm() {
 
         <div className="pt-sm">
           <div className="flex items-start gap-sm">
-            {/* Base UI's Checkbox is not a native input, so it needs a
-                Controller rather than register(). */}
             <Controller
               control={control}
               name="terms"
@@ -235,7 +214,8 @@ export function RegisterForm() {
 
       <AuthDivider />
 
-      <GoogleAuthButton label="Sign up with Google" />
+      {/* Consent screen */}
+      <GoogleOnboardingButton />
     </AuthCard>
   );
 }

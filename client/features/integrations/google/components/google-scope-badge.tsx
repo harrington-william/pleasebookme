@@ -2,14 +2,6 @@ import type { OAuthConnectionStatus } from "@/features/integrations/google/types
 import { labelForScopeUri } from "@/features/integrations/google/types/google-connection";
 import { cn } from "@/lib/utils";
 
-/**
- * Small chips for granted scopes and connection status.
- *
- * Per DESIGN.md "Chips/Badges": 4px radius, a ~10% tint of the semantic colour
- * with the solid colour for text. Deliberately quiet — a settings page listing
- * several of these should not look like a dashboard of alarms.
- */
-
 export function GoogleScopeBadge({ uri }: { uri: string }) {
   return (
     <span className="inline-flex items-center rounded-sm border border-border bg-surface-container px-xs py-[2px] font-mono text-mono-label text-muted-foreground">
@@ -44,8 +36,6 @@ export function GoogleConnectionStatusBadge({
         STATUS_STYLES[status]
       )}
     >
-      {/* 6px solid dot, per DESIGN.md "Status Indicators". No pulse: none of
-          these states are "active processing". */}
       <span
         aria-hidden="true"
         className="size-[6px] rounded-full bg-current"

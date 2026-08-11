@@ -8,16 +8,6 @@ import { disconnectGoogleConnection } from "@/features/integrations/google/servi
 import { ApiRequestError } from "@/lib/api-error";
 import { cn } from "@/lib/utils";
 
-/**
- * Revokes a Google connection.
- *
- * Uses an inline click-again-to-confirm rather than `window.confirm`, which is
- * banned project-wide (a native modal blocks the page and, in this
- * environment, the automation harness). The confirm step is warranted:
- * disconnecting revokes the grant at Google immediately, so it is not a
- * local-only, easily-undone action — reconnecting requires a full consent
- * round trip.
- */
 export function DisconnectGoogleConnectionButton({
   oauthConnectionUid,
   providerEmail,
@@ -41,7 +31,6 @@ export function DisconnectGoogleConnectionButton({
 
     try {
       await disconnectGoogleConnection(oauthConnectionUid);
-      // Re-runs the Server Component so the row reflects its new state.
       router.refresh();
       setConfirming(false);
     } catch (caught) {

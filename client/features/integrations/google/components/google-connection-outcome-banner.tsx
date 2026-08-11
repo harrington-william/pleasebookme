@@ -10,21 +10,6 @@ import {
 } from "@/features/integrations/google/types/google-connection";
 import { cn } from "@/lib/utils";
 
-/**
- * Reports the result of a Google consent round trip.
- *
- * The `?google=<outcome>` query parameter is the ONLY signal the frontend gets
- * about what happened — the entire callback is handled by Spring Boot, which
- * then 302s the browser back here. There is no Next.js callback route, and no
- * authorization code or token ever reaches this code.
- *
- * Two things happen on mount:
- *  - the parameter is stripped from the URL, so a refresh or a shared link does
- *    not re-show a stale result;
- *  - on `connected`, the route is refreshed, because the Server Component that
- *    rendered the connection list ran BEFORE this redirect landed and therefore
- *    does not yet include the new connection.
- */
 
 type Severity = "success" | "neutral" | "warning" | "destructive";
 
@@ -37,8 +22,6 @@ const OUTCOMES: Record<
     message: "Google account connected.",
   },
   denied: {
-    // A user declining consent is a choice, not a failure. Styling this as an
-    // error would imply something went wrong when nothing did.
     severity: "neutral",
     message: "You declined the Google consent screen — nothing was changed.",
   },
@@ -58,8 +41,6 @@ const OUTCOMES: Record<
 };
 
 const SEVERITY_STYLES: Record<Severity, string> = {
-  // Per DESIGN.md "Chips/Badges": a ~10% tint of the semantic colour with the
-  // solid colour for text, keeping the surface quiet.
   success: "border-success/30 bg-success/10 text-success",
   neutral: "border-border bg-surface-container text-muted-foreground",
   warning: "border-warning/30 bg-warning/10 text-warning",
@@ -80,12 +61,6 @@ export function GoogleConnectionOutcomeBanner() {
 
   const raw = searchParams.get("google");
 
-  // Captured once, at mount, via a lazy initializer rather than written from
-  // the effect below. The effect immediately strips `?google=` from the URL, so
-  // `raw` goes null on the very next render — the outcome has to be remembered
-  // independently of the query string. A lazy initializer is the right tool
-  // here: the user always arrives on this page through a full page load (Spring
-  // Boot 302s the browser back), so the component is guaranteed to mount fresh.
   const [outcome] = useState<GoogleConnectOutcome | null>(() =>
     isGoogleConnectOutcome(raw) ? raw : null
   );
@@ -93,7 +68,6 @@ export function GoogleConnectionOutcomeBanner() {
   useEffect(() => {
     if (!isGoogleConnectOutcome(raw)) return;
 
-    // Drop the parameter so refreshing does not resurrect the banner.
     const next = new URLSearchParams(searchParams.toString());
     next.delete("google");
     const query = next.toString();
@@ -102,7 +76,6 @@ export function GoogleConnectionOutcomeBanner() {
     });
 
     if (raw === "connected") {
-      // The list was fetched server-side before this redirect arrived.
       router.refresh();
     }
   }, [raw, pathname, router, searchParams]);

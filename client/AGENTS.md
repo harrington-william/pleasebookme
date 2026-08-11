@@ -157,6 +157,8 @@ the grid to a radial fade — a flat edge-to-edge grid reads as wallpaper.
 ```
 app/
   (auth)/{login,register}/page.tsx   Route files: metadata only, no logic
+  (auth)/google/complete/page.tsx    PUBLIC landing for one-shot registration.
+                                     Must stay outside /dashboard — see Flow 3
   api/auth/*/route.ts                BFF boundary — the only caller of gateways
   dashboard/page.tsx                 PLACEHOLDER, replace with the real one
 components/
@@ -194,6 +196,9 @@ Auth endpoints are under `/api/v1/auth` and are the only `permitAll()` paths.
 | `/register` | 201, returns tokens directly — registration signs you in      |
 | `/login`    | 200, authenticates by **username**, not email                 |
 | `/refresh`  | 200, **rotates** the pair — persist both tokens               |
+| `/google`   | 200, ID-token sign-in (flow 1)                                |
+| `/google/authorize` | 200 `{ authorizationUrl }` — starts one-shot registration (flow 3) |
+| `/google/handoff`   | 200, trades the single-use callback code for a token pair; 401 when spent/expired |
 
 Gaps the client currently works around (**remove the workaround when fixed**):
 
@@ -247,26 +252,38 @@ days.
   persisted there. The refreshed token is still used for that request; the next
   mutation through a Route Handler persists a fresh pair properly.
 
-## Google OAuth2 — two unrelated flows
+## Google OAuth2 — three distinct flows
 
-The single most important thing to understand: **there are two Google flows and
-they share nothing on the frontend.** Conflating them is the easiest mistake to
-make in this area.
+The single most important thing to understand: **there are three Google flows,
+they do different things, and only two of them share any frontend code.**
+Conflating them is the easiest mistake to make in this area.
 
-| | **Sign-In** (authentication) | **Delegated authorization** |
-|---|---|---|
-| Question | who is this user? | may we act on their behalf? |
-| Endpoint | `POST /api/v1/auth/google` | `/api/v1/integrations/google/*` |
-| Auth | `permitAll` — the ID token *is* the credential | Bearer |
-| Mechanism | ID token from Google Identity Services, posted | authorization code + browser redirect |
-| Google Console field | Authorized **JavaScript origin** | Authorized **redirect URI** |
-| Client secret used | no | yes (server-side only) |
-| Produces | a platform session (our cookies) | encrypted row in `integration.oauth_connections` |
-| Frontend code | `features/auth/` | `features/integrations/google/` |
+| | **1. Sign-In** | **2. Delegated authorization** | **3. One-shot registration** |
+|---|---|---|---|
+| Question | who is this user? | may we act on their behalf? | both, in one trip |
+| Where | `/login` | Settings → Integrations | `/register` |
+| Endpoint | `POST /api/v1/auth/google` | `/api/v1/integrations/google/*` | `POST /api/v1/auth/google/{authorize,handoff}` |
+| Auth | `permitAll` — the ID token *is* the credential | Bearer | `permitAll` — no account exists yet |
+| Mechanism | ID token from Google Identity Services, posted | authorization code + browser redirect | authorization code + browser redirect |
+| Google Console field | Authorized **JavaScript origin** | Authorized **redirect URI** | Authorized **redirect URI** |
+| Client secret used | no | yes (server-side only) | yes (server-side only) |
+| Produces | a platform session | encrypted row in `integration.oauth_connections` | **both**, plus a provisioned account |
+| Frontend code | `features/auth/` | `features/integrations/google/` | `features/auth/` |
 
-They live in separate feature folders on purpose: `features/auth/` owns the
-platform *session*; `features/integrations/google/` owns a *post-login*
-integration that maps onto the backend's own `integration` bounded context.
+Flows 1 and 3 both live in `features/auth/` because both produce a platform
+*session*. Flow 2 lives in `features/integrations/google/`, mirroring the
+backend's own `integration` bounded context — it is a *post-login* concern that
+never touches the session.
+
+Flow 3 is not a replacement for either. It shares flow 2's authorization-code
+machinery on the server (same `initiate`, same callback, distinguished by an
+`OAuthFlowMode`) and flow 1's account resolution — but on the frontend it is its
+own path end to end.
+
+**Why login is not also one-shot:** flow 3 sends `prompt=consent`, and forcing
+the Google consent screen on every sign-in is hostile. A returning user on flow 1
+sees an account chooser and no consent screen, because the registration grant
+already covers `openid email profile` for the same client ID.
 
 ### Flow 1 — Google Sign-In
 
@@ -329,11 +346,13 @@ Non-obvious rules, each of which will bite if ignored:
   here, the real bug is that something is fetching the URL instead of
   navigating to it.
 - **Always pass `redirectAfter: "/dashboard/settings/integrations"` explicitly.**
-  The server's `DEFAULT_REDIRECT_AFTER` is `/settings/integrations` — *without*
-  the `/dashboard` prefix — which would land outside `proxy.ts`'s protected
-  prefix on a route that does not exist. Never rely on the server default. This
-  is enforced in `app/api/integrations/google/connect/route.ts`, not in the
-  browser, so a caller cannot forget it.
+  The server's `DEFAULT_REDIRECT_AFTER` now agrees (it was corrected backend-side
+  from `/settings/integrations`, which lacked the `/dashboard` prefix and would
+  have landed outside `proxy.ts`'s protected prefix on a route that does not
+  exist). The explicit pass stays: this app's routing is not the server's to
+  know, and the two agreeing today is not a reason to depend on it. Enforced in
+  `app/api/integrations/google/connect/route.ts`, not in the browser, so a caller
+  cannot forget it. Flow 3 deliberately does the opposite — see there for why.
 - **No Next.js callback route exists, by design.** Step 4 hits Spring directly.
   The frontend only ever sees the aftermath as a `?google=` parameter. No
   authorization code, state value, or Google token ever reaches frontend code
@@ -350,6 +369,86 @@ Non-obvious rules, each of which will bite if ignored:
 - The five outcomes are `connected`, `denied`, `invalid_state`, `missing_code`,
   `error`. `denied` is a neutral user choice, not a failure — do not style it
   as an error.
+
+### Flow 3 — One-shot registration (`/register`)
+
+Creates the account **and** grants Calendar/Sheets/Drive in a single Google
+round trip. It exists because the product is unusable without calendar access
+(`SERVER_AGENTS.md` → "Product invariants"), so a separate consent chore parked
+in settings is a chore that never gets done.
+
+```
+1. click  ──▶ POST /api/auth/google/authorize ──▶ POST /api/v1/auth/google/authorize
+                                                    │  no Bearer — nobody exists yet
+                          ◀── { authorizationUrl } ─┘  PKCE + state (mode=SIGN_UP_AND_CONNECT)
+2. window.location.assign(authorizationUrl)   ← a REAL navigation, never fetch
+3. user consents on Google's own UI
+4. Google redirects the BROWSER to Spring directly (no Next.js route involved)
+5. Spring: exchange code → verify id_token → resolve-or-provision the user
+           → store the encrypted connection → mint JWTs → stash them behind a
+           single-use handoff code, then 302 to:
+              {frontend}/google/complete?google=connected&handoff=<code>
+6. /google/complete → GoogleHandoffExchange
+      POST /api/auth/google/handoff ──▶ POST /api/v1/auth/google/handoff
+      BFF writes httpOnly cookies ──▶ router.replace("/dashboard")
+```
+
+**Why the handoff code exists.** The callback lands on Spring (`:8080`), which
+cannot write cookies for the Next origin (`:3000`). The alternatives are worse:
+tokens in the query string leak into browser history, `Referer`, and every proxy
+log; a Spring-side cookie abandons the httpOnly BFF model entirely. So Spring
+hands over an opaque code instead.
+
+**The code is not a token.** Redis stores only a user reference; the JWT pair is
+minted at exchange time. It is single-use (`GETDEL`) with a **60-second TTL**.
+Two consequences that are easy to get wrong:
+
+- **React StrictMode consumes it twice.** In development, effects run twice —
+  the second call hits a spent key and reports failure *on a flow that actually
+  succeeded*, telling the user their sign-up broke while their cookie sits right
+  there. `google-handoff-exchange.tsx` latches with a `useRef`, **not** state:
+  state resets across the double-invoke, a ref does not.
+- **Keep `/google/complete` light.** 60 seconds is not much, and a heavy Server
+  Component or cold start burns a real fraction of it. Fire the exchange
+  immediately, never behind a transition or a Suspense boundary waiting on
+  something else.
+
+Non-obvious rules:
+
+- **⚠ `/google/complete` must never be session-gated.** The redirect arrives
+  *before any cookie exists* — that is the entire point. `proxy.ts` gates
+  `PROTECTED_PREFIXES = ["/dashboard"]`, so a landing route under `/dashboard`
+  would bounce to `/login` and **silently discard the handoff code after a real
+  consent**. `GUEST_ONLY_ROUTES` is exact-matched on `/login` and `/register`, so
+  it does not catch this path either — which also means a user with a stale
+  session cookie still reaches the exchange instead of being punted to
+  `/dashboard`. Both verified. Re-check both lists if this route ever moves.
+- **The server owns the landing path.** `DEFAULT_ONBOARDING_REDIRECT_AFTER` is
+  `/google/complete`, and the client deliberately sends **no** `redirectAfter` —
+  hardcoding the same path on both sides only invites drift. Renaming the route
+  therefore means changing that server constant. This is the opposite of flow 2,
+  which always sends one explicitly.
+- **`?google=connected` does not mean Calendar was granted.** Users can untick
+  scopes and the connection is still written `ACTIVE`. Any "is this workspace
+  calendar-connected?" check must read the connection's `scopes` array, never
+  `status`. That belongs to the dashboard, not to this flow.
+- **`denied` and unticking are completely different outcomes.** Unticking →
+  `?google=connected&handoff=…`, account created, narrow scopes. Cancelling →
+  `?google=denied`, **nothing created at all** — the user is not registered. The
+  landing page's copy distinguishes them.
+- **`connected` with no `handoff` is treated as a failure**, deliberately. It
+  should not occur from this path, but a flow-2 callback misconfigured to land
+  here produces exactly that, and a spinner that never resolves is the worst
+  possible outcome.
+- **A failed exchange is genuinely awkward and the copy says so.** The account
+  and the Google connection already exist by then; only the cookie is missing.
+  The recovery is to sign in with Google — *not* to register again.
+- **Known edge, backend-side:** an onboarding state that expires (10 min) or is
+  replayed resolves to nothing, so the server falls back to
+  `DEFAULT_REDIRECT_AFTER` (`/dashboard/settings/integrations`) rather than
+  `/google/complete`. With no session that lands on `/login?next=…` — recoverable
+  and safe, but not the wording this flow would choose. Fixing it means giving
+  the server a mode-aware fallback, which it cannot know once the state is gone.
 
 ## Environment
 
@@ -405,6 +504,21 @@ It does not: the server registers no custom Jackson number handling (no
 Boot's defaults apply and it serializes as a **number**. Typed as `number` in
 `google-connection.ts`. Nothing in the UI reads it — every operation is keyed by
 `oauthConnectionUid` — so if this ever does change, the blast radius is one line.
+
+### One-shot registration: built, with one open prerequisite
+
+Flow 3 is implemented on both sides. `features/auth/GOOGLE_ONE_SHOT_FLOW.md` is
+the build plan it was written from; this file is the current description.
+
+**It still provisions tenant-less accounts.** `UserProvisioningService` writes no
+`tenant.tenants` row (`SERVER_AGENTS.md` → "Workspace provisioning —
+INCOMPLETE"), and this flow provisions through that same component. A green
+end-to-end run therefore proves the *flow* works, not that the workspace is
+complete. Do not read one as the other.
+
+Related: every user **is** a tenant under the current product rule, with no null
+case. The nullable-tenant language in `SECURITY.md` §5 is stale and is being
+corrected alongside the loader code, not before it.
 
 ### Still-open gaps (not blockers)
 

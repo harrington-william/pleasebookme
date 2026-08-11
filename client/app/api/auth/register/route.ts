@@ -6,17 +6,6 @@ import { registerOnPlatform } from "@/features/auth/services/auth-gateway";
 import { createSession } from "@/lib/session";
 import { decodeJwt } from "@/lib/jwt";
 
-/**
- * POST /api/auth/register
- *
- * BFF boundary. Forwards a registration to the platform, then converts the
- * returned JWTs into httpOnly cookies so they never touch browser JavaScript.
- * The response body deliberately contains NO tokens.
- *
- * Registration is a complete authentication event on the platform (it issues a
- * token pair directly, per SECURITY.md), so a successful call leaves the user
- * signed in — there is no separate login step and no email-verification gate.
- */
 export async function POST(request: NextRequest) {
   let payload: unknown;
 
@@ -29,11 +18,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Re-validate server-side: the browser's checks are bypassable.
   const parsed = registerRequestSchema.safeParse(payload);
   if (!parsed.success) {
     return NextResponse.json(
-      { message: "Some of the details you entered are not valid.", status: 400 },
+      { message: "Payload contains invalid data.", status: 400 },
       { status: 400 }
     );
   }

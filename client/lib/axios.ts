@@ -5,22 +5,9 @@ import axios, {
 
 import { serverEnv } from "@/lib/env";
 
-/**
- * The client app talks to the Spring Boot platform through a Backend-for-
- * Frontend (BFF) hop, so there are two distinct axios instances and they must
- * not be confused:
- *
- *   browser ──bffClient──▶ Next.js Route Handler ──platformClient──▶ Spring Boot
- *
- *   bffClient        Runs in the BROWSER. Same-origin, so the httpOnly session
- *                    cookie rides along automatically and no CORS negotiation
- *                    is needed (the Spring server currently configures no CORS
- *                    at all, which is exactly why the browser never calls it).
- *
- *   platformClient() Runs on the SERVER only. Targets the Spring Boot origin
- *                    from API_BASE_URL. Never import this into a Client
- *                    Component — it reads server-only configuration.
- */
+// bffClient: Runs in the BROWSER, Same-origin
+// platformClient(): Server component, targets the Spring Boot origin
+// Never use platformClient() in client components
 
 const CORRELATION_HEADER = "X-Correlation-Id";
 
