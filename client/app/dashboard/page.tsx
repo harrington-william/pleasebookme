@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
-import { getSessionActor } from "@/lib/session";
+import { getSessionActor, SESSION_EXPIRED_REDIRECT } from "@/lib/session";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -19,13 +19,14 @@ export const metadata: Metadata = {
  * The `redirect` below is a defence-in-depth check, not the primary guard —
  * proxy.ts already gates this route. Per the Next.js data-security guidance,
  * route-level interception alone is not sufficient; checks belong close to the
- * data as well.
+ * data as well. It must target SESSION_EXPIRED_REDIRECT, never a bare "/login"
+ * — see lib/auth-cookies.ts for why.
  */
 export default async function DashboardPage() {
   const actor = await getSessionActor();
 
   if (!actor) {
-    redirect("/login");
+    redirect(SESSION_EXPIRED_REDIRECT);
   }
 
   return (

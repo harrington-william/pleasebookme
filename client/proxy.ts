@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { REFRESH_TOKEN_COOKIE } from "@/lib/auth-cookies";
+import {
+  ACCESS_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE,
+  SESSION_EXPIRED_PARAM,
+  SESSION_EXPIRED_VALUE,
+} from "@/lib/auth-cookies";
 
 /**
  * Route gating.
@@ -27,6 +32,13 @@ import { REFRESH_TOKEN_COOKIE } from "@/lib/auth-cookies";
  * Presence of the REFRESH token (30 days) is the session signal, not the access
  * token (15 minutes). Gating on the access token would bounce a user to /login
  * every 15 minutes even though their session is still perfectly renewable.
+ *
+ * ⚠ Because this check is optimistic, it WILL sometimes disagree with the
+ * server-side guards in the pages. That disagreement is only safe as long as
+ * every redirect to /login also clears the session cookies — otherwise the two
+ * sides redirect at each other forever. See SESSION_EXPIRED_REDIRECT in
+ * lib/auth-cookies.ts for the full statement of that invariant. Both places
+ * this file sends a visitor to /login therefore call `clearSession`.
  */
 
 /** Routes that require a session. Prefix-matched. */
@@ -35,12 +47,39 @@ const PROTECTED_PREFIXES = ["/dashboard"];
 /** Routes an already-signed-in user should not see. Exact-matched. */
 const GUEST_ONLY_ROUTES = ["/login", "/register"];
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+/**
+ * Strips the session cookies from an outgoing response.
+ *
+ * Deleting them on the response — rather than trusting the browser to have
+ * already dropped them — is what breaks the redirect cycle: once they are gone
+ * the next request looks like a plain signed-out visitor to every layer.
+ */
+function clearSession<T extends NextResponse>(response: T): T {
+  response.cookies.delete(ACCESS_TOKEN_COOKIE);
+  response.cookies.delete(REFRESH_TOKEN_COOKIE);
+  return response;
+}
 
-  const hasSession = Boolean(
-    request.cookies.get(REFRESH_TOKEN_COOKIE)?.value
-  );
+export function proxy(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl;
+
+  const hasSession = Boolean(request.cookies.get(REFRESH_TOKEN_COOKIE)?.value);
+
+  if (GUEST_ONLY_ROUTES.includes(pathname)) {
+    // A server-side guard concluded the session is unusable and bounced the
+    // visitor here. It could not clear the cookies itself (illegal during
+    // render), so do it now — and, critically, do NOT send them back to
+    // /dashboard on the strength of the very cookie being discarded.
+    if (searchParams.get(SESSION_EXPIRED_PARAM) === SESSION_EXPIRED_VALUE) {
+      return clearSession(NextResponse.next());
+    }
+
+    if (hasSession) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
+    return NextResponse.next();
+  }
 
   const isProtected = PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -50,11 +89,9 @@ export function proxy(request: NextRequest) {
     const target = new URL("/login", request.url);
     // Preserve the destination so sign-in can return the user to it.
     target.searchParams.set("next", pathname);
-    return NextResponse.redirect(target);
-  }
-
-  if (hasSession && GUEST_ONLY_ROUTES.includes(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    // A leftover access cookie with no refresh cookie is not a session; drop it
+    // so no later layer mistakes it for one.
+    return clearSession(NextResponse.redirect(target));
   }
 
   return NextResponse.next();
