@@ -23,7 +23,13 @@ import {
 import { loginWithCredentials } from "@/features/auth/services/auth-api";
 import { AuthRequestError } from "@/features/auth/services/auth-errors";
 
-export function LoginForm() {
+/**
+ * `notice` is a neutral, server-supplied message shown above the form — used
+ * when the visitor did not choose to be here (an expired session bounced them).
+ * It is deliberately not styled as an error: nothing went wrong, and it is
+ * suppressed once a real submit error exists, which is the more urgent message.
+ */
+export function LoginForm({ notice }: { notice?: string }) {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -71,6 +77,15 @@ export function LoginForm() {
     >
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-md">
         {submitError ? <AuthFormAlert message={submitError} /> : null}
+
+        {!submitError && notice ? (
+          <p
+            role="status"
+            className="rounded-lg border border-border bg-surface-container px-md py-sm text-body-md text-muted-foreground"
+          >
+            {notice}
+          </p>
+        ) : null}
 
         <AuthField
           id="username"

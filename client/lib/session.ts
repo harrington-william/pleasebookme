@@ -8,25 +8,13 @@ import {
   REFRESH_TOKEN_MAX_AGE,
 } from "@/lib/auth-cookies";
 import { serverEnv } from "@/lib/env";
-import { decodeJwt } from "@/lib/jwt";
+import { decodeJwt, isJwtExpired } from "@/lib/jwt";
 
-/**
- * Session storage.
- *
- * The platform's JWTs are held in httpOnly cookies written by the BFF route
- * handlers. Browser JavaScript can never read them, which is the whole point
- * of routing auth through Next.js instead of calling Spring Boot directly.
- *
- * The tokens are stored as issued — they are NOT re-encrypted or re-signed.
- * Spring Boot already signed them and is the only party that can verify them;
- * wrapping them in a second Next.js-managed signature would add a key to
- * manage and a failure mode to debug without adding security.
- *
- * Server-only: `cookies()` is unavailable in Client Components, and `.set()`
- * additionally only works inside a Route Handler or Server Function.
- */
-
-export { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "@/lib/auth-cookies";
+export {
+  ACCESS_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE,
+  SESSION_EXPIRED_REDIRECT,
+} from "@/lib/auth-cookies";
 
 function cookieOptions(maxAge: number) {
   return {
@@ -38,7 +26,7 @@ function cookieOptions(maxAge: number) {
   };
 }
 
-/** Writes both tokens. Call only from a Route Handler or Server Function. */
+// Set access & refresh tokens in cookies
 export async function createSession(tokens: AuthTokens): Promise<void> {
   const cookieStore = await cookies();
 
@@ -54,7 +42,7 @@ export async function createSession(tokens: AuthTokens): Promise<void> {
   );
 }
 
-/** Clears both tokens. Call only from a Route Handler or Server Function. */
+// Clear both tokens
 export async function destroySession(): Promise<void> {
   const cookieStore = await cookies();
 
@@ -72,23 +60,8 @@ export async function getRefreshToken(): Promise<string | null> {
   return cookieStore.get(REFRESH_TOKEN_COOKIE)?.value ?? null;
 }
 
-/**
- * Reads the current actor from the access token's claims.
- *
- * OPTIMISTIC ONLY — the signature is not verified here (see lib/jwt.ts). Use
- * this to decide what to render, never to authorize access to data. Any call
- * that actually touches platform data must go through the platform, which
- * verifies the token itself.
- *
- * Returns null when there is no access token or it is unreadable. A null
- * `tenantUid` on a valid session is expected, not an error: per SECURITY.md a
- * user has no Tenant until their organization subscribes to a plan.
- */
-export async function getSessionActor(): Promise<SessionActor | null> {
-  const accessToken = await getAccessToken();
-  if (!accessToken) return null;
-
-  const claims = decodeJwt(accessToken);
+function toSessionActor(token: string): SessionActor | null {
+  const claims = decodeJwt(token);
   if (!claims?.sub) return null;
 
   return {
@@ -97,4 +70,50 @@ export async function getSessionActor(): Promise<SessionActor | null> {
     tenantUid: claims.tenant ?? null,
     expiresAt: claims.exp,
   };
+}
+
+/**
+ * Who is signed in, or null if nobody is.
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * THE ACCESS TOKEN IS NOT THE SESSION SIGNAL. The refresh token is.
+ *
+ * The access cookie lives 15 minutes; the refresh cookie lives 30 days. So for
+ * almost the entire life of a session there is no access cookie at all, and
+ * reading its absence as "signed out" is simply wrong — the session is alive
+ * and renewable, it just needs a round trip nobody has made yet.
+ *
+ * This used to return null in exactly that window while proxy.ts (correctly)
+ * kept saying "signed in", and the two redirected at each other until Chrome
+ * gave up with ERR_TOO_MANY_REDIRECTS. It reproduced on every visit made more
+ * than 15 minutes after signing in.
+ *
+ * lib/authenticated-platform-request.ts already models this correctly — it
+ * treats a missing refresh token as fatal and a missing access token as
+ * routine. This function now agrees with it, and with proxy.ts.
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
+ * Both tokens are JWTs carrying the same identity claims (sub / actor_type /
+ * tenant — see DefaultJwtGenerator on the platform), differing only in
+ * `token_type` and lifetime, so identity is readable from whichever survives.
+ *
+ * Decoded, never verified — for optimistic render decisions only, exactly as
+ * lib/jwt.ts warns. The platform re-verifies on every API call.
+ */
+export async function getSessionActor(): Promise<SessionActor | null> {
+  const accessToken = await getAccessToken();
+
+  if (accessToken && !isJwtExpired(accessToken)) {
+    const actor = toSessionActor(accessToken);
+    if (actor) return actor;
+  }
+
+  // No usable access token is the NORMAL steady state, not a failure. Fall back
+  // to the refresh token: it answers both "is there a session" and "whose".
+  const refreshToken = await getRefreshToken();
+  if (!refreshToken || isJwtExpired(refreshToken)) return null;
+
+  // `expiresAt` is now when the SESSION dies rather than when the access token
+  // does — which is what a caller asking about the session actually wants.
+  return toSessionActor(refreshToken);
 }

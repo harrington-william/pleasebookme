@@ -114,6 +114,46 @@ Rules:
 Never treat layer 1 as security. Per the Next.js data-security guide, checks
 belong close to the data.
 
+### ⚠ The redirect-loop invariant
+
+**Every redirect to `/login` must also clear the session cookies, or it bounces
+straight back.** `proxy.ts` sends a signed-in visitor away from `/login`, so a
+guard that says "no session" and redirects there while the refresh cookie
+survives hands the proxy a cookie that says "signed in" — and the two redirect
+at each other until the browser gives up with `ERR_TOO_MANY_REDIRECTS`.
+
+A Server Component **cannot** clear a cookie — `cookies().delete()` is illegal
+during render — so it redirects to `SESSION_EXPIRED_REDIRECT`
+(`/login?session=expired`, `lib/auth-cookies.ts`) and `proxy.ts` does the
+clearing on its behalf. Never write a bare `redirect("/login")` in a page or
+layout. The marker is a UX signal, not a credential: anyone can type it, and all
+it achieves is signing the typist out of their own browser.
+
+This shipped broken once and reproduced on **every** visit made more than 15
+minutes after signing in — long enough after a working first login to look
+intermittent, which is why "it works, then it doesn't" was the reported symptom.
+
+### The access token is not the session signal
+
+The refresh cookie is, at *both* layers. The access cookie lives 15 minutes and
+the refresh cookie 30 days, so for almost the whole life of a session there is
+no access cookie at all — reading its absence as "signed out" is simply wrong.
+
+- `getSessionActor()` reads the access token, then falls back to the refresh
+  token. Both are JWTs carrying the same identity claims (`sub`/`actor_type`/
+  `tenant` — see `DefaultJwtGenerator` on the platform), differing only in
+  `token_type` and lifetime, so identity survives either way.
+- `withAccessToken` already had this right: missing refresh token is fatal,
+  missing access token is routine.
+
+### `SessionExpiredError` means the platform said no
+
+It must **not** be thrown for a network error, a timeout or a 5xx. Callers treat
+it as grounds to sign the user out, so widening it to every failure means a
+backend restart silently ends everyone's session. `withAccessToken` rethrows
+non-auth failures unchanged; pages surface those as a load error and keep the
+session.
+
 ## Design system
 
 `design/client/DESIGN.md` is the branding authority. The `design/client/stitch/`

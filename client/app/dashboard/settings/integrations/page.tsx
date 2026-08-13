@@ -11,7 +11,7 @@ import {
   SessionExpiredError,
   withAccessToken,
 } from "@/lib/authenticated-platform-request";
-import { getSessionActor } from "@/lib/session";
+import { getSessionActor, SESSION_EXPIRED_REDIRECT } from "@/lib/session";
 
 export const metadata: Metadata = {
   title: "Integrations",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default async function GoogleIntegrationsPage() {
   const actor = await getSessionActor();
   if (!actor) {
-    redirect("/login");
+    redirect(SESSION_EXPIRED_REDIRECT);
   }
 
   let connections: OAuthConnectionSummary[] = [];
@@ -34,7 +34,12 @@ export default async function GoogleIntegrationsPage() {
     );
   } catch (error) {
     if (error instanceof SessionExpiredError) {
-      redirect("/login");
+      // This is the one case the cookies alone cannot detect: they look fine,
+      // but the platform rejected the refresh token (revoked, or its row is
+      // gone). `allowSessionWrite: false` above means withAccessToken could not
+      // clear them either — cookies().set() is illegal during render — so the
+      // redirect target has to be the one proxy.ts will clear on our behalf.
+      redirect(SESSION_EXPIRED_REDIRECT);
     }
 
     loadError =
