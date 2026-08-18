@@ -1,4 +1,4 @@
-package com.pleasebookme.server.security.identity.context.exception;
+package com.pleasebookme.server.security.identity.exception;
 
 public class ForbiddenActorException extends RuntimeException {
     public ForbiddenActorException(String message) {

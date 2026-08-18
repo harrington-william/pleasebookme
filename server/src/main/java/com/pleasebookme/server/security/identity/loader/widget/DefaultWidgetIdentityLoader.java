@@ -58,6 +58,7 @@ public class DefaultWidgetIdentityLoader implements WidgetIdentityLoader {
             AuthenticatedActorType.WIDGET,
             widget.getWidgetUid(),
             widget.getTenant().getTenantUid(),
+            widget.getTenant().getTenantId(),
             widget.getStatus()
         );
     }

@@ -64,8 +64,9 @@ import com.pleasebookme.server.integration.syncjob.exception.SyncJobNotFoundExce
 import com.pleasebookme.server.security.oauth.google.exception.InvalidGoogleIdTokenException;
 import com.pleasebookme.server.security.oauth.google.exception.GoogleTokenExchangeException;
 import com.pleasebookme.server.security.oauth.google.exception.GoogleTokenRefreshException;
-import com.pleasebookme.server.security.identity.context.exception.ForbiddenActorException;
-import com.pleasebookme.server.security.identity.context.exception.UnauthenticatedException;
+import com.pleasebookme.server.security.authorization.exception.AuthorizationDeniedException;
+import com.pleasebookme.server.security.identity.exception.ForbiddenActorException;
+import com.pleasebookme.server.security.identity.exception.UnauthenticatedException;
 import com.pleasebookme.server.service.integration.exception.OAuthConnectionAccessDeniedException;
 import com.pleasebookme.server.service.auth.exception.GoogleAccountEmailNotVerifiedException;
 import com.pleasebookme.server.service.auth.exception.InvalidSessionHandoffException;
@@ -1725,6 +1726,26 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthorizationDeniedException(
+        AuthorizationDeniedException exception,
+        HttpServletRequest request
+    ) {
+        HttpStatus status = "OUT_OF_SCOPE".equals(exception.decision().code())
+            ? HttpStatus.NOT_FOUND
+            : HttpStatus.FORBIDDEN;
+
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.decision().code(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, status);
     }
 
     @ExceptionHandler(OAuthConnectionAccessDeniedException.class)
