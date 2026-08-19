@@ -5,6 +5,7 @@ import com.pleasebookme.server.widget.enums.WidgetStatus;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.UUID;
 
 public record WidgetPrincipal(
@@ -14,6 +15,7 @@ public record WidgetPrincipal(
 
     UUID widgetUid,
     UUID tenantUid,
+    BigInteger tenantId,
 
     WidgetStatus status
 

@@ -1,8 +1,8 @@
 package com.pleasebookme.server.security.identity.context;
 
 import com.pleasebookme.server.security.identity.adapter.PrincipalUserDetails;
-import com.pleasebookme.server.security.identity.context.exception.ForbiddenActorException;
-import com.pleasebookme.server.security.identity.context.exception.UnauthenticatedException;
+import com.pleasebookme.server.security.identity.exception.ForbiddenActorException;
+import com.pleasebookme.server.security.identity.exception.UnauthenticatedException;
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
 import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

@@ -5,16 +5,7 @@ import com.pleasebookme.server.auth.role.entity.RoleEntity;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.user.repository.UserRepository;
-import com.pleasebookme.server.organization.membership.entity.MembershipEntity;
-import com.pleasebookme.server.organization.membership.exception.MembershipNotFoundException;
-import com.pleasebookme.server.organization.membership.repository.MembershipRepository;
-import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
-import com.pleasebookme.server.organization.profile.entity.ProfileEntity;
-import com.pleasebookme.server.organization.profile.exception.ProfileNotFoundException;
-import com.pleasebookme.server.organization.profile.repository.ProfileRepository;
 import com.pleasebookme.server.security.identity.aggregation.AuthenticationAggregation;
-import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
-import com.pleasebookme.server.tenant.tenants.repository.TenantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,9 +19,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class DefaultUserIdentityLoader implements UserIdentityLoader {
     private final UserRepository userRepository;
-    private final MembershipRepository membershipRepository;
-    private final ProfileRepository profileRepository;
-    private final TenantRepository tenantRepository;
 
     @Override
     public AuthenticationAggregation loadByUsername(String username) {
@@ -63,28 +51,8 @@ public class DefaultUserIdentityLoader implements UserIdentityLoader {
     }
 
     private AuthenticationAggregation build(UserEntity user) {
-        MembershipEntity membership = membershipRepository
-            .findByUserUserId(user.getUserId())
-            .orElseThrow(() -> new MembershipNotFoundException(
-                "Membership not found for user: " + user.getUserId()
-            ));
-
-        ProfileEntity profile = profileRepository
-            .findByUserUserId(user.getUserId())
-            .orElseThrow(() -> new ProfileNotFoundException(
-                "Profile not found for user: " + user.getUserId()
-            ));
-
-        OrganizationEntity organization = membership.getOrganization();
-
-        TenantEntity tenant = tenantRepository
-            .findByOrganizationOrganizationId(organization.getOrganizationId())
-            .orElse(null);
-
-        // Handle roles
         Set<RoleEntity> roles = Set.copyOf(user.getRoles());
 
-        // Handle permissions
         Set<PermissionEntity> permissions = roles
             .stream()
             .flatMap(
@@ -94,10 +62,6 @@ public class DefaultUserIdentityLoader implements UserIdentityLoader {
 
         return new AuthenticationAggregation(
             user,
-            membership,
-            organization,
-            tenant,
-            profile,
             roles,
             permissions
         );

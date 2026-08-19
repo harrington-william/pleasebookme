@@ -15,5 +15,9 @@ public interface MembershipRepository extends JpaRepository<MembershipEntity, Bi
         BigInteger organizationId
     );
 
-    Optional<MembershipEntity> findByUserUserId(BigInteger userId);
+    Optional<MembershipEntity> findByUserUserUidAndOrganizationOrganizationIdAndAccepted(
+        UUID userUid,
+        BigInteger organizationId,
+        Boolean accepted
+    );
 }

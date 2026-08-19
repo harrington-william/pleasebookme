@@ -2,8 +2,8 @@ package com.pleasebookme.server.security.identity.context;
 
 import com.pleasebookme.server.auth.enums.AccountStatus;
 import com.pleasebookme.server.security.identity.adapter.PrincipalUserDetails;
-import com.pleasebookme.server.security.identity.context.exception.ForbiddenActorException;
-import com.pleasebookme.server.security.identity.context.exception.UnauthenticatedException;
+import com.pleasebookme.server.security.identity.exception.ForbiddenActorException;
+import com.pleasebookme.server.security.identity.exception.UnauthenticatedException;
 import com.pleasebookme.server.security.identity.enums.AuthenticatedActorType;
 import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import com.pleasebookme.server.security.identity.principal.WidgetPrincipal;
@@ -17,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +33,7 @@ class DefaultCurrentPrincipalProviderTest {
     private static UserPrincipal userPrincipal() {
         return new UserPrincipal(
             AuthenticatedActorType.USER,
-            UUID.randomUUID(), null, null, null, null,
+            UUID.randomUUID(), null,
             "jane", "jane@example.com", "Jane Doe", null,
             "Australia/Sydney", AccountStatus.ACTIVE, Set.of(), Set.of(), Map.of()
         );
@@ -43,6 +44,7 @@ class DefaultCurrentPrincipalProviderTest {
             AuthenticatedActorType.WIDGET,
             UUID.randomUUID(),
             UUID.randomUUID(),
+            BigInteger.ONE,
             WidgetStatus.ACTIVE
         );
     }
