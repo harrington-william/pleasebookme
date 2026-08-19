@@ -8,20 +8,6 @@ export const metadata: Metadata = {
   title: "Dashboard",
 };
 
-/**
- * PLACEHOLDER — not the real dashboard.
- *
- * This exists so the auth loop terminates somewhere real: register/login
- * redirect here, and it proves the session cookie survives the round trip and
- * is readable server-side. Replace wholesale when the operational dashboard is
- * built.
- *
- * The `redirect` below is a defence-in-depth check, not the primary guard —
- * proxy.ts already gates this route. Per the Next.js data-security guidance,
- * route-level interception alone is not sufficient; checks belong close to the
- * data as well. It must target SESSION_EXPIRED_REDIRECT, never a bare "/login"
- * — see lib/auth-cookies.ts for why.
- */
 export default async function DashboardPage() {
   const actor = await getSessionActor();
 
@@ -56,8 +42,6 @@ export default async function DashboardPage() {
           <div className="flex items-baseline justify-between gap-md">
             <dt className="text-body-md text-muted-foreground">Tenant</dt>
             <dd className="font-mono text-mono-label text-foreground">
-              {/* Null is expected, not an error: a user has no Tenant until
-                  their organization subscribes to a plan (SECURITY.md). */}
               {actor.tenantUid ?? "— no active plan"}
             </dd>
           </div>

@@ -7,32 +7,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardTopbar } from "@/components/dashboard/dashboard-topbar";
 
-/**
- * The dashboard chrome: persistent rail, command bar, and the content stage.
- *
- * A client component purely to own the mobile drawer's open state — `children`
- * arrives already rendered on the server and passes straight through, so pages
- * under /dashboard stay Server Components and keep their data access
- * server-side.
- *
- * Scrolling is the document's, not a nested container's. The rail is
- * `sticky h-screen` and the command bar `sticky top-0`, which keeps both
- * pinned without introducing a second scroll context that would break
- * scroll-into-view and anchor links inside pages.
- */
 export function DashboardShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [renderedPathname, setRenderedPathname] = useState(pathname);
 
-  // Choosing a destination should dismiss the drawer. Keyed on the pathname
-  // rather than the link's onClick alone so a redirect or a programmatic
-  // navigation closes it too.
-  //
-  // Adjusted during render rather than in an effect — React's documented
-  // pattern for deriving state from a changed input. An effect here would
-  // render the drawer open on the new route first and then close it, which is
-  // both a visible flash and a lint error (react-hooks/set-state-in-effect).
   if (renderedPathname !== pathname) {
     setRenderedPathname(pathname);
     setNavigationOpen(false);

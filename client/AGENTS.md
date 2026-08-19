@@ -196,8 +196,13 @@ the grid to a radial fade — a flat edge-to-edge grid reads as wallpaper.
 
 ```
 app/
-  (auth)/{login,register}/page.tsx   Route files: metadata only, no logic
-  (auth)/google/complete/page.tsx    PUBLIC landing for one-shot registration.
+  (public)/layout.tsx                Public shell — owns MarketingHeader. See
+                                     "The public route group" below
+  (public)/page.tsx                  Landing page: section composition only
+  (public)/(auth)/{login,register}/page.tsx
+                                     Route files: metadata only, no logic
+  (public)/(auth)/google/complete/page.tsx
+                                     PUBLIC landing for one-shot registration.
                                      Must stay outside /dashboard — see Flow 3
   api/auth/*/route.ts                BFF boundary — the only caller of gateways
   dashboard/page.tsx                 PLACEHOLDER, replace with the real one
@@ -205,6 +210,7 @@ components/
   ui/                                shadcn-managed. Do not hand-edit; the CLI
                                      overwrites this directory.
   background/                        Our own shared visual primitives
+  marketing/                         Public header/footer + landing sections
 features/<domain>/
   components/                        UI, "use client" where interactive
   hooks/                             client-only hooks
@@ -226,6 +232,25 @@ session only.
 - Pages stay thin so behaviour is reusable and testable independently of routing.
 - Put your own components in a new `components/<purpose>/` folder rather than
   `components/ui/`, which the shadcn CLI owns.
+
+### The public route group
+
+`app/(public)/` exists so one header can cover every public route while
+`/dashboard` keeps its own chrome. A child layout cannot *remove* a parent's
+header, so putting `MarketingHeader` in the root layout would leak it into the
+dashboard — grouping the public routes is the only way to scope it.
+
+- **Route groups do not change URLs.** `/`, `/login`, `/register` and
+  `/google/complete` are all unaffected, so `proxy.ts`'s `PROTECTED_PREFIXES`
+  and `GUEST_ONLY_ROUTES` need no update. Verify that if the group ever moves.
+- `(auth)` is nested inside `(public)` and still owns the centered-card `<main>`.
+- `PublicLayout` returns a fragment, not a wrapper `<div>`, so its children stay
+  direct flex items of the `body` column — a wrapper would break `flex-grow` on
+  the pages' own `<main>`.
+- Only the header is shared. The footer stays on the landing page; auth screens
+  are deliberately chrome-light.
+- ⚠ `MarketingHeader` now renders on auth routes too, so its name is narrower
+  than its job. Rename to a neutral `site-header` if that starts to mislead.
 
 ## Platform contract & known gaps
 

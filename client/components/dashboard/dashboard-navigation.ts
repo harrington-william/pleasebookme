@@ -18,21 +18,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-/**
- * The dashboard navigation model.
- *
- * Structure and ordering come from `design/client/stitch/dashboard_pleasebookme`.
- * The design mock shows thirteen operational sections; almost none of them have
- * a route yet, and per AGENTS.md ("Reserved features") an unbuilt capability is
- * rendered visibly inert rather than linked to a 404 or faked.
- *
- * `status` is therefore the single switch that turns a section on:
- *
- *   1. create `app/dashboard/<section>/page.tsx`
- *   2. flip that item's `status` to "ready"
- *
- * Nothing else in the shell needs to change.
- */
 export type DashboardNavStatus = "ready" | "reserved";
 
 export type DashboardNavItem = {
@@ -40,22 +25,10 @@ export type DashboardNavItem = {
   href: string;
   icon: LucideIcon;
   status: DashboardNavStatus;
-  /**
-   * Why this item is not clickable yet. Surfaced as the `title` attribute, and
-   * doubles as the in-code record of the blocker — see AGENTS.md, which asks
-   * every reserved feature to name the thing that unblocks it.
-   */
   reservedReason?: string;
-  /**
-   * How `href` is compared against the current pathname. "/dashboard" must be
-   * exact, or it would light up on every child route.
-   */
   match?: "exact" | "prefix";
 };
 
-/**
- * The operational sections — the main body of the rail.
- */
 export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
   {
     label: "Dashboard",
@@ -129,8 +102,6 @@ export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
     reservedReason: "The notification inbox has not been built yet.",
   },
   {
-    // The only settings sub-page that exists today, promoted to the rail
-    // because the mock treats integrations as a top-level operational concern.
     label: "Integrations",
     href: "/dashboard/settings/integrations",
     icon: Plug,
@@ -153,11 +124,6 @@ export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
   },
 ];
 
-/**
- * The account block pinned to the bottom of the rail. Sign-out is an action
- * rather than a destination, so it is not modelled here — see
- * `dashboard-sidebar.tsx`.
- */
 export const DASHBOARD_ACCOUNT_ITEMS: readonly DashboardNavItem[] = [
   {
     label: "Profile",

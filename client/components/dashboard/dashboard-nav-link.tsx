@@ -8,18 +8,9 @@ import { cn } from "@/lib/utils";
 type DashboardNavLinkProps = {
   item: DashboardNavItem;
   active: boolean;
-  /** Closes the mobile drawer once a destination is chosen. */
   onNavigate?: () => void;
 };
 
-/**
- * A single rail entry.
- *
- * A reserved item is rendered as a non-interactive `<span>`, not a disabled
- * `<a>`: an anchor without an href is already inert, but it still reads as a
- * link to assistive technology. `aria-disabled` plus the muted treatment and
- * the "Soon" chip say the same thing to everyone.
- */
 export function DashboardNavLink({
   item,
   active,
@@ -53,7 +44,6 @@ export function DashboardNavLink({
       aria-current={active ? "page" : undefined}
       className={cn(
         base,
-        // Interactive state brightens the surface; it never lifts (DESIGN.md).
         active
           ? "bg-sidebar-accent font-medium text-sidebar-primary"
           : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
