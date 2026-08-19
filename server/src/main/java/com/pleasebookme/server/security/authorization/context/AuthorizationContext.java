@@ -1,5 +1,6 @@
 package com.pleasebookme.server.security.authorization.context;
 
+import com.pleasebookme.server.security.authorization.membership.MembershipSnapshot;
 import com.pleasebookme.server.security.authorization.scope.ResourceScope;
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
 
@@ -12,6 +13,7 @@ public record AuthorizationContext(
     String action,
     Object resource,
     ResourceScope scope,
+    MembershipSnapshot membership,
     Map<String, Object> attributes
 ) {
     public AuthorizationContext {
@@ -34,7 +36,8 @@ public record AuthorizationContext(
     public static AuthorizationContext forCreate(
         AuthenticatedPrincipal principal,
         String resourceType,
-        ResourceScope scope
+        ResourceScope scope,
+        MembershipSnapshot membership
     ) {
         return new AuthorizationContext(
             principal,
@@ -42,6 +45,7 @@ public record AuthorizationContext(
             "CREATE",
             null,
             scope,
+            membership,
             null
         );
     }
@@ -51,7 +55,8 @@ public record AuthorizationContext(
         String resourceType,
         String action,
         Object resource,
-        ResourceScope scope
+        ResourceScope scope,
+        MembershipSnapshot membership
     ) {
         return new AuthorizationContext(
             principal,
@@ -59,12 +64,17 @@ public record AuthorizationContext(
             action,
             resource,
             scope,
+            membership,
             null
         );
     }
 
     public String permissionSlug() {
         return resourceType + "." + action;
+    }
+
+    public boolean hasMembership() {
+        return membership != null;
     }
 
     public Optional<Object> attribute(String key) {

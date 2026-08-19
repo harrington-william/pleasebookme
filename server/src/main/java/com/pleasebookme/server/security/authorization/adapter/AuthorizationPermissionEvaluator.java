@@ -79,6 +79,7 @@ public class AuthorizationPermissionEvaluator implements PermissionEvaluator {
             action,
             resource,
             ResourceScope.unscoped(),
+            null,
             null
         );
 

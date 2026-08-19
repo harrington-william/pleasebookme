@@ -1,14 +1,18 @@
-package com.pleasebookme.server.security.authorization.policy.impl;
+package com.pleasebookme.server.security.authorization.policy.wildcard;
 
 import com.pleasebookme.server.security.authorization.context.AuthorizationContext;
 import com.pleasebookme.server.security.authorization.decision.AuthorizationDecision;
 import com.pleasebookme.server.security.authorization.policy.AuthorizationPolicy;
 import com.pleasebookme.server.security.authorization.scope.ResourceScope;
-import com.pleasebookme.server.security.identity.principal.WidgetPrincipal;
+import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
-public class WidgetTenantIsolationPolicy implements AuthorizationPolicy {
+public class OrganizationIsolationPolicy implements AuthorizationPolicy {
+
+    private static final Set<String> PLATFORM_WIDE_ROLES = Set.of("PLATFORM_OWNER", "PLATFORM_MANAGER");
 
     @Override
     public String resourceType() {
@@ -22,7 +26,11 @@ public class WidgetTenantIsolationPolicy implements AuthorizationPolicy {
 
     @Override
     public AuthorizationDecision evaluate(AuthorizationContext context) {
-        if (!(context.principal() instanceof WidgetPrincipal widgetPrincipal)) {
+        if (!(context.principal() instanceof UserPrincipal userPrincipal)) {
+            return AuthorizationDecision.abstain(policyName());
+        }
+
+        if (PLATFORM_WIDE_ROLES.stream().anyMatch(userPrincipal::hasRole)) {
             return AuthorizationDecision.abstain(policyName());
         }
 
@@ -32,15 +40,15 @@ public class WidgetTenantIsolationPolicy implements AuthorizationPolicy {
             return AuthorizationDecision.deny(
                 policyName(),
                 "OUT_OF_SCOPE",
-                "Resource " + context.resourceType() + " has no resolvable tenant scope"
+                "Resource " + context.resourceType() + " has no resolvable organization scope"
             );
         }
 
-        if (!scope.matchesTenant(widgetPrincipal.tenantId())) {
+        if (!context.hasMembership() || !scope.matchesOrganization(context.membership().organizationId())) {
             return AuthorizationDecision.deny(
                 policyName(),
                 "OUT_OF_SCOPE",
-                "Widget tenant does not match the resource's tenant"
+                "User has no accepted membership in the resource's organization"
             );
         }
 

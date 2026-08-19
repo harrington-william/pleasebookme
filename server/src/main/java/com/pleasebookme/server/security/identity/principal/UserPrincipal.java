@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -18,10 +17,10 @@ public record UserPrincipal(
     AuthenticatedActorType actorType,
 
     UUID subject,
+
+    // Always null because a user can hold membership in more than 1 organization
+    // Kept only to satisfy AuthenticatedPrincipal's sealed contract
     UUID tenantUid,
-    BigInteger organizationId,
-    BigInteger membershipId,
-    BigInteger profileId,
 
     @NotBlank(message = "Username is required")
     String username,
@@ -33,6 +32,7 @@ public record UserPrincipal(
     String timezone,
 
     AccountStatus accountStatus,
+
     Set<String> roles,
     Set<String> permissions,
     Map<String, Object> attributes

@@ -1,4 +1,4 @@
-package com.pleasebookme.server.security.authorization.policy.impl;
+package com.pleasebookme.server.security.authorization.policy.wildcard;
 
 import com.pleasebookme.server.security.authorization.context.AuthorizationContext;
 import com.pleasebookme.server.security.authorization.decision.AuthorizationDecision;

@@ -76,7 +76,7 @@ class DefaultGoogleConnectServiceTest {
     private static UserPrincipal principal() {
         return new UserPrincipal(
             AuthenticatedActorType.USER,
-            USER_UID, null, null, null, null,
+            USER_UID, null,
             "jane", "jane@example.com", "Jane Doe", null,
             "Australia/Sydney", AccountStatus.ACTIVE, Set.of(), Set.of(), Map.of()
         );
