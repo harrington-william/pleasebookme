@@ -1,5 +1,7 @@
 package com.pleasebookme.server.service.auth.controller;
 
+import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import com.pleasebookme.server.service.auth.dto.*;
 import com.pleasebookme.server.service.auth.service.AuthService;
 import com.pleasebookme.server.service.auth.service.GoogleOnboardingService;
@@ -8,11 +10,7 @@ import com.pleasebookme.server.service.integration.service.GoogleConnectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -22,6 +20,7 @@ public class AuthController {
     private final GoogleSignInService googleSignInService;
     private final GoogleOnboardingService googleOnboardingService;
     private final GoogleConnectService googleConnectService;
+    private final CurrentPrincipalProvider currentPrincipalProvider;
 
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
@@ -37,6 +36,11 @@ public class AuthController {
     @PostMapping("/refresh")
     public RefreshResponse refresh(@Valid @RequestBody RefreshRequest request) {
         return authService.refreshToken(request.refreshToken());
+    }
+
+    @GetMapping("/me")
+    public UserPrincipal getCurrentUser() {
+        return currentPrincipalProvider.requireUser();
     }
 
     @PostMapping("/widget/bootstrap")
