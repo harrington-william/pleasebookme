@@ -1,0 +1,284 @@
+{
+  "main": {
+    "id": "6dbc2dc7cbad772a",
+    "type": "split",
+    "children": [
+      {
+        "id": "8ace1e8230dfe2ee",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f0e3ab1f11893adc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Issue Template.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Issue Template"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5d23b7ef55d640e0",
+    "type": "split",
+    "children": [
+      {
+        "id": "995fa8cd5a44436c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a75d76270c57159a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "0060159c635c1635",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "6b186a8961a5ba36",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "e407183aee1f5544",
+    "type": "split",
+    "children": [
+      {
+        "id": "b13aeca88e2281eb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b817d06ce979382a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Issue Template.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "9ec7aebe0b09ec75",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Issue Template.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "b65602fa65df53b4",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "4d4dfd182b014818",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "15a5c159134a1a78",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Issue Template.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "obsidian-excalidraw-plugin:New drawing": false
+    }
+  },
+  "floating": {
+    "id": "5d71202f70651173",
+    "type": "floating",
+    "children": [
+      {
+        "id": "986c1c889a271dab",
+        "type": "window",
+        "children": [
+          {
+            "id": "a825232926ae0ca9",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "b7269fbe2c226c53",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "AI Orchestration Strategy.md",
+                    "mode": "source",
+                    "source": false
+                  },
+                  "icon": "lucide-file",
+                  "title": "AI Orchestration Strategy"
+                }
+              },
+              {
+                "id": "913adef93ccd160b",
+                "type": "leaf",
+                "state": {
+                  "type": "excalidraw",
+                  "state": {
+                    "file": "Security/The Security Big Picture.md"
+                  },
+                  "icon": "excalidraw-icon",
+                  "title": "The Security Big Picture"
+                }
+              }
+            ],
+            "currentTab": 1
+          }
+        ],
+        "direction": "vertical",
+        "x": 974,
+        "y": 45,
+        "width": 736,
+        "height": 1050,
+        "maximize": true,
+        "zoom": 0
+      }
+    ]
+  },
+  "active": "f0e3ab1f11893adc",
+  "lastOpenFiles": [
+    "Security/The Security Big Picture.md",
+    "AI Orchestration Strategy.md",
+    "Issue Template.md",
+    "Skills Organizing Strategy.md",
+    "Documentation Structure.md",
+    "Security/OAuth2/FinalizeOnboarding Explained.md",
+    "Security/CORS",
+    "Security/OAuth2/Google OAuth2 Architecture.md",
+    "Security/OAuth2/Model/Google Identity Model.md",
+    "Security/OAuth2/Model",
+    "Reading List/Handoff Code.md",
+    "AI Task Contract.md",
+    "Welcome Message.md",
+    "Security/OAuth2/State/Google State.md",
+    "Security/Token/Access & Refresh Architecture.md",
+    "Security/Token/JWT/JWT Claims.md",
+    "Security/Crypto",
+    "Security/Token/JWT/Untitled.md",
+    "Security/Token/JWT",
+    "Security/Authorization/Authorization Engine.md",
+    "Google OAuth2 Flow.md",
+    "Security/Authorization/Policy/Wildcard/WidgetTenantIsolationPolicy.md",
+    "Security/Authorization/Policy/Wildcard/OrganizationIsolationPolicy.md",
+    "Security/Authorization/Policy/Wildcard/WidgetCapabilityPolicy.md",
+    "Security/Authorization/Policy/Wildcard/ActorStatusPolicy.md",
+    "Security/Authorization/Policy/Wildcard",
+    "Security/Authorization/Policy",
+    "Security/Authorization/Registry/AuthorizationPolicyRegistry.md",
+    "Security/Authorization/Context/AuthorizationContext.md",
+    "Security/Authorization/Decision/AuthorizationDecision.md",
+    "Security/Authorization/Decision",
+    "Security/Authorization/Context",
+    "Security/Authorization/Registry",
+    "Security/OAuth2/Session/Google OAuth2 Session.md",
+    "Security/OAuth2/Session",
+    "Shared/images/System_Architecture_v2.jpg",
+    "Shared/images/System_Architecture_v1.jpg"
+  ]
+}

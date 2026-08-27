@@ -1,0 +1,69 @@
+## Description
+
+Revokes a role from a user by the composite key of `userId` and `roleId`.
+
+---
+
+## Endpoint
+
+```json
+DELETE /api/v1/user-roles/{userId}/{roleId}
+```
+
+---
+
+## Authentication
+
+Required **Bearer Token**
+
+---
+
+## Headers
+
+```json
+{
+	"Authorization": "JWT Access Token"
+}
+```
+
+## Successful Response
+
+```json
+204 No Content
+```
+
+---
+
+## Possible Errors
+
+- 401 UNAUTHORIZED
+- 403 FORBIDDEN
+- 404 USER_ROLE_NOT_FOUND
+- 429 RATE_LIMIT_EXCEEDED
+
+---
+
+## Error Message
+
+```json
+{
+	"code": "USER_ROLE_NOT_FOUND"
+}
+```
+
+---
+
+## Example Request
+
+```bash
+curl \
+-X DELETE \
+<https://api.pleasebookme.com/api/v1/user-roles/1/2> \
+-H "Authorization: Bearer xxx"
+```
+
+---
+
+## Event Produced
+
+- UserRoleDeleted

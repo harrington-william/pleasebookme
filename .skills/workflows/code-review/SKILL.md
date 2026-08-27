@@ -1,0 +1,33 @@
+---
+title: Code Review Focus
+description: Focused reviews are more useful than scattered feedback
+---
+
+# Code Review Focus
+
+## When Asked to Review a PR
+
+Focus on providing a clear summary of what the PR is doing and its core functionality.
+
+**Avoid getting sidetracked by:**
+- CI failures
+- Testing issues
+- Technical implementation details (unless specifically requested)
+
+## Good Review Structure
+
+1. **Summary**: What does this PR do?
+2. **Core changes**: What are the main code changes?
+3. **Impact**: What parts of the system does this affect?
+
+## What to Look For
+
+- Does the code do what it claims to do?
+- Are there any obvious bugs or edge cases?
+- Does it follow Cal.diy coding standards?
+- Is the change appropriately scoped?
+
+## What to Skip (Unless Asked)
+
+- Suggestions for refactoring unrelated code
+- Deep dives into implementation details
