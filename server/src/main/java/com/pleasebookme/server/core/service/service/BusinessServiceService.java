@@ -7,7 +7,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 public interface BusinessServiceService {
-    ServiceEntity createService(ServiceRequest request);
+    ServiceCreateResult createService(ServiceRequest request);
 
     ServiceEntity getServiceById(BigInteger serviceId);
 

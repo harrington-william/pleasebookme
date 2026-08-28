@@ -26,6 +26,9 @@ type WithAccessTokenOptions = {
   allowSessionWrite?: boolean;
 };
 
+// Extract access & refresh tokens from cookies and make a call
+// If the access token expired -> Attempt refresh and retry call
+// If no refresh -> Destroy session and throw SessionExpiredError
 export async function withAccessToken<T>(
   call: (accessToken: string) => Promise<T>,
   { allowSessionWrite = true }: WithAccessTokenOptions = {}
@@ -47,14 +50,10 @@ export async function withAccessToken<T>(
   }
 
   let rotated;
+
   try {
     rotated = await refreshOnPlatform(refreshToken);
   } catch (error) {
-    // Only the platform REJECTING the token is a verdict on the session. A
-    // connection refusal, a timeout or a 5xx says nothing about whether the
-    // session is still good, and callers now treat SessionExpiredError as
-    // grounds to sign the user out — so widening it to every failure would
-    // mean a backend restart silently ends everyone's session.
     if (!isAuthFailure(error)) throw error;
 
     if (allowSessionWrite) {

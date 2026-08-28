@@ -72,34 +72,6 @@ function toSessionActor(token: string): SessionActor | null {
   };
 }
 
-/**
- * Who is signed in, or null if nobody is.
- *
- * ─────────────────────────────────────────────────────────────────────────────
- * THE ACCESS TOKEN IS NOT THE SESSION SIGNAL. The refresh token is.
- *
- * The access cookie lives 15 minutes; the refresh cookie lives 30 days. So for
- * almost the entire life of a session there is no access cookie at all, and
- * reading its absence as "signed out" is simply wrong — the session is alive
- * and renewable, it just needs a round trip nobody has made yet.
- *
- * This used to return null in exactly that window while proxy.ts (correctly)
- * kept saying "signed in", and the two redirected at each other until Chrome
- * gave up with ERR_TOO_MANY_REDIRECTS. It reproduced on every visit made more
- * than 15 minutes after signing in.
- *
- * lib/authenticated-platform-request.ts already models this correctly — it
- * treats a missing refresh token as fatal and a missing access token as
- * routine. This function now agrees with it, and with proxy.ts.
- * ─────────────────────────────────────────────────────────────────────────────
- *
- * Both tokens are JWTs carrying the same identity claims (sub / actor_type /
- * tenant — see DefaultJwtGenerator on the platform), differing only in
- * `token_type` and lifetime, so identity is readable from whichever survives.
- *
- * Decoded, never verified — for optimistic render decisions only, exactly as
- * lib/jwt.ts warns. The platform re-verifies on every API call.
- */
 export async function getSessionActor(): Promise<SessionActor | null> {
   const accessToken = await getAccessToken();
 
@@ -108,12 +80,8 @@ export async function getSessionActor(): Promise<SessionActor | null> {
     if (actor) return actor;
   }
 
-  // No usable access token is the NORMAL steady state, not a failure. Fall back
-  // to the refresh token: it answers both "is there a session" and "whose".
   const refreshToken = await getRefreshToken();
   if (!refreshToken || isJwtExpired(refreshToken)) return null;
 
-  // `expiresAt` is now when the SESSION dies rather than when the access token
-  // does — which is what a caller asking about the session actually wants.
   return toSessionActor(refreshToken);
 }

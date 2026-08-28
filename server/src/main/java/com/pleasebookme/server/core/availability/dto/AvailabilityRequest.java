@@ -7,9 +7,6 @@ import java.time.LocalTime;
 
 public record AvailabilityRequest(
     @NotNull
-    BigInteger userId,
-
-    @NotNull
     BigInteger scheduleId,
 
     @NotNull

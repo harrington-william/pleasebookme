@@ -8,6 +8,7 @@ import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
 import com.pleasebookme.server.core.schedule.service.ScheduleService;
+import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +20,11 @@ import java.util.List;
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final CurrentPrincipalProvider currentPrincipalProvider;
 
     @Override
     public ScheduleEntity createSchedule(ScheduleRequest request) {
-        UserEntity user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new UserNotFoundException("User not found: " + request.userId()));
+        UserEntity user = resolveCurrentUser();
 
         ScheduleEntity.ScheduleEntityBuilder schedule = ScheduleEntity.builder()
             .user(user)
@@ -54,10 +55,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     ) {
         ScheduleEntity schedule = getScheduleById(scheduleId);
 
-        UserEntity user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new UserNotFoundException("User not found: " + request.userId()));
+        // A PUT can change schedule details, but it must not become an ownership transfer.
+        resolveCurrentUser();
 
-        schedule.setUser(user);
         schedule.setTitle(request.title());
 
         if (request.timezone() != null) schedule.setTimezone(request.timezone());
@@ -68,5 +68,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public void deleteSchedule(BigInteger scheduleId) {
         scheduleRepository.delete(getScheduleById(scheduleId));
+    }
+
+    private UserEntity resolveCurrentUser() {
+        BigInteger userId = currentPrincipalProvider.requireUser().userId();
+
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
     }
 }

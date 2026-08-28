@@ -11,6 +11,7 @@ import com.pleasebookme.server.core.availability.service.AvailabilityService;
 import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
+import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +24,11 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     private final AvailabilityRepository availabilityRepository;
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
+    private final CurrentPrincipalProvider currentPrincipalProvider;
 
     @Override
     public AvailabilityEntity createAvailability(AvailabilityRequest request) {
-        UserEntity user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new UserNotFoundException("User not found: " + request.userId()));
+        UserEntity user = resolveCurrentUser();
 
         ScheduleEntity schedule = scheduleRepository.findById(request.scheduleId())
             .orElseThrow(() -> new ScheduleNotFoundException("Schedule not found: " + request.scheduleId()));
@@ -63,13 +64,12 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     ) {
         AvailabilityEntity availability = getAvailabilityById(availabilityId);
 
-        UserEntity user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new UserNotFoundException("User not found: " + request.userId()));
+        // A PUT can move a window to another schedule, but it must not reassign row ownership.
+        resolveCurrentUser();
 
         ScheduleEntity schedule = scheduleRepository.findById(request.scheduleId())
             .orElseThrow(() -> new ScheduleNotFoundException("Schedule not found: " + request.scheduleId()));
 
-        availability.setUser(user);
         availability.setSchedule(schedule);
         availability.setDays(request.days());
         availability.setStartTime(request.startTime());
@@ -81,5 +81,12 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     @Override
     public void deleteAvailability(BigInteger availabilityId) {
         availabilityRepository.delete(getAvailabilityById(availabilityId));
+    }
+
+    private UserEntity resolveCurrentUser() {
+        BigInteger userId = currentPrincipalProvider.requireUser().userId();
+
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
     }
 }

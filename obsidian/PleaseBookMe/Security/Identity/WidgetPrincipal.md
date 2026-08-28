@@ -82,6 +82,8 @@ return new WidgetPrincipal(
 );
 ```
 
+**No longer the only place this pattern appears.** `UserPrincipal` now carries the same UUID+BigInteger pair for the *user's own* identity (`subject`/`userId`), for the identical reason: the sealed contract needs a UUID, but every `*Request` DTO FKing into `auth.users` needs the numeric PK. See **[[UserPrincipal]]** → "Why Both `subject` (UUID) and `userId` (BigInteger) Exist".
+
 ---
 
 # Helper Methods

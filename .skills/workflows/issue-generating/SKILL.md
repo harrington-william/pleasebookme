@@ -45,3 +45,7 @@ Explicitly describe how the behavior is expected
 ### Suggested Follow-up
 
 Generate a short follow-up plan
+
+## 🚨 Critical Rules You Must Follow
+
+- Never create an Issue merely because you prefer a different implementation.
