@@ -1,22 +1,22 @@
-package com.pleasebookme.server.core.service.services.impl;
+package com.pleasebookme.server.core.service.service.impl;
 
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.user.repository.UserRepository;
 import com.pleasebookme.server.core.bookingpolicy.dto.ServiceBookingPolicyRequest;
 import com.pleasebookme.server.core.bookingpolicy.entity.BookingPolicyEntity;
-import com.pleasebookme.server.core.bookingpolicy.exception.DuplicateBookingPolicyException;
 import com.pleasebookme.server.core.bookingpolicy.repository.BookingPolicyRepository;
 import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
 import com.pleasebookme.server.core.service.dto.ServiceRequest;
 import com.pleasebookme.server.core.service.entity.ServiceEntity;
+import com.pleasebookme.server.core.service.exception.AmbiguousServiceOwnerException;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.core.service.repository.ServiceRepository;
-import com.pleasebookme.server.core.service.services.BusinessServiceService;
-import com.pleasebookme.server.core.service.services.ServiceCreateResult;
+import com.pleasebookme.server.core.service.service.BusinessServiceService;
+import com.pleasebookme.server.core.service.dto.ServiceCreateResult;
 import com.pleasebookme.server.integration.calendar.entity.DestinationCalendarEntity;
 import com.pleasebookme.server.integration.calendar.exception.DestinationCalendarNotFoundException;
 import com.pleasebookme.server.integration.calendar.repository.DestinationCalendarRepository;
@@ -98,11 +98,6 @@ public class BusinessServiceImpl implements BusinessServiceService {
         BookingPolicyEntity bookingPolicy = null;
 
         if (request.bookingPolicy() != null) {
-            if (bookingPolicyRepository.existsByServiceServiceId(createdService.getServiceId())) {
-                throw new DuplicateBookingPolicyException("Booking policy already exists for service: " + createdService.getServiceId());
-            }
-
-            // TASK-0002 deliberately keeps this cross-domain write local instead of adding a service/core orchestration bean.
             bookingPolicy = bookingPolicyRepository.save(buildBookingPolicy(createdService, request.bookingPolicy()));
         }
 
@@ -110,16 +105,11 @@ public class BusinessServiceImpl implements BusinessServiceService {
     }
 
     @Override
-    public ServiceEntity getServiceById(BigInteger serviceId) {
-        return serviceRepository.findById(serviceId)
-            .orElseThrow(() -> new ServiceNotFoundException(
-                "Service not found: " + serviceId
-            ));
-    }
+    public ServiceCreateResult getServiceById(BigInteger serviceId) {
+        ServiceEntity service = findServiceOrThrow(serviceId);
+        BookingPolicyEntity bookingPolicy = bookingPolicyRepository.findByServiceServiceId(serviceId).orElse(null);
 
-    @Override
-    public List<ServiceEntity> getAllServices() {
-        return serviceRepository.findAll();
+        return new ServiceCreateResult(service, bookingPolicy);
     }
 
     @Override
@@ -128,8 +118,12 @@ public class BusinessServiceImpl implements BusinessServiceService {
         BigInteger serviceId,
         ServiceRequest request
     ) {
-        ServiceEntity service = getServiceById(serviceId);
+        ServiceEntity service = findServiceOrThrow(serviceId);
         OwnerContext owner = resolveCurrentOwner();
+
+        if (!service.getOrganization().getOrganizationId().equals(owner.organization().getOrganizationId())) {
+            throw new ServiceNotFoundException("Service not found: " + serviceId);
+        }
 
         ScheduleEntity schedule = scheduleRepository.findById(request.scheduleId())
             .orElseThrow(() -> new ScheduleNotFoundException("Schedule not found: " + request.scheduleId()));
@@ -138,9 +132,6 @@ public class BusinessServiceImpl implements BusinessServiceService {
         service.setSlug(request.slug());
         service.setDescription(request.description());
         service.setLocation(request.location());
-        service.setUser(owner.user());
-        service.setProfile(owner.profile());
-        service.setOrganization(owner.organization());
         service.setSchedule(schedule);
         service.setMinPrice(request.minPrice());
         service.setMaxPrice(request.maxPrice());
@@ -177,7 +168,12 @@ public class BusinessServiceImpl implements BusinessServiceService {
 
     @Override
     public void deleteService(BigInteger serviceId) {
-        serviceRepository.delete(getServiceById(serviceId));
+        serviceRepository.delete(findServiceOrThrow(serviceId));
+    }
+
+    private ServiceEntity findServiceOrThrow(BigInteger serviceId) {
+        return serviceRepository.findById(serviceId)
+            .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + serviceId));
     }
 
     private OwnerContext resolveCurrentOwner() {
@@ -186,8 +182,20 @@ public class BusinessServiceImpl implements BusinessServiceService {
         UserEntity user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
 
-        ProfileEntity profile = profileRepository.findByUserUserId(userId)
-            .orElseThrow(() -> new ProfileNotFoundException("Profile not found for user: " + userId));
+        List<ProfileEntity> profiles = profileRepository.findAllByUserUserId(userId);
+
+        if (profiles.isEmpty()) {
+            throw new ProfileNotFoundException("Profile not found for user: " + userId);
+        }
+
+        // Check if this user belongs to more than 1 organization
+        if (profiles.size() > 1) {
+            throw new AmbiguousServiceOwnerException(
+                "User " + userId + " belongs to multiple organizations; this endpoint cannot infer which one this request concerns."
+            );
+        }
+
+        ProfileEntity profile = profiles.get(0);
 
         return new OwnerContext(user, profile, profile.getOrganization());
     }
@@ -222,6 +230,5 @@ public class BusinessServiceImpl implements BusinessServiceService {
         UserEntity user,
         ProfileEntity profile,
         OrganizationEntity organization
-    ) {
-    }
+    ) {}
 }

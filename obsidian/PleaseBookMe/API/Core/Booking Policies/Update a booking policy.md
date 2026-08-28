@@ -33,7 +33,6 @@ Required **Bearer Token**
 {
 	"serviceId": 0,
 	"bookingMode": "",
-	"durationType": "",
 	"defaultDuration": 0,
 	"minimumDuration": 0,
 	"maximumDuration": 0,
@@ -62,7 +61,6 @@ Required **Bearer Token**
 	"bookingPolicyId": 0,
 	"serviceId": 0,
 	"bookingMode": "",
-	"durationType": "",
 	"defaultDuration": 0,
 	"minimumDuration": 0,
 	"maximumDuration": 0,
@@ -117,7 +115,6 @@ curl \
 -d '{
     "serviceId": 1,
 	"bookingMode": "FIXED",
-	"durationType": "FIXED",
 	"defaultDuration": 1,
 	"minimumDuration": null,
 	"maximumDuration": null,

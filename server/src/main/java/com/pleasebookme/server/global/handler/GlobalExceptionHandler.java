@@ -40,10 +40,12 @@ import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException
 import com.pleasebookme.server.core.availability.exception.AvailabilityNotFoundException;
 import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
 import com.pleasebookme.server.core.bookingpolicy.exception.BookingPolicyNotFoundException;
+import com.pleasebookme.server.core.bookingpolicy.exception.DuplicateBookingPolicyException;
 import com.pleasebookme.server.core.outofoffice.exception.OutOfOfficeNotFoundException;
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
 import com.pleasebookme.server.core.selectedslot.exception.DuplicateSelectedSlotException;
 import com.pleasebookme.server.core.selectedslot.exception.SelectedSlotNotFoundException;
+import com.pleasebookme.server.core.service.exception.AmbiguousServiceOwnerException;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.customer.activity.exception.CustomerActivityNotFoundException;
@@ -495,6 +497,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(AmbiguousServiceOwnerException.class)
+    public ResponseEntity<ApiErrorResponse> handleAmbiguousServiceOwnerException(
+        AmbiguousServiceOwnerException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(OrganizationNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleOrganizationNotFoundException(
         OrganizationNotFoundException exception,
@@ -621,6 +639,22 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateBookingPolicyException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateBookingPolicyException(
+        DuplicateBookingPolicyException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(BookingNotFoundException.class)

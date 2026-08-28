@@ -2,14 +2,13 @@ package com.pleasebookme.server.core.service.controller;
 
 import com.pleasebookme.server.core.service.dto.ServiceRequest;
 import com.pleasebookme.server.core.service.dto.ServiceResponse;
-import com.pleasebookme.server.core.service.services.BusinessServiceService;
+import com.pleasebookme.server.core.service.service.BusinessServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/services")
@@ -20,19 +19,14 @@ public class ServiceController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ServiceResponse createService(@Valid @RequestBody ServiceRequest request) {
-        return ServiceResponse.from(businessService.createService(request));
+        var result = businessService.createService(request);
+        return ServiceResponse.from(result.service(), result.bookingPolicy());
     }
 
     @GetMapping("/{serviceId}")
     public ServiceResponse getService(@PathVariable BigInteger serviceId) {
-        return ServiceResponse.from(businessService.getServiceById(serviceId));
-    }
-
-    @GetMapping
-    public List<ServiceResponse> getServices() {
-        return businessService.getAllServices().stream()
-            .map(ServiceResponse::from)
-            .toList();
+        var result = businessService.getServiceById(serviceId);
+        return ServiceResponse.from(result.service(), result.bookingPolicy());
     }
 
     @PutMapping("/{serviceId}")

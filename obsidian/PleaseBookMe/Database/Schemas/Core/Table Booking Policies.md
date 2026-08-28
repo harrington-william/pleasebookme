@@ -13,7 +13,6 @@ Defines the reservation rules a service's bookings must obey — duration model,
 | `id` | `BIGSERIAL` | Internal surrogate primary key. |
 | `service_id` | `BIGINT` | The service this policy governs. |
 | `booking_mode` | `core.booking_mode` | `FIXED` / `FLEXIBLE` / `HYBRID`. |
-| `duration_type` | `VARCHAR(50)` | How booking duration is determined. |
 | `default_duration` | `INTEGER` | Default booking length. |
 | `minimum_duration` / `maximum_duration` | `INTEGER` | Optional duration bounds. |
 | `minimum_notice` | `INTEGER` | How much lead time a booking requires. |
@@ -41,12 +40,12 @@ Each row represents the reservation policy configuration for one service — the
 
 ## Lifecycle
 
-Created alongside or shortly after a service, via the standard CRUD service. No unique constraint ties this table to exactly one row per service at the database level, despite the product intent of one active policy per service.
+Created alongside or shortly after a service, via the standard CRUD service. As of `V126__add_booking_policy_service_unique.sql`, `service_id` carries `UNIQUE (service_id)`, so exactly one row per service is enforced at the database level, matching the product intent of one active policy per service.
 
 ## Invariants
 
-- No unique constraint beyond the primary key is declared — the schema does not itself enforce one-policy-per-service, though that is the evident product intent.
-- `duration_type`/`booking_window_type` are required with no SQL default, unlike most of this table's other fields.
+- `service_id` is unique — enforced at the database level since `V126`, not merely intended. `BookingPolicyServiceImpl.createBookingPolicy` also pre-checks it through `existsByServiceServiceId(...)` and returns a typed `409`.
+- `booking_window_type` is required with no SQL default, unlike most of this table's other fields.
 - `auto_confirm` defaults to `true` — the only boolean on this table (and one of the few in the whole schema) that defaults to `true` rather than `false`.
 
 ## Relationships
@@ -55,8 +54,12 @@ Created alongside or shortly after a service, via the standard CRUD service. No 
 
 ## Usage Rules
 
-- Writes go through `BookingPolicyServiceImpl`.
+- Writes go through `BookingPolicyServiceImpl`. Creating a service through `POST /api/v1/services` may also create the first policy atomically when the service request carries a nested `bookingPolicy` payload.
 
 ## Important Fields
 
-- `booking_mode`/`duration_type`/`booking_window_type` — Together determine how the platform's slot-generation logic interprets a service's availability into bookable windows; this is the heart of the reservation engine's genericism across business types (appointment vs. reservation vs. rental).
+- `booking_mode`/`booking_window_type` — Together determine how the platform's slot-generation logic interprets a service's availability into bookable windows; this is the heart of the reservation engine's genericism across business types (appointment vs. reservation vs. rental).
+
+## Removed Fields
+
+- `duration_type` (`VARCHAR(50)`) — dropped in `V127__booking_policies_drop_duration_type.sql`. Overlapped with `booking_mode` without adding distinct meaning; removed as vague and redundant rather than carried forward for backward compatibility.

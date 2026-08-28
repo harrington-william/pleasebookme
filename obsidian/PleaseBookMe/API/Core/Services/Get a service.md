@@ -57,6 +57,7 @@ Required **Bearer Token**
 	"maxActiveBookingPerBooker": 0,
 	"destinationCalendarId": 0,
 	"destinationSheetsId": 0,
+	"bookingPolicy": null,
 	"createdAt": "",
 	"updatedAt": ""
 }

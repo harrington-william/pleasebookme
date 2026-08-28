@@ -48,15 +48,13 @@ export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
     label: "Availability",
     href: "/dashboard/availability",
     icon: Clock,
-    status: "reserved",
-    reservedReason: "The availability editor has not been built yet.",
+    status: "ready",
   },
   {
     label: "Services",
     href: "/dashboard/services",
     icon: Sparkles,
-    status: "reserved",
-    reservedReason: "The service catalog has not been built yet.",
+    status: "ready",
   },
   {
     label: "Resources",

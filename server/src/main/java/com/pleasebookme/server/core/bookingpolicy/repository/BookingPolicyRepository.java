@@ -5,7 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Repository
 public interface BookingPolicyRepository extends JpaRepository<BookingPolicyEntity, BigInteger> {
+    boolean existsByServiceServiceId(BigInteger serviceId);
+
+    Optional<BookingPolicyEntity> findByServiceServiceId(BigInteger serviceId);
 }

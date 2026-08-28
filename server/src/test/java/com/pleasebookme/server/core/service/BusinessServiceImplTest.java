@@ -1,0 +1,392 @@
+package com.pleasebookme.server.core.service;
+
+import com.pleasebookme.server.auth.enums.AccountStatus;
+import com.pleasebookme.server.auth.user.entity.UserEntity;
+import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
+import com.pleasebookme.server.auth.user.repository.UserRepository;
+import com.pleasebookme.server.core.bookingpolicy.dto.ServiceBookingPolicyRequest;
+import com.pleasebookme.server.core.bookingpolicy.entity.BookingPolicyEntity;
+import com.pleasebookme.server.core.bookingpolicy.repository.BookingPolicyRepository;
+import com.pleasebookme.server.core.enums.BookingMode;
+import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
+import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
+import com.pleasebookme.server.core.service.dto.ServiceRequest;
+import com.pleasebookme.server.core.service.entity.ServiceEntity;
+import com.pleasebookme.server.core.service.exception.AmbiguousServiceOwnerException;
+import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
+import com.pleasebookme.server.core.service.repository.ServiceRepository;
+import com.pleasebookme.server.core.service.dto.ServiceCreateResult;
+import com.pleasebookme.server.core.service.service.impl.BusinessServiceImpl;
+import com.pleasebookme.server.global.enums.Currency;
+import com.pleasebookme.server.global.enums.Locale;
+import com.pleasebookme.server.integration.calendar.repository.DestinationCalendarRepository;
+import com.pleasebookme.server.integration.sheets.repository.DestinationSheetsRepository;
+import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
+import com.pleasebookme.server.organization.profile.entity.ProfileEntity;
+import com.pleasebookme.server.organization.profile.repository.ProfileRepository;
+import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.enums.AuthenticatedActorType;
+import com.pleasebookme.server.security.identity.principal.UserPrincipal;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class BusinessServiceImplTest {
+    private static final BigInteger USER_ID = BigInteger.valueOf(42);
+    private static final BigInteger PROFILE_ID = BigInteger.valueOf(24);
+    private static final BigInteger ORGANIZATION_ID = BigInteger.valueOf(7);
+    private static final BigInteger SCHEDULE_ID = BigInteger.valueOf(11);
+    private static final BigInteger SERVICE_ID = BigInteger.valueOf(15);
+
+    @Mock private ServiceRepository serviceRepository;
+    @Mock private BookingPolicyRepository bookingPolicyRepository;
+    @Mock private UserRepository userRepository;
+    @Mock private ProfileRepository profileRepository;
+    @Mock private ScheduleRepository scheduleRepository;
+    @Mock private DestinationCalendarRepository destinationCalendarRepository;
+    @Mock private DestinationSheetsRepository destinationSheetsRepository;
+    @Mock private CurrentPrincipalProvider currentPrincipalProvider;
+
+    private BusinessServiceImpl service;
+    private UserEntity user;
+    private ProfileEntity profile;
+    private OrganizationEntity organization;
+    private ScheduleEntity schedule;
+
+    @BeforeEach
+    void setUp() {
+        service = new BusinessServiceImpl(
+            serviceRepository,
+            bookingPolicyRepository,
+            userRepository,
+            profileRepository,
+            scheduleRepository,
+            destinationCalendarRepository,
+            destinationSheetsRepository,
+            currentPrincipalProvider
+        );
+
+        user = UserEntity.builder().username("jane").build();
+        user.setUserId(USER_ID);
+
+        organization = OrganizationEntity.builder().name("Studio").slug("studio").build();
+        organization.setOrganizationId(ORGANIZATION_ID);
+
+        profile = ProfileEntity.builder()
+            .user(user)
+            .organization(organization)
+            .username("jane")
+            .build();
+        profile.setProfileId(PROFILE_ID);
+
+        schedule = ScheduleEntity.builder().title("Working Hours").user(user).build();
+        schedule.setScheduleId(SCHEDULE_ID);
+    }
+
+    @Test
+    void createService_derivesOwnerAndCreatesNestedBookingPolicy() {
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(serviceRepository.existsByOrganizationOrganizationIdAndSlug(ORGANIZATION_ID, "consultation"))
+            .thenReturn(false);
+        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(Optional.of(schedule));
+        when(serviceRepository.save(any())).thenAnswer(invocation -> {
+            ServiceEntity saved = invocation.getArgument(0);
+            saved.setServiceId(SERVICE_ID);
+            return saved;
+        });
+        when(bookingPolicyRepository.save(any())).thenAnswer(invocation -> {
+            BookingPolicyEntity saved = invocation.getArgument(0);
+            saved.setBookingPolicyId(BigInteger.valueOf(99));
+            return saved;
+        });
+
+        ServiceCreateResult result = service.createService(request(bookingPolicyRequest()));
+
+        assertThat(result.service().getUser()).isSameAs(user);
+        assertThat(result.service().getProfile()).isSameAs(profile);
+        assertThat(result.service().getOrganization()).isSameAs(organization);
+        assertThat(result.bookingPolicy()).isNotNull();
+        assertThat(result.bookingPolicy().getService()).isSameAs(result.service());
+        assertThat(result.bookingPolicy().getBookingMode()).isEqualTo(BookingMode.FIXED);
+        assertThat(result.bookingPolicy().getDefaultDuration()).isEqualTo(60);
+        assertThat(result.bookingPolicy().getMinimumNotice()).isEqualTo(30);
+
+        verify(bookingPolicyRepository, never()).existsByServiceServiceId(any());
+    }
+
+    @Test
+    void createService_resolvedPrincipalUserMustExist() {
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.createService(request(null)))
+            .isInstanceOf(UserNotFoundException.class);
+
+        verify(profileRepository, never()).findAllByUserUserId(any());
+        verify(scheduleRepository, never()).findById(any());
+        verify(serviceRepository, never()).save(any());
+    }
+
+    @Test
+    void createService_rejectsCallerWithMultipleOrganizationProfiles() {
+        ProfileEntity secondProfile = ProfileEntity.builder()
+            .user(user)
+            .organization(OrganizationEntity.builder().name("Other").slug("other").build())
+            .username("jane")
+            .build();
+
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile, secondProfile));
+
+        assertThatThrownBy(() -> service.createService(request(null)))
+            .isInstanceOf(AmbiguousServiceOwnerException.class);
+
+        verify(serviceRepository, never()).save(any());
+    }
+
+    @Test
+    void createService_policyFailureReliesOnTransactionalBoundaryForRollback() {
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(serviceRepository.existsByOrganizationOrganizationIdAndSlug(ORGANIZATION_ID, "consultation"))
+            .thenReturn(false);
+        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(Optional.of(schedule));
+        when(serviceRepository.save(any())).thenAnswer(invocation -> {
+            ServiceEntity saved = invocation.getArgument(0);
+            saved.setServiceId(SERVICE_ID);
+            return saved;
+        });
+        when(bookingPolicyRepository.save(any())).thenThrow(new RuntimeException("flush failed"));
+
+        assertThatThrownBy(() -> service.createService(request(bookingPolicyRequest())))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessage("flush failed");
+
+        InOrder order = inOrder(serviceRepository, bookingPolicyRepository);
+        order.verify(serviceRepository).save(any());
+        order.verify(bookingPolicyRepository).save(any());
+    }
+
+    @Test
+    void updateService_succeedsWhenCallerBelongsToOwningOrganization() {
+        ServiceEntity existing = ServiceEntity.builder()
+            .title("Old")
+            .slug("old")
+            .user(user)
+            .profile(profile)
+            .organization(organization)
+            .schedule(schedule)
+            .build();
+        existing.setServiceId(SERVICE_ID);
+
+        when(serviceRepository.findById(SERVICE_ID)).thenReturn(Optional.of(existing));
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(Optional.of(schedule));
+        when(serviceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ServiceEntity updated = service.updateService(SERVICE_ID, request(null));
+
+        assertThat(updated.getTitle()).isEqualTo("Consultation");
+        assertThat(updated.getOrganization()).isSameAs(organization);
+        assertThat(updated.getSchedule()).isSameAs(schedule);
+    }
+
+    @Test
+    void updateService_rejectsCallerFromDifferentOrganization() {
+        UserEntity otherUser = UserEntity.builder().username("other").build();
+        otherUser.setUserId(BigInteger.valueOf(100));
+        OrganizationEntity otherOrganization = OrganizationEntity.builder().name("Other").slug("other").build();
+        otherOrganization.setOrganizationId(BigInteger.valueOf(101));
+        ProfileEntity otherProfile = ProfileEntity.builder()
+            .user(otherUser)
+            .organization(otherOrganization)
+            .username("other")
+            .build();
+        otherProfile.setProfileId(BigInteger.valueOf(102));
+
+        ServiceEntity existing = ServiceEntity.builder()
+            .title("Old")
+            .slug("old")
+            .user(otherUser)
+            .profile(otherProfile)
+            .organization(otherOrganization)
+            .schedule(schedule)
+            .build();
+        existing.setServiceId(SERVICE_ID);
+
+        when(serviceRepository.findById(SERVICE_ID)).thenReturn(Optional.of(existing));
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+
+        assertThatThrownBy(() -> service.updateService(SERVICE_ID, request(null)))
+            .isInstanceOf(ServiceNotFoundException.class);
+
+        verify(serviceRepository, never()).save(any());
+        verify(scheduleRepository, never()).findById(any());
+    }
+
+    @Test
+    void getServiceById_includesBookingPolicyWhenOneExists() {
+        ServiceEntity existing = ServiceEntity.builder()
+            .title("Old")
+            .slug("old")
+            .user(user)
+            .profile(profile)
+            .organization(organization)
+            .schedule(schedule)
+            .build();
+        existing.setServiceId(SERVICE_ID);
+
+        BookingPolicyEntity policy = BookingPolicyEntity.builder().service(existing).build();
+        policy.setBookingPolicyId(BigInteger.valueOf(99));
+
+        when(serviceRepository.findById(SERVICE_ID)).thenReturn(Optional.of(existing));
+        when(bookingPolicyRepository.findByServiceServiceId(SERVICE_ID)).thenReturn(Optional.of(policy));
+
+        ServiceCreateResult result = service.getServiceById(SERVICE_ID);
+
+        assertThat(result.service()).isSameAs(existing);
+        assertThat(result.bookingPolicy()).isSameAs(policy);
+    }
+
+    @Test
+    void getServiceById_bookingPolicyNullWhenNoneExists() {
+        ServiceEntity existing = ServiceEntity.builder()
+            .title("Old")
+            .slug("old")
+            .user(user)
+            .profile(profile)
+            .organization(organization)
+            .schedule(schedule)
+            .build();
+        existing.setServiceId(SERVICE_ID);
+
+        when(serviceRepository.findById(SERVICE_ID)).thenReturn(Optional.of(existing));
+        when(bookingPolicyRepository.findByServiceServiceId(SERVICE_ID)).thenReturn(Optional.empty());
+
+        ServiceCreateResult result = service.getServiceById(SERVICE_ID);
+
+        assertThat(result.bookingPolicy()).isNull();
+    }
+
+    @Test
+    void createService_transactionBoundaryLivesOnPublicServiceMethod() throws Exception {
+        Method method = BusinessServiceImpl.class.getMethod(
+            "createService",
+            ServiceRequest.class
+        );
+
+        assertThat(method.isAnnotationPresent(Transactional.class)).isTrue();
+    }
+
+    @Test
+    void updateService_transactionBoundaryLivesOnPublicServiceMethod() throws Exception {
+        Method method = BusinessServiceImpl.class.getMethod(
+            "updateService",
+            BigInteger.class,
+            ServiceRequest.class
+        );
+
+        assertThat(method.isAnnotationPresent(Transactional.class)).isTrue();
+    }
+
+    @Test
+    void serviceRequestTypeHasNoOwnershipAccessors() {
+        assertThat(ServiceRequest.class.getRecordComponents())
+            .extracting(component -> component.getName())
+            .doesNotContain("userId", "profileId", "organizationId")
+            .contains("bookingPolicy");
+    }
+
+    private static ServiceRequest request(ServiceBookingPolicyRequest bookingPolicy) {
+        return new ServiceRequest(
+            "Consultation",
+            "consultation",
+            "Planning session",
+            Locale.en,
+            "Online",
+            SCHEDULE_ID,
+            "UNLIMITED",
+            "Asia/Ho_Chi_Minh",
+            BigDecimal.valueOf(25),
+            BigDecimal.valueOf(25),
+            Currency.USD,
+            false,
+            false,
+            false,
+            "https://example.com/thanks",
+            false,
+            1,
+            null,
+            null,
+            bookingPolicy
+        );
+    }
+
+    private static ServiceBookingPolicyRequest bookingPolicyRequest() {
+        return new ServiceBookingPolicyRequest(
+            BookingMode.FIXED,
+            60,
+            null,
+            null,
+            30,
+            90,
+            30,
+            0,
+            0,
+            false,
+            false,
+            false,
+            true,
+            "ROLLING",
+            1
+        );
+    }
+
+    private static UserPrincipal principal(BigInteger userId) {
+        return new UserPrincipal(
+            AuthenticatedActorType.USER,
+            UUID.randomUUID(),
+            userId,
+            null,
+            "jane",
+            "jane@example.com",
+            "Jane Doe",
+            null,
+            "Asia/Ho_Chi_Minh",
+            AccountStatus.ACTIVE,
+            Set.of(),
+            Set.of(),
+            Map.of()
+        );
+    }
+}

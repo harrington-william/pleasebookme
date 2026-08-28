@@ -1,6 +1,6 @@
 # Overview
 
-The Booking Policy API allows application to create, retrieve, update, and delete a service's booking rules — duration, notice, advance-booking window, buffers, overlap, capacity, and confirmation behavior. A service is not limited to one policy; no uniqueness is enforced on `serviceId`.
+The Booking Policy API allows application to create, retrieve, update, and delete a service's booking rules — duration, notice, advance-booking window, buffers, overlap, capacity, and confirmation behavior. `serviceId` is unique at the database level and checked before create — a service has at most one policy, with duplicate creates returning `409`.
 
 ## Base URL
 

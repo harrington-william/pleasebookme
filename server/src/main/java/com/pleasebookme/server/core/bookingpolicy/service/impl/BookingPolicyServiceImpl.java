@@ -3,6 +3,7 @@ package com.pleasebookme.server.core.bookingpolicy.service.impl;
 import com.pleasebookme.server.core.bookingpolicy.dto.BookingPolicyRequest;
 import com.pleasebookme.server.core.bookingpolicy.entity.BookingPolicyEntity;
 import com.pleasebookme.server.core.bookingpolicy.exception.BookingPolicyNotFoundException;
+import com.pleasebookme.server.core.bookingpolicy.exception.DuplicateBookingPolicyException;
 import com.pleasebookme.server.core.bookingpolicy.repository.BookingPolicyRepository;
 import com.pleasebookme.server.core.bookingpolicy.service.BookingPolicyService;
 import com.pleasebookme.server.core.service.entity.ServiceEntity;
@@ -22,12 +23,15 @@ public class BookingPolicyServiceImpl implements BookingPolicyService {
 
     @Override
     public BookingPolicyEntity createBookingPolicy(BookingPolicyRequest request) {
+        if (bookingPolicyRepository.existsByServiceServiceId(request.serviceId())) {
+            throw new DuplicateBookingPolicyException("Booking policy already exists for service: " + request.serviceId());
+        }
+
         ServiceEntity service = serviceRepository.findById(request.serviceId())
             .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + request.serviceId()));
 
         BookingPolicyEntity.BookingPolicyEntityBuilder bookingPolicy = BookingPolicyEntity.builder()
             .service(service)
-            .durationType(request.durationType())
             .minimumDuration(request.minimumDuration())
             .maximumDuration(request.maximumDuration())
             .minimumNotice(request.minimumNotice())
@@ -72,7 +76,6 @@ public class BookingPolicyServiceImpl implements BookingPolicyService {
             .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + request.serviceId()));
 
         bookingPolicy.setService(service);
-        bookingPolicy.setDurationType(request.durationType());
         bookingPolicy.setMinimumDuration(request.minimumDuration());
         bookingPolicy.setMaximumDuration(request.maximumDuration());
         bookingPolicy.setMinimumNotice(request.minimumNotice());

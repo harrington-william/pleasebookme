@@ -1,6 +1,6 @@
 ## Description
 
-Creates a booking policy for an existing service. `bookingMode`, `defaultDuration`, `slotInterval`, `beforeBuffer`, `afterBuffer`, `allowOverlap`, `allowMultipleAttendee`, `requiresPayment`, and `autoConfirm` fall back to their platform defaults (`FIXED`, `1`, `30`, `0`, `0`, `false`, `false`, `false`, `true`) when omitted. A service is not restricted to a single booking policy — no uniqueness is enforced on `serviceId`.
+Creates a booking policy for an existing service. `bookingMode`, `defaultDuration`, `slotInterval`, `beforeBuffer`, `afterBuffer`, `allowOverlap`, `allowMultipleAttendee`, `requiresPayment`, and `autoConfirm` fall back to their platform defaults (`FIXED`, `1`, `30`, `0`, `0`, `false`, `false`, `false`, `true`) when omitted. `serviceId` is unique at the database level and pre-checked by the service layer — a service may have at most one booking policy, and creating a second returns a typed `409`.
 
 ---
 
@@ -33,7 +33,6 @@ Required **Bearer Token**
 {
 	"serviceId": 0,
 	"bookingMode": "",
-	"durationType": "",
 	"defaultDuration": 0,
 	"minimumDuration": 0,
 	"maximumDuration": 0,
@@ -62,7 +61,6 @@ Required **Bearer Token**
 	"bookingPolicyId": 0,
 	"serviceId": 0,
 	"bookingMode": "",
-	"durationType": "",
 	"defaultDuration": 0,
 	"minimumDuration": 0,
 	"maximumDuration": 0,
@@ -90,6 +88,7 @@ Required **Bearer Token**
 - 401 UNAUTHORIZED
 - 403 FORBIDDEN
 - 404 SERVICE_NOT_FOUND
+- 409 BOOKING_POLICY_ALREADY_EXISTS
 - 429 RATE_LIMIT_EXCEEDED
 
 ---
@@ -98,7 +97,12 @@ Required **Bearer Token**
 
 ```json
 {
-	"code": "SERVICE_NOT_FOUND"
+	"status": "error",
+	"message": "Booking policy already exists for service: 1",
+	"data": null,
+	"client": "127.0.0.1",
+	"timestamp": "2026-08-29T00:00:00Z",
+	"path": "/api/v1/booking-policies"
 }
 ```
 
@@ -116,7 +120,6 @@ curl \
 -d '{
     "serviceId": 1,
 	"bookingMode": "FIXED",
-	"durationType": "FIXED",
 	"defaultDuration": 1,
 	"minimumDuration": null,
 	"maximumDuration": null,

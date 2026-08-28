@@ -37,7 +37,6 @@ Required **Bearer Token**
 	"bookingPolicyId": 0,
 	"serviceId": 0,
 	"bookingMode": "",
-	"durationType": "",
 	"defaultDuration": 0,
 	"minimumDuration": 0,
 	"maximumDuration": 0,

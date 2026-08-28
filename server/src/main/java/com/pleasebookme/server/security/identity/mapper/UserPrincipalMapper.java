@@ -21,6 +21,7 @@ public class UserPrincipalMapper implements PrincipalMapper<AuthenticationAggreg
             AuthenticatedActorType.USER,
 
             aggregation.user().getUserUid(),
+            aggregation.user().getUserId(),
 
             // Tenant always null
             null,

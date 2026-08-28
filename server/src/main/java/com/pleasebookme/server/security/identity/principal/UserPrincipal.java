@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -17,6 +18,9 @@ public record UserPrincipal(
     AuthenticatedActorType actorType,
 
     UUID subject,
+
+    @NotNull
+    BigInteger userId,
 
     // Always null because a user can hold membership in more than 1 organization
     // Kept only to satisfy AuthenticatedPrincipal's sealed contract
