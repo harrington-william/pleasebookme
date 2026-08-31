@@ -299,6 +299,60 @@ class BusinessServiceImplTest {
     }
 
     @Test
+    void getServicesByOrganizationId_returnsServicesForCallerOrganization() {
+        ServiceEntity existing = ServiceEntity.builder()
+            .title("Consultation")
+            .slug("consultation")
+            .user(user)
+            .profile(profile)
+            .organization(organization)
+            .schedule(schedule)
+            .build();
+        existing.setServiceId(SERVICE_ID);
+
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(serviceRepository.findByOrganizationOrganizationId(ORGANIZATION_ID)).thenReturn(List.of(existing));
+
+        List<ServiceEntity> result = service.getServicesByOrganizationId(ORGANIZATION_ID);
+
+        assertThat(result).containsExactly(existing);
+    }
+
+    @Test
+    void getServicesByOrganizationId_returnsEmptyForForeignOrganization() {
+        BigInteger foreignOrganizationId = BigInteger.valueOf(900);
+
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+
+        List<ServiceEntity> result = service.getServicesByOrganizationId(foreignOrganizationId);
+
+        assertThat(result).isEmpty();
+        verify(serviceRepository, never()).findByOrganizationOrganizationId(any());
+    }
+
+    @Test
+    void getServicesByOrganizationId_rejectsCallerWithMultipleOrganizationProfiles() {
+        ProfileEntity secondProfile = ProfileEntity.builder()
+            .user(user)
+            .organization(OrganizationEntity.builder().name("Other").slug("other").build())
+            .username("jane")
+            .build();
+
+        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile, secondProfile));
+
+        assertThatThrownBy(() -> service.getServicesByOrganizationId(ORGANIZATION_ID))
+            .isInstanceOf(AmbiguousServiceOwnerException.class);
+
+        verify(serviceRepository, never()).findByOrganizationOrganizationId(any());
+    }
+
+    @Test
     void createService_transactionBoundaryLivesOnPublicServiceMethod() throws Exception {
         Method method = BusinessServiceImpl.class.getMethod(
             "createService",

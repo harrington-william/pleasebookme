@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +59,11 @@ public class BookingPolicyServiceImpl implements BookingPolicyService {
             .orElseThrow(() -> new BookingPolicyNotFoundException(
                 "Booking policy not found: " + bookingPolicyId
             ));
+    }
+
+    @Override
+    public Optional<BookingPolicyEntity> getBookingPolicyByServiceId(BigInteger serviceId) {
+        return bookingPolicyRepository.findByServiceServiceId(serviceId);
     }
 
     @Override

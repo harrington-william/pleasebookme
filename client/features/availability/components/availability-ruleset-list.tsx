@@ -63,8 +63,7 @@ export function AvailabilityRulesetList({
     return (
       <div className="rounded-xl border border-dashed border-border px-md py-2xl text-center">
         <p className="text-body-md text-muted-foreground">
-          No availability rulesets yet. Create one to define your working
-          hours.
+          No availability rulesets yet. Create one to define your working hours.
         </p>
       </div>
     );

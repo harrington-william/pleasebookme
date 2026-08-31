@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/services")
@@ -27,6 +28,13 @@ public class ServiceController {
     public ServiceResponse getService(@PathVariable BigInteger serviceId) {
         var result = businessService.getServiceById(serviceId);
         return ServiceResponse.from(result.service(), result.bookingPolicy());
+    }
+
+    @GetMapping
+    public List<ServiceResponse> getServices(@RequestParam BigInteger organizationId) {
+        return businessService.getServicesByOrganizationId(organizationId).stream()
+            .map(ServiceResponse::from)
+            .toList();
     }
 
     @PutMapping("/{serviceId}")

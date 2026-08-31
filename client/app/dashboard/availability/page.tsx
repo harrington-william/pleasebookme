@@ -15,7 +15,7 @@ import { getSessionActor, SESSION_EXPIRED_REDIRECT } from "@/lib/session";
 export const metadata: Metadata = {
   title: "Availability",
   description:
-    "Manage your organization's working hours and scheduling rules.",
+    "Manage your working hours and scheduling configuration.",
 };
 
 export default async function AvailabilityPage() {
@@ -53,15 +53,18 @@ export default async function AvailabilityPage() {
           </h1>
 
           <p className="text-body-md text-muted-foreground">
-            Manage your organization&apos;s working hours and scheduling
-            rules.
+            Manage your working hours and scheudling configuration.
           </p>
         </div>
 
         {/* Create Availability Button */}
         <Link
           href="/dashboard/availability/new"
-          className="inline-flex w-auto justify-center items-center gap-xs rounded-lg bg-primary px-md py-sm text-label-md text-primary-foreground transition-colors hover:bg-primary/90"
+          className="
+            inline-flex w-auto justify-center items-center gap-xs
+            rounded-lg bg-primary px-md py-sm text-label-md
+            text-primary-foreground transition-colors hover:bg-primary/90
+          "
         >
           <Plus className="size-4" aria-hidden="true" />
           Create Availability

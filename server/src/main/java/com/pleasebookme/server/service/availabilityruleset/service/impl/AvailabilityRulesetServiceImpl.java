@@ -48,7 +48,7 @@ public class AvailabilityRulesetServiceImpl implements AvailabilityRulesetServic
             request.windows()
                 .stream()
                 .map(
-                    window ->buildAvailability(user, schedule, window)
+                    window -> buildAvailability(user, schedule, window)
                 )
                 .toList();
 

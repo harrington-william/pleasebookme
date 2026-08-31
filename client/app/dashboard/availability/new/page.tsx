@@ -31,7 +31,8 @@ export default async function CreateAvailabilityPage() {
 
         <Link
           href="/dashboard/availability"
-          className="w-auto rounded-lg border border-border text-center px-md py-sm text-label-md text-foreground transition-colors hover:bg-surface-hover"
+          className="w-auto rounded-lg border border-border text-center text-destructive
+          px-md py-sm text-label-md transition-colors hover:bg-surface-hover"
         >
           Cancel
         </Link>

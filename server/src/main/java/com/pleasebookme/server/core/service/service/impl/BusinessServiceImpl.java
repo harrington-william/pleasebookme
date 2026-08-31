@@ -113,6 +113,17 @@ public class BusinessServiceImpl implements BusinessServiceService {
     }
 
     @Override
+    public List<ServiceEntity> getServicesByOrganizationId(BigInteger organizationId) {
+        OwnerContext owner = resolveCurrentOwner();
+
+        if (!owner.organization().getOrganizationId().equals(organizationId)) {
+            return List.of();
+        }
+
+        return serviceRepository.findByOrganizationOrganizationId(organizationId);
+    }
+
+    @Override
     @Transactional
     public ServiceEntity updateService(
         BigInteger serviceId,

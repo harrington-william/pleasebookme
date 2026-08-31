@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Security/Identity/UserPrincipal.md",
+                "file": "Reading List/Extract timezone from browser.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "UserPrincipal"
+              "title": "Extract timezone from browser"
             }
           }
         ]
@@ -99,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Security/Identity/UserPrincipal.md",
+                "file": "Reading List/Extract timezone from browser.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Security/Identity/UserPrincipal.md",
+                "file": "Reading List/Extract timezone from browser.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -161,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Security/Identity/UserPrincipal.md",
+                "file": "Reading List/Extract timezone from browser.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -189,8 +189,11 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "a75d76270c57159a",
+  "active": "f0e3ab1f11893adc",
   "lastOpenFiles": [
+    "Security/Identity/UserPrincipal.md",
+    "API/Core/Booking Policies/Get booking policy by service.md",
+    "API/Core/Services/Get services by organization.md",
     "API/Availability Ruleset/Create an availability ruleset.md",
     "API/Availability Ruleset/Availability Ruleset API Summary.md",
     "API/Availability Ruleset",
@@ -199,7 +202,6 @@
     "Services/Availability Ruleset/Availability Ruleset Service.md",
     "Services/Availability Ruleset",
     "Security/Identity/WidgetPrincipal.md",
-    "Security/Identity/UserPrincipal.md",
     "Security/Identity/AuthenticatedPrincipal.md",
     "Issue Template.md",
     "AI Orchestration Strategy.md",
@@ -221,8 +223,6 @@
     "Security/Token/JWT/Untitled.md",
     "Security/Token/JWT",
     "Security/Authorization/Authorization Engine.md",
-    "Google OAuth2 Flow.md",
-    "Security/Authorization/Policy/Wildcard/WidgetTenantIsolationPolicy.md",
     "Security/Authorization/Policy/Wildcard",
     "Security/Authorization/Policy",
     "Security/Authorization/Decision",

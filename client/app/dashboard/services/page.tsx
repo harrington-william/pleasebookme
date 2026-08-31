@@ -58,7 +58,10 @@ export default async function ServicesPage() {
         {/* Create Service Button */}
         <Link
           href="/dashboard/services/new"
-          className="inline-flex w-auto justify-center items-center gap-xs rounded-lg bg-primary px-md py-sm text-label-md text-primary-foreground transition-colors hover:bg-primary/90"
+          className="
+          inline-flex w-auto justify-center items-center gap-xs
+          rounded-lg bg-primary px-md py-sm text-label-md
+          text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <Plus className="size-4" aria-hidden="true" />
           Create New Service

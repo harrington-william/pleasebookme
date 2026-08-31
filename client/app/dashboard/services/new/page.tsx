@@ -33,8 +33,6 @@ export default async function CreateServicePage() {
     if (error instanceof SessionExpiredError) {
       redirect(SESSION_EXPIRED_REDIRECT);
     }
-    // Fall through with an empty list — the form renders a clear
-    // "create an availability ruleset first" message either way.
   }
 
   return (
@@ -51,7 +49,8 @@ export default async function CreateServicePage() {
 
         <Link
           href="/dashboard/services"
-          className="w-max rounded-lg border border-border px-md py-sm text-label-md text-foreground transition-colors hover:bg-surface-hover"
+          className="w-auto rounded-lg border border-border text-center text-destructive
+          px-md py-sm text-label-md transition-colors hover:bg-surface-hover"
         >
           Cancel
         </Link>

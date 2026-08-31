@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ import { ApiRequestError } from "@/lib/api-error";
 import { cn } from "@/lib/utils";
 
 const FALLBACK_TIMEZONES = [
-  "Asia/Ho_Chi_Minh",
+  "Asia/Saigon",
   "Australia/Sydney",
   "UTC",
   "America/New_York",
@@ -49,16 +49,26 @@ export function CreateAvailabilityForm() {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CreateAvailabilityFormValues>({
     resolver: zodResolver(createAvailabilityFormSchema),
     mode: "onBlur",
     defaultValues: {
       title: "",
-      timezone: "Asia/Ho_Chi_Minh",
+      timezone: "Asia/Saigon",
       days: DEFAULT_DAY_VALUES,
     },
   });
+
+  // Detect timezone from browser
+  useEffect(() => {
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    if (detected && timezones.includes(detected)) {
+      setValue("timezone", detected);
+    }
+  }, [timezones, setValue]);
 
   async function onSubmit(values: CreateAvailabilityFormValues) {
     setSubmitError(null);
@@ -90,19 +100,21 @@ export function CreateAvailabilityForm() {
       <div className="flex flex-col gap-lg lg:col-span-2">
         {submitError ? <AuthFormAlert message={submitError} /> : null}
 
+        {/* Basic Details */}
         <section className="space-y-md rounded-xl border border-border bg-surface p-lg">
           <h2 className="text-headline-md text-foreground">Basic Details</h2>
 
           <div className="space-y-base">
             <Label
               htmlFor="title"
-              className="text-label-md tracking-wider text-muted-foreground uppercase"
+              className="text-label-md tracking-wider text-muted-foreground uppercase mb-sm"
             >
-              Ruleset Name
+              Name
             </Label>
+
             <Input
               id="title"
-              placeholder="e.g., Standard Business Hours"
+              placeholder="Standard Business Hours"
               aria-invalid={errors.title ? true : undefined}
               className="h-auto rounded-lg border-border bg-background px-md py-sm text-body-md"
               {...register("title")}
@@ -114,17 +126,22 @@ export function CreateAvailabilityForm() {
             ) : null}
           </div>
 
+          {/* Timezone */}
           <div className="space-y-base">
             <Label
               htmlFor="timezone"
-              className="text-label-md tracking-wider text-muted-foreground uppercase"
+              className="text-label-md tracking-wider text-muted-foreground uppercase mb-sm"
             >
               Timezone
             </Label>
+
             <select
               id="timezone"
               aria-invalid={errors.timezone ? true : undefined}
-              className="h-9 w-full rounded-lg border border-border bg-background px-md text-body-md text-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="
+              h-9 w-full rounded-lg border border-border bg-background px-md
+              text-body-md text-foreground focus-visible:border-primary
+              focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               {...register("timezone")}
             >
               {timezones.map((zone) => (
@@ -141,6 +158,7 @@ export function CreateAvailabilityForm() {
           </div>
         </section>
 
+        {/* Availability Config */}
         <section className="space-y-md rounded-xl border border-border bg-surface p-lg">
           <h2 className="text-headline-md text-foreground">Weekly Schedule</h2>
 
@@ -151,7 +169,6 @@ export function CreateAvailabilityForm() {
                 index={index}
                 label={day.label}
                 control={control}
-                register={register}
                 errors={errors}
               />
             ))}
@@ -159,6 +176,7 @@ export function CreateAvailabilityForm() {
         </section>
       </div>
 
+      {/* Right side */}
       <div className="flex flex-col gap-lg">
         <section className="space-y-sm rounded-xl border border-dashed border-border bg-surface/60 p-lg">
           <h2 className="text-headline-md text-muted-foreground">
@@ -197,6 +215,7 @@ export function CreateAvailabilityForm() {
           </p>
         </section>
 
+        {/* Save button */}
         <button
           type="submit"
           disabled={isSubmitting}

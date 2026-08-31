@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +65,45 @@ class BookingPolicyServiceImplTest {
         assertThat(bookingPolicy.getBookingMode()).isEqualTo(BookingMode.FIXED);
         assertThat(bookingPolicy.getDefaultDuration()).isEqualTo(60);
         assertThat(bookingPolicy.getMinimumNotice()).isEqualTo(30);
+    }
+
+    @Test
+    void getBookingPolicyByServiceId_returnsMatchingPolicy() {
+        ServiceEntity serviceEntity = ServiceEntity.builder().title("Consultation").build();
+        serviceEntity.setServiceId(SERVICE_ID);
+        BookingPolicyEntity policy = BookingPolicyEntity.builder()
+            .service(serviceEntity)
+            .bookingMode(BookingMode.FIXED)
+            .defaultDuration(60)
+            .build();
+        policy.setBookingPolicyId(BigInteger.valueOf(99));
+
+        when(bookingPolicyRepository.findByServiceServiceId(SERVICE_ID)).thenReturn(Optional.of(policy));
+
+        Optional<BookingPolicyEntity> result = service.getBookingPolicyByServiceId(SERVICE_ID);
+
+        assertThat(result).containsSame(policy);
+    }
+
+    @Test
+    void getBookingPolicyByServiceId_returnsEmptyWhenServiceHasNoPolicy() {
+        when(bookingPolicyRepository.findByServiceServiceId(SERVICE_ID)).thenReturn(Optional.empty());
+
+        Optional<BookingPolicyEntity> result = service.getBookingPolicyByServiceId(SERVICE_ID);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getAllBookingPolicies_remainsUnfiltered() {
+        BookingPolicyEntity first = BookingPolicyEntity.builder().build();
+        BookingPolicyEntity second = BookingPolicyEntity.builder().build();
+        when(bookingPolicyRepository.findAll()).thenReturn(List.of(first, second));
+
+        List<BookingPolicyEntity> result = service.getAllBookingPolicies();
+
+        assertThat(result).containsExactly(first, second);
+        verify(bookingPolicyRepository, never()).findByServiceServiceId(any());
     }
 
     private static BookingPolicyRequest request() {

@@ -41,5 +41,6 @@ Every endpoint in this resource requires a **Bearer Token**
 | POST | /api/v1/booking-policies | [[Create a booking policy]] |
 | GET | /api/v1/booking-policies/{bookingPolicyId} | [[Get a booking policy]] |
 | GET | /api/v1/booking-policies | [[Get all booking policies]] |
+| GET | /api/v1/booking-policies?serviceId= | [[Get booking policy by service]] |
 | PUT | /api/v1/booking-policies/{bookingPolicyId} | [[Update a booking policy]] |
 | DELETE | /api/v1/booking-policies/{bookingPolicyId} | [[Delete a booking policy]] |

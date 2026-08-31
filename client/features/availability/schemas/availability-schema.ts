@@ -20,7 +20,7 @@ export const createAvailabilityFormSchema = z
     title: z
       .string()
       .trim()
-      .min(1, "Ruleset name is required.")
+      .min(1, "Name is required.")
       .max(TITLE_MAX, `Must be at most ${TITLE_MAX} characters.`),
     timezone: z.string().trim().min(1, "Select a timezone."),
     days: z.array(dayEntrySchema).length(7),
@@ -41,6 +41,7 @@ export type CreateAvailabilityFormValues = z.infer<
   typeof createAvailabilityFormSchema
 >;
 
+// MON - FRI | 9AM - 5PM
 export const DEFAULT_DAY_VALUES: CreateAvailabilityFormValues["days"] =
   DAY_DEFINITIONS.map((day) => ({
     value: day.value,

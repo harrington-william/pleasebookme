@@ -44,18 +44,31 @@ export async function createBookingPolicyOnPlatform(
   return response.data;
 }
 
-/**
- * TEMPORARY WORKAROUND — same shape as availability-gateway.ts.
- *
- * GET /api/v1/services and GET /api/v1/booking-policies are generic CRUD
- * endpoints with no owner/organization scoping at all — they return every
- * service and every booking policy for every organization on the platform.
- * This function fetches everything and filters down to the signed-in user's
- * own organization server-side, so the browser only ever receives the
- * filtered subset. The underlying gap — any authenticated caller's token can
- * already list every other organization's services directly against the
- * platform — is a backend authorization gap this client cannot close.
- */
+export async function getServicesByOrganizationOnPlatform(
+  accessToken: string,
+  organizationId: number
+): Promise<Service[]> {
+  const response = await platformClient().get<Service[]>(SERVICE_BASE, {
+    headers: bearer(accessToken),
+    params: { organizationId },
+  });
+  return response.data;
+}
+
+export async function getBookingPolicyForServiceOnPlatform(
+  accessToken: string,
+  serviceId: number
+): Promise<BookingPolicy | null> {
+  const response = await platformClient().get<BookingPolicy[]>(
+    BOOKING_POLICY_BASE,
+    {
+      headers: bearer(accessToken),
+      params: { serviceId },
+    }
+  );
+  return response.data[0] ?? null;
+}
+
 export async function listMyServiceCatalogOnPlatform(
   accessToken: string,
   userUid: string
@@ -65,28 +78,22 @@ export async function listMyServiceCatalogOnPlatform(
     userUid
   );
 
-  const [servicesResponse, policiesResponse] = await Promise.all([
-    platformClient().get<Service[]>(SERVICE_BASE, {
-      headers: bearer(accessToken),
-    }),
-    platformClient().get<BookingPolicy[]>(BOOKING_POLICY_BASE, {
-      headers: bearer(accessToken),
-    }),
-  ]);
-
-  const myServices = servicesResponse.data.filter(
-    (service) => service.organizationId === organizationId
-  );
-  const policyByServiceId = new Map<number, BookingPolicy>(
-    policiesResponse.data.map((policy) => [policy.serviceId, policy])
+  const services = await getServicesByOrganizationOnPlatform(
+    accessToken,
+    organizationId
   );
 
-  return myServices
-    .map((service) => ({
+  const entries = await Promise.all(
+    services.map(async (service) => ({
       service,
-      bookingPolicy: policyByServiceId.get(service.serviceId) ?? null,
+      bookingPolicy: await getBookingPolicyForServiceOnPlatform(
+        accessToken,
+        service.serviceId
+      ),
     }))
-    .sort((a, b) => b.service.serviceId - a.service.serviceId);
+  );
+
+  return entries.sort((a, b) => b.service.serviceId - a.service.serviceId);
 }
 
 export async function createServiceWithPolicyOnPlatform(

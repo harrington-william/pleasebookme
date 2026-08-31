@@ -69,6 +69,7 @@ export function CreateServiceForm({ schedules }: { schedules: Schedule[] }) {
       <div className="flex flex-col gap-lg lg:col-span-2">
         {submitError ? <AuthFormAlert message={submitError} /> : null}
 
+        {/* Basic info */}
         <section className="space-y-md rounded-xl border border-border bg-surface p-lg">
           <h2 className="text-headline-md text-foreground">
             Basic Information
@@ -77,13 +78,14 @@ export function CreateServiceForm({ schedules }: { schedules: Schedule[] }) {
           <div className="space-y-base">
             <Label
               htmlFor="title"
-              className="text-label-md tracking-wider text-muted-foreground uppercase"
+              className="text-label-md tracking-wider text-muted-foreground uppercase mb-sm"
             >
               Service Name
             </Label>
+
             <Input
               id="title"
-              placeholder="e.g., Executive Consultation"
+              placeholder="Executive Consultation"
               aria-invalid={errors.title ? true : undefined}
               className={fieldInputClassName}
               {...register("title")}
@@ -95,10 +97,11 @@ export function CreateServiceForm({ schedules }: { schedules: Schedule[] }) {
             ) : null}
           </div>
 
+          {/* Description */}
           <div className="space-y-base">
             <Label
               htmlFor="description"
-              className="text-label-md tracking-wider text-muted-foreground uppercase"
+              className="text-label-md tracking-wider text-muted-foreground uppercase mb-sm"
             >
               Description
             </Label>
@@ -106,44 +109,40 @@ export function CreateServiceForm({ schedules }: { schedules: Schedule[] }) {
               id="description"
               rows={4}
               placeholder="Briefly describe the service offering..."
-              className="w-full resize-none rounded-lg border border-border bg-background px-md py-sm text-body-md text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="
+                w-full resize-none rounded-lg border border-border
+                bg-background px-md py-sm text-body-md text-foreground
+                placeholder:text-muted-foreground focus-visible:border-primary
+                focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none
+              "
               {...register("description")}
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-md md:grid-cols-2">
-            <div className="space-y-base">
-              <Label className="text-label-md tracking-wider text-muted-foreground uppercase">
-                Category
-              </Label>
-              <select
-                disabled
-                title="core.services has no category column — nothing to select yet."
-                className={cn(selectClassName, "cursor-not-allowed opacity-50")}
-              >
-                <option>Not available yet</option>
-              </select>
-            </div>
+          {/* Cover image */}
+          <div className="space-y-base">
+            <Label className="text-label-md tracking-wider text-muted-foreground uppercase mb-sm">
+              Service Cover Image
+            </Label>
 
-            <div className="space-y-base">
-              <Label className="text-label-md tracking-wider text-muted-foreground uppercase">
-                Service Cover Image
-              </Label>
-              <button
-                type="button"
-                disabled
-                title="core.services has no image column, and this platform has no file-upload endpoint yet."
-                className="flex h-9 w-full cursor-not-allowed items-center justify-center rounded-lg border border-dashed border-border text-label-md text-muted-foreground opacity-50"
-              >
-                Upload Image (Max 2MB)
-              </button>
-            </div>
+            <button
+              type="button"
+              disabled
+              title="core.services has no image column, and this platform has no file-upload endpoint yet."
+              className="
+                flex h-9 w-full cursor-not-allowed items-center justify-center rounded-lg
+                border border-dashed border-border text-label-md text-muted-foreground opacity-50
+              "
+            >
+              Upload Image
+            </button>
           </div>
 
+          {/* Availability */}
           <div className="space-y-base">
             <Label
               htmlFor="scheduleId"
-              className="text-label-md tracking-wider text-muted-foreground uppercase"
+              className="text-label-md tracking-wider text-muted-foreground uppercase mb-sm"
             >
               Availability Ruleset
             </Label>

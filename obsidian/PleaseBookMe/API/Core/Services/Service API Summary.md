@@ -39,6 +39,7 @@ Every endpoint in this resource requires a **Bearer Token**
 | Method | Endpoint | Description |
 |---|---|---|
 | POST | /api/v1/services | [[Create a service]] |
+| GET | /api/v1/services?organizationId= | [[Get services by organization]] |
 | GET | /api/v1/services/{serviceId} | [[Get a service]] |
 | PUT | /api/v1/services/{serviceId} | [[Update a service]] |
 | DELETE | /api/v1/services/{serviceId} | [[Delete a service]] |
