@@ -1,8 +1,5 @@
 package com.pleasebookme.server.core.service.service.impl;
 
-import com.pleasebookme.server.auth.user.entity.UserEntity;
-import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
-import com.pleasebookme.server.auth.user.repository.UserRepository;
 import com.pleasebookme.server.core.bookingpolicy.dto.ServiceBookingPolicyRequest;
 import com.pleasebookme.server.core.bookingpolicy.entity.BookingPolicyEntity;
 import com.pleasebookme.server.core.bookingpolicy.repository.BookingPolicyRepository;
@@ -11,7 +8,6 @@ import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
 import com.pleasebookme.server.core.service.dto.ServiceRequest;
 import com.pleasebookme.server.core.service.entity.ServiceEntity;
-import com.pleasebookme.server.core.service.exception.AmbiguousServiceOwnerException;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.core.service.repository.ServiceRepository;
@@ -23,11 +19,8 @@ import com.pleasebookme.server.integration.calendar.repository.DestinationCalend
 import com.pleasebookme.server.integration.sheets.entity.DestinationSheetsEntity;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
 import com.pleasebookme.server.integration.sheets.repository.DestinationSheetsRepository;
-import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
-import com.pleasebookme.server.organization.profile.entity.ProfileEntity;
-import com.pleasebookme.server.organization.profile.exception.ProfileNotFoundException;
-import com.pleasebookme.server.organization.profile.repository.ProfileRepository;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.service.organization.context.OrganizationContext;
+import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,19 +33,17 @@ import java.util.List;
 public class BusinessServiceImpl implements BusinessServiceService {
     private final ServiceRepository serviceRepository;
     private final BookingPolicyRepository bookingPolicyRepository;
-    private final UserRepository userRepository;
-    private final ProfileRepository profileRepository;
     private final ScheduleRepository scheduleRepository;
     private final DestinationCalendarRepository destinationCalendarRepository;
     private final DestinationSheetsRepository destinationSheetsRepository;
-    private final CurrentPrincipalProvider currentPrincipalProvider;
+    private final CurrentOrganizationProvider currentOrganizationProvider;
 
     @Override
     @Transactional
     public ServiceCreateResult createService(ServiceRequest request) {
-        OwnerContext owner = resolveCurrentOwner();
+        OrganizationContext organizationContext = currentOrganizationProvider.requireCurrent();
 
-        if (serviceRepository.existsByOrganizationOrganizationIdAndSlug(owner.organization().getOrganizationId(), request.slug())) {
+        if (serviceRepository.existsByOrganizationOrganizationIdAndSlug(organizationContext.organizationId(), request.slug())) {
             throw new DuplicateServiceException("Slug already exists for organization: " + request.slug());
         }
 
@@ -64,9 +55,9 @@ public class BusinessServiceImpl implements BusinessServiceService {
             .slug(request.slug())
             .description(request.description())
             .location(request.location())
-            .user(owner.user())
-            .profile(owner.profile())
-            .organization(owner.organization())
+            .user(organizationContext.user())
+            .profile(currentOrganizationProvider.requireProfile(organizationContext))
+            .organization(organizationContext.organization())
             .schedule(schedule)
             .minPrice(request.minPrice())
             .maxPrice(request.maxPrice())
@@ -114,9 +105,9 @@ public class BusinessServiceImpl implements BusinessServiceService {
 
     @Override
     public List<ServiceEntity> getServicesByOrganizationId(BigInteger organizationId) {
-        OwnerContext owner = resolveCurrentOwner();
+        OrganizationContext organizationContext = currentOrganizationProvider.requireCurrent();
 
-        if (!owner.organization().getOrganizationId().equals(organizationId)) {
+        if (!organizationContext.organizationId().equals(organizationId)) {
             return List.of();
         }
 
@@ -130,9 +121,9 @@ public class BusinessServiceImpl implements BusinessServiceService {
         ServiceRequest request
     ) {
         ServiceEntity service = findServiceOrThrow(serviceId);
-        OwnerContext owner = resolveCurrentOwner();
+        OrganizationContext organizationContext = currentOrganizationProvider.requireCurrent();
 
-        if (!service.getOrganization().getOrganizationId().equals(owner.organization().getOrganizationId())) {
+        if (!service.getOrganization().getOrganizationId().equals(organizationContext.organizationId())) {
             throw new ServiceNotFoundException("Service not found: " + serviceId);
         }
 
@@ -187,30 +178,6 @@ public class BusinessServiceImpl implements BusinessServiceService {
             .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + serviceId));
     }
 
-    private OwnerContext resolveCurrentOwner() {
-        BigInteger userId = currentPrincipalProvider.requireUser().userId();
-
-        UserEntity user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
-
-        List<ProfileEntity> profiles = profileRepository.findAllByUserUserId(userId);
-
-        if (profiles.isEmpty()) {
-            throw new ProfileNotFoundException("Profile not found for user: " + userId);
-        }
-
-        // Check if this user belongs to more than 1 organization
-        if (profiles.size() > 1) {
-            throw new AmbiguousServiceOwnerException(
-                "User " + userId + " belongs to multiple organizations; this endpoint cannot infer which one this request concerns."
-            );
-        }
-
-        ProfileEntity profile = profiles.get(0);
-
-        return new OwnerContext(user, profile, profile.getOrganization());
-    }
-
     private BookingPolicyEntity buildBookingPolicy(
         ServiceEntity service,
         ServiceBookingPolicyRequest request
@@ -236,10 +203,4 @@ public class BusinessServiceImpl implements BusinessServiceService {
 
         return bookingPolicy.build();
     }
-
-    private record OwnerContext(
-        UserEntity user,
-        ProfileEntity profile,
-        OrganizationEntity organization
-    ) {}
 }

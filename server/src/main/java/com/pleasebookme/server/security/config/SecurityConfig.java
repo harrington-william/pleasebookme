@@ -63,6 +63,13 @@ public class SecurityConfig {
                     "/api/v1/integrations/google/callback"
                 ).permitAll()
 
+                // Spring Boot forwards unhandled exceptions to /error. Without this,
+                // that forward is itself rejected as unauthenticated and the real 500
+                // leaves the server as an empty-bodied 401 — which the client cannot
+                // distinguish from an expired token, so it signs the user out instead
+                // of showing the error.
+                .requestMatchers("/error").permitAll()
+
                 .anyRequest().authenticated()
             )
 

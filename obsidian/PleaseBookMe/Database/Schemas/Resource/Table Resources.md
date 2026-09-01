@@ -13,13 +13,12 @@ Stores every allocatable asset that can participate in a reservation — the thi
 | `id` | `BIGSERIAL` | Internal surrogate primary key. |
 | `uid` | `UUID` | Stable, externally-safe identifier for this resource. |
 | `organization_id` | `BIGINT` | The organization that owns this resource. |
-| `service_id` | `BIGINT` | The bookable service this resource is associated with. |
 | `resource_type_id` | `BIGINT` | The category this resource belongs to. |
 | `name` | `VARCHAR(255)` | Display name (e.g. "Room 101," "Barber Chair 2"). |
 | `slug` | `VARCHAR(255)` | URL-safe identifier, unique per organization. |
-| `description` | `TEXT` | Description of the resource. |
-| `capacity` | `INTEGER` | How many bookings/attendees this resource can hold concurrently. |
-| `status` | `VARCHAR(50)` | Current operational status. |
+| `description` | `TEXT` | Optional description of the resource. |
+| `capacity` | `INTEGER` | Optional number of bookings/attendees this resource can hold concurrently. |
+| `status` | `resource.resource_status` | Required operational status: `ACTIVE`, `INACTIVE`, `MAINTENANCE`, or `RETIRED`. |
 | `is_bookable` | `BOOLEAN` | Whether this resource currently accepts new bookings. |
 | `is_virtual` | `BOOLEAN` | Whether this resource is virtual (no physical presence). |
 | `metadata` | `JSONB` | Free-form, application-defined data. |
@@ -42,13 +41,13 @@ Created through the standard CRUD service by an organization admin. `is_bookable
 ## Invariants
 
 - `(organization_id, slug)` is unique.
-- `status` is a plain `VARCHAR`, not a native Postgres enum, despite reading like one.
-- `capacity` is required — every resource declares how many concurrent bookings it can hold, even a capacity-of-one physical asset.
+- `status` is required and has no database default; callers must choose it explicitly.
+- `description` and `capacity` may be null.
 
 ## Relationships
 
 - **Organization:** Owns the resource.
-- **Service:** The bookable service this resource is offered under.
+- **Service:** Many-to-many assignments are stored in [[Table Resource Services]].
 - **Resource Type:** Classifies this resource.
 - **Resource Pricing / Assignment / Calendar / Maintenance / Attribute / Override:** All scope directly by `resource_id`, attaching pricing, staff assignment, availability, downtime, custom attributes, and one-off overrides respectively.
 

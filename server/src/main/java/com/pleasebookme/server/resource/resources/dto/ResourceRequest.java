@@ -1,5 +1,6 @@
 package com.pleasebookme.server.resource.resources.dto;
 
+import com.pleasebookme.server.resource.enums.ResourceStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,12 +8,6 @@ import jakarta.validation.constraints.Size;
 import java.math.BigInteger;
 
 public record ResourceRequest(
-    @NotNull
-    BigInteger organizationId,
-
-    @NotNull
-    BigInteger serviceId,
-
     @NotNull
     BigInteger resourceTypeId,
 
@@ -24,15 +19,12 @@ public record ResourceRequest(
     @Size(max = 255)
     String slug,
 
-    @NotBlank
     String description,
 
-    @NotNull
     Integer capacity,
 
-    @NotBlank
-    @Size(max = 50)
-    String status,
+    @NotNull
+    ResourceStatus status,
 
     Boolean isBookable,
 

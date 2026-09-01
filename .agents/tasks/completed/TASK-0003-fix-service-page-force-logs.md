@@ -9,7 +9,7 @@ Risk: Medium
 
 Resolves: `.agents/issues/open/ISSUE-0005-sign-out-on-service.md`
 
-Status: Active
+Status: COMPLETED
 
 ---
 

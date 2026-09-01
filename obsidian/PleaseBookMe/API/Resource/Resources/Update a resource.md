@@ -1,6 +1,6 @@
 ## Description
 
-Full-replaces an existing resource. All three FKs (`organizationId`, `serviceId`, `resourceTypeId`) are re-resolved on every update. The `(organizationId, slug)` uniqueness constraint is **not** re-checked on update — only on create.
+Full-replaces an existing resource in the caller's current organization. `resourceTypeId` is re-resolved; service assignments remain separate in `/api/v1/resource-services`. `description` and `capacity` may be null. The organization-scoped slug constraint is not re-checked before update.
 
 ---
 
@@ -31,8 +31,6 @@ Required **Bearer Token**
 
 ```json
 {
-	"organizationId": 0,
-	"serviceId": 0,
 	"resourceTypeId": 0,
 	"name": "",
 	"slug": "",
@@ -55,7 +53,6 @@ Required **Bearer Token**
 	"resourceId": 0,
 	"resourceUid": "",
 	"organizationId": 0,
-	"serviceId": 0,
 	"resourceTypeId": 0,
 	"name": "",
 	"slug": "",
@@ -77,8 +74,6 @@ Required **Bearer Token**
 - 401 UNAUTHORIZED
 - 403 FORBIDDEN
 - 404 RESOURCE_NOT_FOUND
-- 404 ORGANIZATION_NOT_FOUND
-- 404 SERVICE_NOT_FOUND
 - 404 RESOURCE_TYPE_NOT_FOUND
 - 429 RATE_LIMIT_EXCEEDED
 
@@ -104,8 +99,6 @@ curl \
 -H "Idempotency-Key: 123456" \
 -H "Content-Type: application/json" \
 -d '{
-    "organizationId": 1,
-	"serviceId": 1,
 	"resourceTypeId": 1,
 	"name": "Chair 1",
 	"slug": "chair-1",

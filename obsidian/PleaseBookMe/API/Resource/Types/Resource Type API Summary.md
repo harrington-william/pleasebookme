@@ -40,6 +40,6 @@ Every endpoint in this resource requires a **Bearer Token**
 |---|---|---|
 | POST | /api/v1/resource-types | [[Create a resource type]] |
 | GET | /api/v1/resource-types/{resourceTypeId} | [[Get a resource type]] |
-| GET | /api/v1/resource-types | [[Get all resource types]] |
+| GET | /api/v1/resource-types?organizationId= | [[Get resource types by organization]] |
 | PUT | /api/v1/resource-types/{resourceTypeId} | [[Update a resource type]] |
 | DELETE | /api/v1/resource-types/{resourceTypeId} | [[Delete a resource type]] |

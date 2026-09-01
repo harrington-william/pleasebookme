@@ -1,5 +1,5 @@
 ---
-title: Task Generator
+name: task-generating
 description: Guidelines for generating large tasks with strong structure
 ---
 

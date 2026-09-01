@@ -1,9 +1,6 @@
 package com.pleasebookme.server.core.service;
 
-import com.pleasebookme.server.auth.enums.AccountStatus;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
-import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
-import com.pleasebookme.server.auth.user.repository.UserRepository;
 import com.pleasebookme.server.core.bookingpolicy.dto.ServiceBookingPolicyRequest;
 import com.pleasebookme.server.core.bookingpolicy.entity.BookingPolicyEntity;
 import com.pleasebookme.server.core.bookingpolicy.repository.BookingPolicyRepository;
@@ -12,7 +9,6 @@ import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
 import com.pleasebookme.server.core.service.dto.ServiceRequest;
 import com.pleasebookme.server.core.service.entity.ServiceEntity;
-import com.pleasebookme.server.core.service.exception.AmbiguousServiceOwnerException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.core.service.repository.ServiceRepository;
 import com.pleasebookme.server.core.service.dto.ServiceCreateResult;
@@ -21,12 +17,12 @@ import com.pleasebookme.server.global.enums.Currency;
 import com.pleasebookme.server.global.enums.Locale;
 import com.pleasebookme.server.integration.calendar.repository.DestinationCalendarRepository;
 import com.pleasebookme.server.integration.sheets.repository.DestinationSheetsRepository;
+import com.pleasebookme.server.organization.membership.entity.MembershipEntity;
 import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
 import com.pleasebookme.server.organization.profile.entity.ProfileEntity;
-import com.pleasebookme.server.organization.profile.repository.ProfileRepository;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
-import com.pleasebookme.server.security.identity.enums.AuthenticatedActorType;
-import com.pleasebookme.server.security.identity.principal.UserPrincipal;
+import com.pleasebookme.server.service.organization.context.OrganizationContext;
+import com.pleasebookme.server.service.organization.exception.AmbiguousOrganizationContextException;
+import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,10 +35,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -57,35 +49,34 @@ class BusinessServiceImplTest {
     private static final BigInteger USER_ID = BigInteger.valueOf(42);
     private static final BigInteger PROFILE_ID = BigInteger.valueOf(24);
     private static final BigInteger ORGANIZATION_ID = BigInteger.valueOf(7);
+    private static final BigInteger MEMBERSHIP_ID = BigInteger.valueOf(70);
     private static final BigInteger SCHEDULE_ID = BigInteger.valueOf(11);
     private static final BigInteger SERVICE_ID = BigInteger.valueOf(15);
 
     @Mock private ServiceRepository serviceRepository;
     @Mock private BookingPolicyRepository bookingPolicyRepository;
-    @Mock private UserRepository userRepository;
-    @Mock private ProfileRepository profileRepository;
     @Mock private ScheduleRepository scheduleRepository;
     @Mock private DestinationCalendarRepository destinationCalendarRepository;
     @Mock private DestinationSheetsRepository destinationSheetsRepository;
-    @Mock private CurrentPrincipalProvider currentPrincipalProvider;
+    @Mock private CurrentOrganizationProvider currentOrganizationProvider;
 
     private BusinessServiceImpl service;
     private UserEntity user;
     private ProfileEntity profile;
     private OrganizationEntity organization;
+    private MembershipEntity membership;
     private ScheduleEntity schedule;
+    private OrganizationContext organizationContext;
 
     @BeforeEach
     void setUp() {
         service = new BusinessServiceImpl(
             serviceRepository,
             bookingPolicyRepository,
-            userRepository,
-            profileRepository,
             scheduleRepository,
             destinationCalendarRepository,
             destinationSheetsRepository,
-            currentPrincipalProvider
+            currentOrganizationProvider
         );
 
         user = UserEntity.builder().username("jane").build();
@@ -93,6 +84,13 @@ class BusinessServiceImplTest {
 
         organization = OrganizationEntity.builder().name("Studio").slug("studio").build();
         organization.setOrganizationId(ORGANIZATION_ID);
+
+        membership = MembershipEntity.builder()
+            .user(user)
+            .organization(organization)
+            .accepted(true)
+            .build();
+        membership.setMembershipId(MEMBERSHIP_ID);
 
         profile = ProfileEntity.builder()
             .user(user)
@@ -103,16 +101,17 @@ class BusinessServiceImplTest {
 
         schedule = ScheduleEntity.builder().title("Working Hours").user(user).build();
         schedule.setScheduleId(SCHEDULE_ID);
+
+        organizationContext = new OrganizationContext(user, membership, organization);
     }
 
     @Test
     void createService_derivesOwnerAndCreatesNestedBookingPolicy() {
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(currentOrganizationProvider.requireCurrent()).thenReturn(organizationContext);
+        when(currentOrganizationProvider.requireProfile(organizationContext)).thenReturn(profile);
         when(serviceRepository.existsByOrganizationOrganizationIdAndSlug(ORGANIZATION_ID, "consultation"))
             .thenReturn(false);
-        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(Optional.of(schedule));
+        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(java.util.Optional.of(schedule));
         when(serviceRepository.save(any())).thenAnswer(invocation -> {
             ServiceEntity saved = invocation.getArgument(0);
             saved.setServiceId(SERVICE_ID);
@@ -139,44 +138,24 @@ class BusinessServiceImplTest {
     }
 
     @Test
-    void createService_resolvedPrincipalUserMustExist() {
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
+    void createService_rejectsCallerWithNoOrganizationContext() {
+        when(currentOrganizationProvider.requireCurrent())
+            .thenThrow(new AmbiguousOrganizationContextException("ambiguous"));
 
         assertThatThrownBy(() -> service.createService(request(null)))
-            .isInstanceOf(UserNotFoundException.class);
+            .isInstanceOf(AmbiguousOrganizationContextException.class);
 
-        verify(profileRepository, never()).findAllByUserUserId(any());
         verify(scheduleRepository, never()).findById(any());
         verify(serviceRepository, never()).save(any());
     }
 
     @Test
-    void createService_rejectsCallerWithMultipleOrganizationProfiles() {
-        ProfileEntity secondProfile = ProfileEntity.builder()
-            .user(user)
-            .organization(OrganizationEntity.builder().name("Other").slug("other").build())
-            .username("jane")
-            .build();
-
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile, secondProfile));
-
-        assertThatThrownBy(() -> service.createService(request(null)))
-            .isInstanceOf(AmbiguousServiceOwnerException.class);
-
-        verify(serviceRepository, never()).save(any());
-    }
-
-    @Test
     void createService_policyFailureReliesOnTransactionalBoundaryForRollback() {
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(currentOrganizationProvider.requireCurrent()).thenReturn(organizationContext);
+        when(currentOrganizationProvider.requireProfile(organizationContext)).thenReturn(profile);
         when(serviceRepository.existsByOrganizationOrganizationIdAndSlug(ORGANIZATION_ID, "consultation"))
             .thenReturn(false);
-        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(Optional.of(schedule));
+        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(java.util.Optional.of(schedule));
         when(serviceRepository.save(any())).thenAnswer(invocation -> {
             ServiceEntity saved = invocation.getArgument(0);
             saved.setServiceId(SERVICE_ID);
@@ -205,11 +184,9 @@ class BusinessServiceImplTest {
             .build();
         existing.setServiceId(SERVICE_ID);
 
-        when(serviceRepository.findById(SERVICE_ID)).thenReturn(Optional.of(existing));
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
-        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(Optional.of(schedule));
+        when(serviceRepository.findById(SERVICE_ID)).thenReturn(java.util.Optional.of(existing));
+        when(currentOrganizationProvider.requireCurrent()).thenReturn(organizationContext);
+        when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(java.util.Optional.of(schedule));
         when(serviceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         ServiceEntity updated = service.updateService(SERVICE_ID, request(null));
@@ -242,10 +219,8 @@ class BusinessServiceImplTest {
             .build();
         existing.setServiceId(SERVICE_ID);
 
-        when(serviceRepository.findById(SERVICE_ID)).thenReturn(Optional.of(existing));
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(serviceRepository.findById(SERVICE_ID)).thenReturn(java.util.Optional.of(existing));
+        when(currentOrganizationProvider.requireCurrent()).thenReturn(organizationContext);
 
         assertThatThrownBy(() -> service.updateService(SERVICE_ID, request(null)))
             .isInstanceOf(ServiceNotFoundException.class);
@@ -269,8 +244,8 @@ class BusinessServiceImplTest {
         BookingPolicyEntity policy = BookingPolicyEntity.builder().service(existing).build();
         policy.setBookingPolicyId(BigInteger.valueOf(99));
 
-        when(serviceRepository.findById(SERVICE_ID)).thenReturn(Optional.of(existing));
-        when(bookingPolicyRepository.findByServiceServiceId(SERVICE_ID)).thenReturn(Optional.of(policy));
+        when(serviceRepository.findById(SERVICE_ID)).thenReturn(java.util.Optional.of(existing));
+        when(bookingPolicyRepository.findByServiceServiceId(SERVICE_ID)).thenReturn(java.util.Optional.of(policy));
 
         ServiceCreateResult result = service.getServiceById(SERVICE_ID);
 
@@ -290,8 +265,8 @@ class BusinessServiceImplTest {
             .build();
         existing.setServiceId(SERVICE_ID);
 
-        when(serviceRepository.findById(SERVICE_ID)).thenReturn(Optional.of(existing));
-        when(bookingPolicyRepository.findByServiceServiceId(SERVICE_ID)).thenReturn(Optional.empty());
+        when(serviceRepository.findById(SERVICE_ID)).thenReturn(java.util.Optional.of(existing));
+        when(bookingPolicyRepository.findByServiceServiceId(SERVICE_ID)).thenReturn(java.util.Optional.empty());
 
         ServiceCreateResult result = service.getServiceById(SERVICE_ID);
 
@@ -310,9 +285,7 @@ class BusinessServiceImplTest {
             .build();
         existing.setServiceId(SERVICE_ID);
 
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(currentOrganizationProvider.requireCurrent()).thenReturn(organizationContext);
         when(serviceRepository.findByOrganizationOrganizationId(ORGANIZATION_ID)).thenReturn(List.of(existing));
 
         List<ServiceEntity> result = service.getServicesByOrganizationId(ORGANIZATION_ID);
@@ -324,9 +297,7 @@ class BusinessServiceImplTest {
     void getServicesByOrganizationId_returnsEmptyForForeignOrganization() {
         BigInteger foreignOrganizationId = BigInteger.valueOf(900);
 
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile));
+        when(currentOrganizationProvider.requireCurrent()).thenReturn(organizationContext);
 
         List<ServiceEntity> result = service.getServicesByOrganizationId(foreignOrganizationId);
 
@@ -335,19 +306,12 @@ class BusinessServiceImplTest {
     }
 
     @Test
-    void getServicesByOrganizationId_rejectsCallerWithMultipleOrganizationProfiles() {
-        ProfileEntity secondProfile = ProfileEntity.builder()
-            .user(user)
-            .organization(OrganizationEntity.builder().name("Other").slug("other").build())
-            .username("jane")
-            .build();
-
-        when(currentPrincipalProvider.requireUser()).thenReturn(principal(USER_ID));
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(profileRepository.findAllByUserUserId(USER_ID)).thenReturn(List.of(profile, secondProfile));
+    void getServicesByOrganizationId_rejectsCallerWithNoOrganizationContext() {
+        when(currentOrganizationProvider.requireCurrent())
+            .thenThrow(new AmbiguousOrganizationContextException("ambiguous"));
 
         assertThatThrownBy(() -> service.getServicesByOrganizationId(ORGANIZATION_ID))
-            .isInstanceOf(AmbiguousServiceOwnerException.class);
+            .isInstanceOf(AmbiguousOrganizationContextException.class);
 
         verify(serviceRepository, never()).findByOrganizationOrganizationId(any());
     }
@@ -423,24 +387,6 @@ class BusinessServiceImplTest {
             true,
             "ROLLING",
             1
-        );
-    }
-
-    private static UserPrincipal principal(BigInteger userId) {
-        return new UserPrincipal(
-            AuthenticatedActorType.USER,
-            UUID.randomUUID(),
-            userId,
-            null,
-            "jane",
-            "jane@example.com",
-            "Jane Doe",
-            null,
-            "Asia/Ho_Chi_Minh",
-            AccountStatus.ACTIVE,
-            Set.of(),
-            Set.of(),
-            Map.of()
         );
     }
 }

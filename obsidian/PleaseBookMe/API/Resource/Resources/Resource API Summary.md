@@ -40,6 +40,7 @@ Every endpoint in this resource requires a **Bearer Token**
 |---|---|---|
 | POST | /api/v1/resources | [[Create a resource]] |
 | GET | /api/v1/resources/{resourceId} | [[Get a resource]] |
-| GET | /api/v1/resources | [[Get all resources]] |
+| GET | /api/v1/resources?organizationId=&resourceTypeId=&status=&q=&sort=&page=&size= | [[Get resources by organization]] |
+| GET | /api/v1/resources/stats?organizationId= | [[Get resource statistics by organization]] |
 | PUT | /api/v1/resources/{resourceId} | [[Update a resource]] |
 | DELETE | /api/v1/resources/{resourceId} | [[Delete a resource]] |

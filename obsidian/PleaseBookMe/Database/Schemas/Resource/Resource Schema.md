@@ -8,6 +8,7 @@
 | ------------------------ | ---------------------------------------- |
 | `resource_types`         | [[Table Resource Types]]         |
 | `resources`               | [[Table Resources]]               |
+| `resource_services`       | [[Table Resource Services]]       |
 | `resource_pricing`        | [[Table Resource Pricing]]        |
 | `resource_assignments`    | [[Table Resource Assignments]]    |
 | `resource_calendars`      | [[Table Resource Calendars]]      |

@@ -6,7 +6,7 @@ Title: Atomic Service + BookingPolicy Creation with Server-Derived Ownership
 Domain: Server / `core.service` + `core.bookingpolicy` (Spring Boot) — with required client and documentation follow-through
 Priority: High
 Risk: Medium
-Status: Active
+Status: COMPLETED
 
 Resolves: `.agents/issues/open/ISSUE-0004-service-booking-policy-flow.md`
 

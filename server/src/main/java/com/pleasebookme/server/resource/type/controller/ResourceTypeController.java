@@ -29,8 +29,8 @@ public class ResourceTypeController {
     }
 
     @GetMapping
-    public List<ResourceTypeResponse> getResourceTypes() {
-        return resourceTypeService.getAllResourceTypes().stream()
+    public List<ResourceTypeResponse> getResourceTypes(@RequestParam BigInteger organizationId) {
+        return resourceTypeService.getResourceTypesByOrganizationId(organizationId).stream()
             .map(ResourceTypeResponse::from)
             .toList();
     }

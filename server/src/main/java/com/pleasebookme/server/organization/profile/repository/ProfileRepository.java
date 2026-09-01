@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -21,4 +22,9 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, BigInteg
     );
 
     List<ProfileEntity> findAllByUserUserId(BigInteger userId);
+
+    Optional<ProfileEntity> findByUserUserIdAndOrganizationOrganizationId(
+        BigInteger userId,
+        BigInteger organizationId
+    );
 }

@@ -8,25 +8,25 @@ Defines the reservation rules a service's bookings must obey — duration model,
 
 ## Fields
 
-| Field | Type | Description |
-|---|---|---|
-| `id` | `BIGSERIAL` | Internal surrogate primary key. |
-| `service_id` | `BIGINT` | The service this policy governs. |
-| `booking_mode` | `core.booking_mode` | `FIXED` / `FLEXIBLE` / `HYBRID`. |
-| `default_duration` | `INTEGER` | Default booking length. |
-| `minimum_duration` / `maximum_duration` | `INTEGER` | Optional duration bounds. |
-| `minimum_notice` | `INTEGER` | How much lead time a booking requires. |
-| `maximum_advance_booking` | `INTEGER` | How far ahead a booking may be made. |
-| `slot_interval` | `INTEGER` | Granularity of generated slots. |
-| `before_buffer` / `after_buffer` | `INTEGER` | Padding time around a booking. |
-| `allow_overlap` | `BOOLEAN` | Whether overlapping bookings are permitted. |
-| `allow_multiple_attendee` | `BOOLEAN` | Whether a booking may have more than one attendee. |
-| `requires_payment` | `BOOLEAN` | Whether payment is required to complete a booking. |
-| `auto_confirm` | `BOOLEAN` | Whether a booking is confirmed automatically (defaults to `true`). |
-| `booking_window_type` | `VARCHAR(50)` | How the booking window is bounded. |
-| `capacity` | `INTEGER` | Maximum concurrent bookings/attendees. |
-| `metadata` | `JSONB` | Free-form, application-defined data. |
-| `created_at` / `updated_at` | `TIMESTAMPTZ` | Row creation/last-modified timestamps. |
+| Field                                   | Type                | Description                                                        |
+| --------------------------------------- | ------------------- | ------------------------------------------------------------------ |
+| `id`                                    | `BIGSERIAL`         | Internal surrogate primary key.                                    |
+| `service_id`                            | `BIGINT`            | The service this policy governs.                                   |
+| `booking_mode`                          | `core.booking_mode` | `FIXED` / `FLEXIBLE` / `HYBRID`.                                   |
+| `default_duration`                      | `INTEGER`           | Default booking length.                                            |
+| `minimum_duration` / `maximum_duration` | `INTEGER`           | Optional duration bounds.                                          |
+| `minimum_notice`                        | `INTEGER`           | How much lead time a booking requires.                             |
+| `maximum_advance_booking`               | `INTEGER`           | How far ahead a booking may be made.                               |
+| `slot_interval`                         | `INTEGER`           | Granularity of generated slots.                                    |
+| `before_buffer` / `after_buffer`        | `INTEGER`           | Padding time around a booking.                                     |
+| `allow_overlap`                         | `BOOLEAN`           | Whether overlapping bookings are permitted.                        |
+| `allow_multiple_attendee`               | `BOOLEAN`           | Whether a booking may have more than one attendee.                 |
+| `requires_payment`                      | `BOOLEAN`           | Whether payment is required to complete a booking.                 |
+| `auto_confirm`                          | `BOOLEAN`           | Whether a booking is confirmed automatically (defaults to `true`). |
+| `booking_window_type`                   | `VARCHAR(50)`       | How the booking window is bounded.                                 |
+| `capacity`                              | `INTEGER`           | Maximum concurrent bookings/attendees.                             |
+| `metadata`                              | `JSONB`             | Free-form, application-defined data.                               |
+| `created_at` / `updated_at`             | `TIMESTAMPTZ`       | Row creation/last-modified timestamps.                             |
 
 ## Row Semantics
 

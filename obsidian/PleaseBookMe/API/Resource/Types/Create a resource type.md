@@ -1,6 +1,6 @@
 ## Description
 
-Creates a resource type owned by an organization. `description` is optional free text; there is no uniqueness constraint on `name` — two resource types in the same organization may share a name.
+Creates a resource type in the caller's current organization. `description` and `icon` are optional. `(organization_id, name)` is unique in Postgres; a pre-flush duplicate handler is intentionally deferred, so a duplicate currently surfaces from the database constraint.
 
 ---
 
@@ -31,7 +31,6 @@ Required **Bearer Token**
 
 ```json
 {
-	"organizationId": 0,
 	"name": "",
 	"description": "",
 	"icon": ""
@@ -63,7 +62,6 @@ Required **Bearer Token**
 - 400 INVALID_REQUEST
 - 401 UNAUTHORIZED
 - 403 FORBIDDEN
-- 404 ORGANIZATION_NOT_FOUND
 - 429 RATE_LIMIT_EXCEEDED
 
 ---
@@ -88,7 +86,6 @@ curl \
 -H "Idempotency-Key: 123456" \
 -H "Content-Type: application/json" \
 -d '{
-    "organizationId": 1,
 	"name": "Barber Chair",
 	"description": "A single-seat barber station",
 	"icon": "chair"

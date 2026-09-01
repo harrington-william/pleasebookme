@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reading List/Extract timezone from browser.md",
+                "file": "Database/Schemas/Core/Table Booking Policies.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Extract timezone from browser"
+              "title": "Table Booking Policies"
             }
           }
         ]
@@ -99,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Reading List/Extract timezone from browser.md",
+                "file": "Database/Schemas/Core/Table Booking Policies.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Reading List/Extract timezone from browser.md",
+                "file": "Database/Schemas/Core/Table Booking Policies.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -161,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Reading List/Extract timezone from browser.md",
+                "file": "Database/Schemas/Core/Table Booking Policies.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -191,42 +191,42 @@
   },
   "active": "f0e3ab1f11893adc",
   "lastOpenFiles": [
-    "Security/Identity/UserPrincipal.md",
-    "API/Core/Booking Policies/Get booking policy by service.md",
-    "API/Core/Services/Get services by organization.md",
-    "API/Availability Ruleset/Create an availability ruleset.md",
-    "API/Availability Ruleset/Availability Ruleset API Summary.md",
-    "API/Availability Ruleset",
-    "API/Core/Services/Update a service.md",
-    "API/Core/Services/Create a service.md",
-    "Services/Availability Ruleset/Availability Ruleset Service.md",
-    "Services/Availability Ruleset",
-    "Security/Identity/WidgetPrincipal.md",
-    "Security/Identity/AuthenticatedPrincipal.md",
-    "Issue Template.md",
-    "AI Orchestration Strategy.md",
-    "Security/The Security Big Picture.md",
-    "Skills Organizing Strategy.md",
-    "Documentation Structure.md",
-    "Security/OAuth2/FinalizeOnboarding Explained.md",
-    "Security/CORS",
-    "Security/OAuth2/Google OAuth2 Architecture.md",
-    "Security/OAuth2/Model/Google Identity Model.md",
-    "Security/OAuth2/Model",
-    "Reading List/Handoff Code.md",
-    "AI Task Contract.md",
-    "Welcome Message.md",
-    "Security/OAuth2/State/Google State.md",
-    "Security/Token/Access & Refresh Architecture.md",
-    "Security/Token/JWT/JWT Claims.md",
-    "Security/Crypto",
-    "Security/Token/JWT/Untitled.md",
-    "Security/Token/JWT",
-    "Security/Authorization/Authorization Engine.md",
-    "Security/Authorization/Policy/Wildcard",
-    "Security/Authorization/Policy",
-    "Security/Authorization/Decision",
-    "Security/Authorization/Context",
+    "Database/Schemas/Core/Table Services.md",
+    "Services/Resource/Workflows/Assign a Resource to Services.md",
+    "Services/Resource/Workflows/Define a Resource Type.md",
+    "Services/Resource/Workflows/Create a Resource.md",
+    "Services/Resource/Workflows/Browse the Resource Inventory.md",
+    "Services/Resource/Resource Service.md",
+    "Services/Resource/Domain/Resource Status.md",
+    "Services/Resource/Domain/Resource Service Assignment.md",
+    "Services/Resource/Domain/Resource.md",
+    "Services/Resource/Dependencies/Resource Service Dependencies.md",
+    "Services/Resource/Decisions/Assignments Are Created and Revoked Never Updated.md",
+    "Services/Resource/Decisions/Ownership Is Derived Not Supplied.md",
+    "Services/Resource/Decisions/Resource Status Has No Default.md",
+    "Services/Resource/Decisions/Utilization Is Not Reported.md",
+    "Database/Architecture/Database Architecture Design.md",
+    "Services/Resource/Decisions/Inventory Reads Are Filtered Server Side.md",
+    "Services/Resource/Decisions/Resources Serve Many Services.md",
+    "Services/Resource/Failure Handling/Resource Failure Handling.md",
+    "Services/Resource/Lifecycle/Resource Lifecycle.md",
+    "Services/Resource/Rules/Resource Authorization Rules.md",
+    "Services/Resource/Rules/Resource Validation Rules.md",
+    "Services/Resource/Rules/Resource Business Rules.md",
+    "Services/Resource/Workflows/Withdraw a Resource.md",
+    "Services/Resource/Domain/Resource Type.md",
+    "Services/Resource/Overview/Resource Service Overview.md",
+    "Services/Resource/Workflows",
+    "Services/Resource/Rules",
+    "Services/Resource/Overview",
+    "Services/Resource/Failure Handling",
+    "Services/Resource/Lifecycle",
+    "Services/Resource/Domain",
+    "Services/Resource/Dependencies",
+    "Services/Resource/Decisions",
+    "Services/Resource",
+    "Services/Workspace copy/Domain",
+    "API/Resource/Resource Services/Get resource services by organization.md",
     "Shared/images/System_Architecture_v2.jpg",
     "Shared/images/System_Architecture_v1.jpg"
   ]

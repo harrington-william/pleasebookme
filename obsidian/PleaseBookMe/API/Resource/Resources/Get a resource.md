@@ -37,7 +37,6 @@ Required **Bearer Token**
 	"resourceId": 0,
 	"resourceUid": "",
 	"organizationId": 0,
-	"serviceId": 0,
 	"resourceTypeId": 0,
 	"name": "",
 	"slug": "",

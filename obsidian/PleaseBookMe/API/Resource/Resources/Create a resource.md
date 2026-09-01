@@ -1,6 +1,6 @@
 ## Description
 
-Creates a resource under an organization, tied to a service and a resource type. `slug` must be unique within the organization. `status` is a free-form string (not a fixed enum) — the caller decides its vocabulary (e.g. `"ACTIVE"`, `"INACTIVE"`). `isBookable` defaults to `true`, `isVirtual` defaults to `false` when omitted.
+Creates a resource in the caller's current organization. `slug` must be unique within that organization. `resourceTypeId` and `status` are required; status must be `ACTIVE`, `INACTIVE`, `MAINTENANCE`, or `RETIRED`. `description` and `capacity` are optional. Service assignments are created separately through `/api/v1/resource-services`. `isBookable` defaults to `true` and `isVirtual` defaults to `false` when omitted.
 
 ---
 
@@ -31,8 +31,6 @@ Required **Bearer Token**
 
 ```json
 {
-	"organizationId": 0,
-	"serviceId": 0,
 	"resourceTypeId": 0,
 	"name": "",
 	"slug": "",
@@ -55,7 +53,6 @@ Required **Bearer Token**
 	"resourceId": 0,
 	"resourceUid": "",
 	"organizationId": 0,
-	"serviceId": 0,
 	"resourceTypeId": 0,
 	"name": "",
 	"slug": "",
@@ -76,8 +73,6 @@ Required **Bearer Token**
 - 400 INVALID_REQUEST
 - 401 UNAUTHORIZED
 - 403 FORBIDDEN
-- 404 ORGANIZATION_NOT_FOUND
-- 404 SERVICE_NOT_FOUND
 - 404 RESOURCE_TYPE_NOT_FOUND
 - 409 RESOURCE_SLUG_ALREADY_EXISTS
 - 429 RATE_LIMIT_EXCEEDED
@@ -104,8 +99,6 @@ curl \
 -H "Idempotency-Key: 123456" \
 -H "Content-Type: application/json" \
 -d '{
-    "organizationId": 1,
-	"serviceId": 1,
 	"resourceTypeId": 1,
 	"name": "Chair 1",
 	"slug": "chair-1",

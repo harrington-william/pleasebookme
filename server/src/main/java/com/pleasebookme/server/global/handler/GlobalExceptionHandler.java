@@ -7,6 +7,7 @@ import com.pleasebookme.server.security.token.jwt.exception.WidgetOriginMismatch
 import com.pleasebookme.server.widget.widgets.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -45,7 +46,8 @@ import com.pleasebookme.server.core.outofoffice.exception.OutOfOfficeNotFoundExc
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
 import com.pleasebookme.server.core.selectedslot.exception.DuplicateSelectedSlotException;
 import com.pleasebookme.server.core.selectedslot.exception.SelectedSlotNotFoundException;
-import com.pleasebookme.server.core.service.exception.AmbiguousServiceOwnerException;
+import com.pleasebookme.server.service.organization.exception.AmbiguousOrganizationContextException;
+import com.pleasebookme.server.service.organization.exception.NoOrganizationMembershipException;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.customer.activity.exception.CustomerActivityNotFoundException;
@@ -97,6 +99,8 @@ import com.pleasebookme.server.resource.maintenance.exception.ResourceMaintenanc
 import com.pleasebookme.server.resource.overrides.exception.ResourceOverrideNotFoundException;
 import com.pleasebookme.server.resource.pricing.exception.ResourcePricingNotFoundException;
 import com.pleasebookme.server.resource.resources.exception.DuplicateResourceException;
+import com.pleasebookme.server.resource.resourceservice.exception.DuplicateResourceServiceException;
+import com.pleasebookme.server.resource.resourceservice.exception.ResourceServiceNotFoundException;
 import com.pleasebookme.server.resource.type.exception.ResourceTypeNotFoundException;
 import com.pleasebookme.server.tenant.domain.exception.DuplicateTenantDomainException;
 import com.pleasebookme.server.tenant.domain.exception.TenantDomainNotFoundException;
@@ -113,6 +117,22 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadableException(
+        HttpMessageNotReadableException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            "Invalid request body.",
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleResourceNotFoundException(
         ResourceNotFoundException exception,
@@ -497,9 +517,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(AmbiguousServiceOwnerException.class)
-    public ResponseEntity<ApiErrorResponse> handleAmbiguousServiceOwnerException(
-        AmbiguousServiceOwnerException exception,
+    @ExceptionHandler(AmbiguousOrganizationContextException.class)
+    public ResponseEntity<ApiErrorResponse> handleAmbiguousOrganizationContextException(
+        AmbiguousOrganizationContextException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
@@ -511,6 +531,22 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NoOrganizationMembershipException.class)
+    public ResponseEntity<ApiErrorResponse> handleNoOrganizationMembershipException(
+        NoOrganizationMembershipException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(OrganizationNotFoundException.class)
@@ -980,6 +1016,38 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateResourceException(
         DuplicateResourceException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ResourceServiceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceServiceNotFoundException(
+        ResourceServiceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateResourceServiceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateResourceServiceException(
+        DuplicateResourceServiceException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(

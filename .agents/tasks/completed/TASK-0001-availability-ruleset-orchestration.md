@@ -6,7 +6,7 @@ Title: Atomic Availability Ruleset Endpoint + Server-Side Ownership Enforcement
 Domain: Backend / `core` bounded context (Schedule + Availability orchestration)
 Priority: High
 Risk: Medium-High
-Status: Active
+Status: COMPLETED
 
 ---
 

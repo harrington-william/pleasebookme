@@ -1,6 +1,6 @@
 ## Description
 
-Full-replaces an existing resource type. `organizationId` is re-resolved on every update, so a resource type can be moved to a different organization.
+Full-replaces an existing resource type in the caller's current organization. `icon` is optional; the type cannot be moved between organizations through this request.
 
 ---
 
@@ -31,7 +31,6 @@ Required **Bearer Token**
 
 ```json
 {
-	"organizationId": 0,
 	"name": "",
 	"description": "",
 	"icon": ""
@@ -64,7 +63,6 @@ Required **Bearer Token**
 - 401 UNAUTHORIZED
 - 403 FORBIDDEN
 - 404 RESOURCE_TYPE_NOT_FOUND
-- 404 ORGANIZATION_NOT_FOUND
 - 429 RATE_LIMIT_EXCEEDED
 
 ---
@@ -89,7 +87,6 @@ curl \
 -H "Idempotency-Key: 123456" \
 -H "Content-Type: application/json" \
 -d '{
-    "organizationId": 1,
 	"name": "Barber Chair",
 	"description": "A single-seat barber station",
 	"icon": "chair"

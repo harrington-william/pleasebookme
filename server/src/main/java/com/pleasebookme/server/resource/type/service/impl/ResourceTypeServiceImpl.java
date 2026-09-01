@@ -1,13 +1,12 @@
 package com.pleasebookme.server.resource.type.service.impl;
 
-import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
-import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
-import com.pleasebookme.server.organization.organizations.repository.OrganizationRepository;
 import com.pleasebookme.server.resource.type.dto.ResourceTypeRequest;
 import com.pleasebookme.server.resource.type.entity.ResourceTypeEntity;
 import com.pleasebookme.server.resource.type.exception.ResourceTypeNotFoundException;
 import com.pleasebookme.server.resource.type.repository.ResourceTypeRepository;
 import com.pleasebookme.server.resource.type.service.ResourceTypeService;
+import com.pleasebookme.server.service.organization.context.OrganizationContext;
+import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,15 +17,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResourceTypeServiceImpl implements ResourceTypeService {
     private final ResourceTypeRepository resourceTypeRepository;
-    private final OrganizationRepository organizationRepository;
+    private final CurrentOrganizationProvider currentOrganizationProvider;
 
     @Override
     public ResourceTypeEntity createResourceType(ResourceTypeRequest request) {
-        OrganizationEntity organization = organizationRepository.findById(request.organizationId())
-            .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + request.organizationId()));
+        OrganizationContext organizationContext = currentOrganizationProvider.requireCurrent();
 
         ResourceTypeEntity resourceType = ResourceTypeEntity.builder()
-            .organization(organization)
+            .organization(organizationContext.organization())
             .name(request.name())
             .description(request.description())
             .icon(request.icon())
@@ -42,8 +40,14 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
     }
 
     @Override
-    public List<ResourceTypeEntity> getAllResourceTypes() {
-        return resourceTypeRepository.findAll();
+    public List<ResourceTypeEntity> getResourceTypesByOrganizationId(BigInteger organizationId) {
+        OrganizationContext organizationContext = currentOrganizationProvider.requireCurrent();
+
+        if (!organizationContext.organizationId().equals(organizationId)) {
+            return List.of();
+        }
+
+        return resourceTypeRepository.findByOrganizationOrganizationId(organizationId);
     }
 
     @Override
@@ -52,11 +56,12 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
         ResourceTypeRequest request
     ) {
         ResourceTypeEntity resourceType = getResourceTypeById(resourceTypeId);
+        OrganizationContext organizationContext = currentOrganizationProvider.requireCurrent();
 
-        OrganizationEntity organization = organizationRepository.findById(request.organizationId())
-            .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + request.organizationId()));
+        if (!resourceType.getOrganization().getOrganizationId().equals(organizationContext.organizationId())) {
+            throw new ResourceTypeNotFoundException("Resource type not found: " + resourceTypeId);
+        }
 
-        resourceType.setOrganization(organization);
         resourceType.setName(request.name());
         resourceType.setDescription(request.description());
         resourceType.setIcon(request.icon());

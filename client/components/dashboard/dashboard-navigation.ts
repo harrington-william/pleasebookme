@@ -60,7 +60,7 @@ export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
     label: "Resources",
     href: "/dashboard/resources",
     icon: Boxes,
-    status: "reserved",
+    status: "ready",
     reservedReason: "The resource catalog has not been built yet.",
   },
   {

@@ -14,7 +14,7 @@ Defines the categories of bookable asset an organization uses to classify its re
 | `organization_id` | `BIGINT` | The organization this resource type belongs to. |
 | `name` | `VARCHAR(100)` | Display name. |
 | `description` | `TEXT` | Optional description. |
-| `icon` | `VARCHAR(100)` | Display icon. |
+| `icon` | `VARCHAR(100)` | Optional display icon. |
 | `metadata` | `JSONB` | Free-form, application-defined data. |
 | `created_at` / `updated_at` | `TIMESTAMPTZ` | Row creation/last-modified timestamps. |
 
@@ -34,7 +34,8 @@ Created through the standard CRUD service by an organization admin, before any r
 
 ## Invariants
 
-- No unique constraint beyond the primary key was declared in the migration — two resource types with the same name within the same organization are not prevented at the database level.
+- `(organization_id, name)` is unique at the database level.
+- The CRUD service does not yet perform a pre-flush duplicate check, so this constraint currently surfaces as a database error.
 
 ## Relationships
 
