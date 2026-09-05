@@ -4,6 +4,7 @@ import { Search, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 
+import { NativeSelect } from "@/components/form/native-select";
 import { Input } from "@/components/ui/input";
 import {
   buildResourceSearchParams,
@@ -16,9 +17,6 @@ import {
   type ResourceType,
 } from "@/features/resources/types/resource";
 import { cn } from "@/lib/utils";
-
-const selectClassName =
-  "h-9 rounded-lg border border-border bg-background px-md text-body-md text-foreground";
 
 function toTitleCase(value: string): string {
   return value.charAt(0) + value.slice(1).toLowerCase();
@@ -36,7 +34,6 @@ export function ResourceFilters({
   const [isPending, startTransition] = useTransition();
 
   function navigate(overrides: Partial<ResourceQuery>) {
-    // Any filter change invalidates the current offset, so always return to page 0.
     const search = buildResourceSearchParams(query, { page: 0, ...overrides });
     startTransition(() => router.push(`${pathname}${search}`));
   }
@@ -57,26 +54,24 @@ export function ResourceFilters({
       )}
     >
       <div className="relative min-w-0 flex-1">
+
+        {/* Search bar */}
         <Search
           className="pointer-events-none absolute top-1/2 left-sm size-4 -translate-y-1/2 text-muted-foreground"
           aria-hidden="true"
         />
-        {/*
-          Uncontrolled + keyed on the URL value: the field stays local while
-          typing, and a URL change from elsewhere (Clear, back/forward) remounts
-          it with the correct value instead of fighting the user's input.
-        */}
         <Input
           key={query.q ?? ""}
           name="q"
           defaultValue={query.q ?? ""}
           aria-label="Search resources by name or slug"
-          placeholder="Search resources, then press Enter…"
+          placeholder="Search"
           className="h-9 bg-background pl-9 text-body-md"
         />
       </div>
 
-      <select
+      {/* Filter by resource type */}
+      <NativeSelect
         value={query.resourceTypeId ? String(query.resourceTypeId) : ""}
         onChange={(event) =>
           navigate({
@@ -86,9 +81,9 @@ export function ResourceFilters({
           })
         }
         aria-label="Filter by resource type"
-        className={selectClassName}
       >
         <option value="">All types</option>
+
         {resourceTypes.map((resourceType) => (
           <option
             key={resourceType.resourceTypeId}
@@ -97,9 +92,10 @@ export function ResourceFilters({
             {resourceType.name}
           </option>
         ))}
-      </select>
+      </NativeSelect>
 
-      <select
+      {/* Filter by status */}
+      <NativeSelect
         value={query.status ?? ""}
         onChange={(event) =>
           navigate({
@@ -109,15 +105,15 @@ export function ResourceFilters({
           })
         }
         aria-label="Filter by status"
-        className={selectClassName}
       >
         <option value="">All statuses</option>
+
         {RESOURCE_STATUSES.map((status) => (
           <option key={status} value={status}>
             {toTitleCase(status)}
           </option>
         ))}
-      </select>
+      </NativeSelect>
 
       <button type="submit" className="sr-only">
         Search

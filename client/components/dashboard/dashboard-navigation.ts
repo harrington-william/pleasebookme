@@ -2,7 +2,6 @@ import {
   Bell,
   Boxes,
   Braces,
-  Calendar,
   CalendarCheck,
   ChartColumn,
   CircleUser,
@@ -14,7 +13,6 @@ import {
   Plug,
   Settings,
   Sparkles,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -41,8 +39,7 @@ export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
     label: "Bookings",
     href: "/dashboard/bookings",
     icon: CalendarCheck,
-    status: "reserved",
-    reservedReason: "The bookings workspace has not been built yet.",
+    status: "ready",
   },
   {
     label: "Availability",
@@ -62,20 +59,6 @@ export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
     icon: Boxes,
     status: "ready",
     reservedReason: "The resource catalog has not been built yet.",
-  },
-  {
-    label: "Customers",
-    href: "/dashboard/customers",
-    icon: Users,
-    status: "reserved",
-    reservedReason: "The customer directory has not been built yet.",
-  },
-  {
-    label: "Calendar",
-    href: "/dashboard/calendar",
-    icon: Calendar,
-    status: "reserved",
-    reservedReason: "The calendar view has not been built yet.",
   },
   {
     label: "Widgets",

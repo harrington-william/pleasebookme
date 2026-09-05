@@ -41,6 +41,8 @@ import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException
 import com.pleasebookme.server.core.availability.exception.AvailabilityNotFoundException;
 import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
 import com.pleasebookme.server.core.bookingpolicy.exception.BookingPolicyNotFoundException;
+import com.pleasebookme.server.core.bookingresource.exception.BookingResourceNotFoundException;
+import com.pleasebookme.server.core.bookingresource.exception.DuplicateBookingResourceException;
 import com.pleasebookme.server.core.bookingpolicy.exception.DuplicateBookingPolicyException;
 import com.pleasebookme.server.core.outofoffice.exception.OutOfOfficeNotFoundException;
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
@@ -1016,6 +1018,38 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateResourceException(
         DuplicateResourceException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BookingResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookingResourceNotFoundException(
+        BookingResourceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateBookingResourceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateBookingResourceException(
+        DuplicateBookingResourceException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(

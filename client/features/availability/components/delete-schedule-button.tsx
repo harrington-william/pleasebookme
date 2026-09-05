@@ -66,16 +66,16 @@ export function DeleteScheduleButton({
           }
           title={confirming ? `Confirm deleting ${title}` : `Delete ${title}`}
           className={cn(
-            "inline-flex items-center gap-xs rounded-lg border px-sm py-[6px] text-label-md transition-colors disabled:opacity-50",
+            "inline-flex items-center gap-xs rounded-lg border cursor-pointer px-sm py-[6px] text-label-md transition-colors hover:text-destructive disabled:opacity-50",
             confirming
               ? "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20"
-              : "border-border bg-transparent text-muted-foreground hover:border-surface-hover hover:bg-surface-hover hover:text-foreground"
+              : "border-border text-muted-foreground hover:border-surface-hover hover:bg-surface-hover hover:text-foreground"
           )}
         >
           {pending ? (
             <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
           ) : (
-            <Trash2 className="size-4" aria-hidden="true" />
+            <Trash2 className="size-4 cursor-pointer" aria-hidden="true" />
           )}
         </button>
       </div>

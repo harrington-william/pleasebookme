@@ -1,5 +1,5 @@
 ---
-title: Service Writter
+title: service-writter
 description: Service convention
 ---
 

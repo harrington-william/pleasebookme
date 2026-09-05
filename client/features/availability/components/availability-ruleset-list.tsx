@@ -7,6 +7,7 @@ import {
   type Availability,
   type AvailabilityRuleset,
 } from "@/features/availability/types/availability";
+import Link from "next/link";
 
 const SHORT_LABELS = new Map<number, string>(
   DAY_DEFINITIONS.map((day) => [day.value, day.short])
@@ -70,9 +71,10 @@ export function AvailabilityRulesetList({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-surface">
+    <div className="overflow-hidden rounded-xl border border-border bg-surface cursor-pointer">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
+          {/* Header */}
           <thead>
             <tr className="border-b border-border">
               <th className="px-md py-sm text-label-md tracking-wider text-muted-foreground uppercase">
@@ -96,6 +98,8 @@ export function AvailabilityRulesetList({
               <th className="w-12 px-md py-sm" />
             </tr>
           </thead>
+
+          {/* Body */}
           <tbody className="font-mono text-mono-label">
             {rulesets.map(({ schedule, availabilities }) => (
               <tr

@@ -1,5 +1,5 @@
 ---
-title: Table Creator
+title: table-creator
 description: Table-level convention
 ---
 

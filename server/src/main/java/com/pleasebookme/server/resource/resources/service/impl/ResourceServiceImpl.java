@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +87,11 @@ public class ResourceServiceImpl implements ResourceService {
         );
 
         return resourceRepository.findAll(specification, safePageable);
+    }
+
+    @Override
+    public List<ResourceEntity> getResourceLookupByOrganizationId(BigInteger organizationId) {
+        return resourceRepository.findByOrganizationOrganizationId(organizationId);
     }
 
     @Override

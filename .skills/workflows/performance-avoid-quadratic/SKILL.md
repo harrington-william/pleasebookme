@@ -1,6 +1,6 @@
 ---
-title: Avoid O(n²) Algorithms - Design for Enterprise Scale
-description: Prevents performance collapse at scale
+name: performance-avoid-quadratic
+description: Avoid O(n²) Algorithms - Design for Enterprise Scale. Prevents performance collapse at scale
 ---
 
 ## Avoid O(n²) Algorithms - Design for Enterprise Scale

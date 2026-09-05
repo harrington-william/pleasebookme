@@ -2,6 +2,7 @@ package com.pleasebookme.server.resource.resources.controller;
 
 import com.pleasebookme.server.resource.enums.ResourceStatus;
 import com.pleasebookme.server.resource.resources.dto.ResourceFilter;
+import com.pleasebookme.server.resource.resources.dto.ResourceLookupResponse;
 import com.pleasebookme.server.resource.resources.dto.ResourceRequest;
 import com.pleasebookme.server.resource.resources.dto.ResourceStatsResponse;
 import com.pleasebookme.server.resource.resources.dto.ResourcePageResponse;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/resources")
@@ -26,6 +28,13 @@ public class ResourceController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResourceResponse createResource(@Valid @RequestBody ResourceRequest request) {
         return ResourceResponse.from(resourceService.createResource(request));
+    }
+
+    @GetMapping("/lookup")
+    public List<ResourceLookupResponse> getResourceLookup(@RequestParam BigInteger organizationId) {
+        return resourceService.getResourceLookupByOrganizationId(organizationId).stream()
+            .map(ResourceLookupResponse::from)
+            .toList();
     }
 
     @GetMapping("/{resourceId}")

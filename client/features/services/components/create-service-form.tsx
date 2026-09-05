@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { NativeSelect } from "@/components/form/native-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthFormAlert } from "@/features/auth/components/auth-form-alert";
@@ -26,9 +27,6 @@ const fieldInputClassName =
 
 const numberInputClassName =
   "w-full rounded-lg border border-border bg-background px-md py-sm text-right text-body-md text-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none";
-
-const selectClassName =
-  "h-9 w-full rounded-lg border border-border bg-background px-md text-body-md text-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none";
 
 export function CreateServiceForm({ schedules }: { schedules: Schedule[] }) {
   const router = useRouter();
@@ -162,10 +160,11 @@ export function CreateServiceForm({ schedules }: { schedules: Schedule[] }) {
                 ).
               </p>
             ) : (
-              <select
+              <NativeSelect
                 id="scheduleId"
                 aria-invalid={errors.scheduleId ? true : undefined}
-                className={selectClassName}
+                containerClassName="w-full"
+                className="w-full"
                 {...register("scheduleId")}
               >
                 <option value="">Select a ruleset…</option>
@@ -174,7 +173,7 @@ export function CreateServiceForm({ schedules }: { schedules: Schedule[] }) {
                     {schedule.title}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
             )}
             {errors.scheduleId ? (
               <p className="text-label-md text-destructive">
@@ -374,23 +373,28 @@ export function CreateServiceForm({ schedules }: { schedules: Schedule[] }) {
             <Label className="text-label-md tracking-wider text-muted-foreground uppercase">
               Booking Window
             </Label>
-            <select className={selectClassName} {...register("bookingWindowType")}>
+            <NativeSelect
+              containerClassName="w-full"
+              className="w-full"
+              {...register("bookingWindowType")}
+            >
               <option value="ROLLING">Rolling (N days from today)</option>
               <option value="FIXED">Fixed (a set date range)</option>
-            </select>
+            </NativeSelect>
           </div>
 
           <div className="space-y-base">
             <Label className="text-label-md tracking-wider text-muted-foreground uppercase">
               Visibility Policy
             </Label>
-            <select
+            <NativeSelect
               disabled
               title="core.services has no visibility column — nothing to select yet."
-              className={cn(selectClassName, "cursor-not-allowed opacity-50")}
+              containerClassName="w-full"
+              className="w-full"
             >
               <option>Not available yet</option>
-            </select>
+            </NativeSelect>
           </div>
         </section>
 

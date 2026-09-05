@@ -1,5 +1,5 @@
 ---
-name: API Platform Engineer
+name: api-platform-engineering
 description: Expert API platform engineer for public and partner APIs — contract-first design (OpenAPI/gRPC), versioning and deprecation policy, SDK generation, API gateway concerns (auth, rate limiting, quotas), and developer-portal DX.
 ---
 

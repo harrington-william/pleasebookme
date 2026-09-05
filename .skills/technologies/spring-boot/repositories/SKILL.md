@@ -1,5 +1,5 @@
 ---
-title: Repository Writter
+title: repository-writter
 description: Repository convention
 ---
 

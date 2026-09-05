@@ -1,5 +1,5 @@
 ---
-title: Method Writter
+title: method-declarator
 description: Method convention
 ---
 

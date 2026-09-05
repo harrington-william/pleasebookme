@@ -1,5 +1,5 @@
 ---
-title: Code Review Focus
+name: code-review
 description: Focused reviews are more useful than scattered feedback
 ---
 

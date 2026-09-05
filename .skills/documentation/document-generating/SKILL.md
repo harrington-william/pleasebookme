@@ -1,7 +1,7 @@
 ---
 name: document-generating
 description: Generate maintainable and human-readable documentation
---- 
+---
 
 # Documentation Generating Skill
 

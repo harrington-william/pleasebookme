@@ -1,5 +1,5 @@
 ---
-title: Issue Generator
+name: issue-generating
 description: Guidelines for generating issues with strong structure
 ---
 

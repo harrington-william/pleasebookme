@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Repository
 public interface ResourceRepository
@@ -23,6 +24,8 @@ public interface ResourceRepository
         BigInteger organizationId,
         Pageable pageable
     );
+
+    List<ResourceEntity> findByOrganizationOrganizationId(BigInteger organizationId);
 
     long countByOrganizationOrganizationId(BigInteger organizationId);
 

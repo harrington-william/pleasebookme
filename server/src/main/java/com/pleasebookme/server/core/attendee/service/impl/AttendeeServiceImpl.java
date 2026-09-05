@@ -47,8 +47,13 @@ public class AttendeeServiceImpl implements AttendeeService {
     }
 
     @Override
-    public List<AttendeeEntity> getAllAttendees() {
-        return attendeeRepository.findAll();
+    public List<AttendeeEntity> getAttendeesByBookingId(BigInteger bookingId) {
+        return attendeeRepository.findByBookingBookingId(bookingId);
+    }
+
+    @Override
+    public List<AttendeeEntity> getAttendeesByOrganizationId(BigInteger organizationId) {
+        return attendeeRepository.findByBookingServiceOrganizationOrganizationId(organizationId);
     }
 
     @Override

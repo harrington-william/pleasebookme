@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { NativeSelect } from "@/components/form/native-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthFormAlert } from "@/features/auth/components/auth-form-alert";
@@ -135,13 +136,11 @@ export function CreateAvailabilityForm() {
               Timezone
             </Label>
 
-            <select
+            <NativeSelect
               id="timezone"
               aria-invalid={errors.timezone ? true : undefined}
-              className="
-              h-9 w-full rounded-lg border border-border bg-background px-md
-              text-body-md text-foreground focus-visible:border-primary
-              focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              containerClassName="w-full"
+              className="w-full"
               {...register("timezone")}
             >
               {timezones.map((zone) => (
@@ -149,7 +148,7 @@ export function CreateAvailabilityForm() {
                   {zone}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
             {errors.timezone ? (
               <p className="text-label-md text-destructive">
                 {errors.timezone.message}

@@ -1,5 +1,5 @@
 ---
-title: Code Comment Guidelines
+name: code-comment
 description: Guidelines for writing effective comments in the codebase.
 ---
 

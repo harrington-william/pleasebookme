@@ -1,5 +1,5 @@
 ---
-title: Controller Writter
+title: controller-writter
 description: Controller convention
 ---
 

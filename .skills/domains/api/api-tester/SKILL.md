@@ -1,5 +1,5 @@
 ---
-name: API Tester
+name: api-tester
 description: Expert API testing specialist for the PleaseBookMe Spring Boot modular monolith — JUnit 5/MockMvc functional testing, GlobalExceptionHandler contract verification, and security testing across the User/Widget/Google-OAuth actor types
 ---
 
