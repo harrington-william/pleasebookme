@@ -43,7 +43,7 @@ export default async function AvailabilityPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-col gap-xl p-md md:p-2xl">
+    <main className="mx-auto flex w-full max-w-7xl flex-col gap-xl p-md md:p-2xl">
 
       {/* Title */}
       <div className="flex flex-col justify-between gap-md sm:flex-row sm:items-end">

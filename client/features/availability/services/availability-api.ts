@@ -19,6 +19,21 @@ export async function createAvailabilityRuleset(
   }
 }
 
+export async function updateAvailabilityRuleset(
+  scheduleId: number,
+  input: CreateAvailabilityRulesetInput
+): Promise<AvailabilityRuleset> {
+  try {
+    const response = await bffClient.put<AvailabilityRuleset>(
+      `/availability/${scheduleId}`,
+      input
+    );
+    return response.data;
+  } catch (error) {
+    throw new ApiRequestError(normalizeApiError(error));
+  }
+}
+
 export async function deleteAvailabilityRuleset(
   scheduleId: number
 ): Promise<void> {

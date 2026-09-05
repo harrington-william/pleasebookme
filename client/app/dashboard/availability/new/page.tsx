@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { CreateAvailabilityForm } from "@/features/availability/components/create-availability-form";
+import { AvailabilityRulesetForm } from "@/features/availability/components/availability-ruleset-form";
 import { getSessionActor, SESSION_EXPIRED_REDIRECT } from "@/lib/session";
 
 export const metadata: Metadata = {
@@ -38,7 +38,7 @@ export default async function CreateAvailabilityPage() {
         </Link>
       </div>
 
-      <CreateAvailabilityForm />
+      <AvailabilityRulesetForm mode="create" />
     </main>
   );
 }

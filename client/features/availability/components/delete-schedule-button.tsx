@@ -2,7 +2,7 @@
 
 import { LoaderCircle, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 
 import { deleteAvailabilityRuleset } from "@/features/availability/services/availability-api";
 import { ApiRequestError } from "@/lib/api-error";
@@ -20,7 +20,10 @@ export function DeleteScheduleButton({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onDelete() {
+  async function onDelete(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (!confirming) {
       setConfirming(true);
       return;
@@ -50,7 +53,11 @@ export function DeleteScheduleButton({
         {confirming && !pending ? (
           <button
             type="button"
-            onClick={() => setConfirming(false)}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setConfirming(false);
+            }}
             className="rounded-lg px-sm py-[6px] text-label-md text-muted-foreground transition-colors hover:text-foreground"
           >
             Cancel
@@ -69,7 +76,7 @@ export function DeleteScheduleButton({
             "inline-flex items-center gap-xs rounded-lg border cursor-pointer px-sm py-[6px] text-label-md transition-colors hover:text-destructive disabled:opacity-50",
             confirming
               ? "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20"
-              : "border-border text-muted-foreground hover:border-surface-hover hover:bg-surface-hover hover:text-foreground"
+              : "border-border text-muted-foreground hover:border-surface-hover hover:bg-surface-hover"
           )}
         >
           {pending ? (

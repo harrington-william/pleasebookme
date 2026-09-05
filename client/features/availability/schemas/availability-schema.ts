@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   DAY_DEFINITIONS,
+  type AvailabilityRuleset,
   type AvailabilityWindow,
   type CreateAvailabilityRulesetInput,
 } from "@/features/availability/types/availability";
@@ -88,5 +89,35 @@ export function toCreateAvailabilityRulesetInput(
     title: values.title,
     timezone: values.timezone,
     windows: toAvailabilityWindows(values),
+  };
+}
+
+// Inverse of toAvailabilityWindows — reconstructs per-day form state from
+// the persisted Availability rows so the edit form starts pre-filled.
+export function toEditAvailabilityFormValues(
+  ruleset: AvailabilityRuleset
+): CreateAvailabilityFormValues {
+  const byDay = new Map<number, { startTime: string; endTime: string }>();
+
+  for (const availability of ruleset.availabilities) {
+    const startTime = availability.startTime.slice(0, 5);
+    const endTime = availability.endTime.slice(0, 5);
+    for (const day of availability.days) {
+      byDay.set(day, { startTime, endTime });
+    }
+  }
+
+  return {
+    title: ruleset.schedule.title,
+    timezone: ruleset.schedule.timezone,
+    days: DAY_DEFINITIONS.map((day) => {
+      const window = byDay.get(day.value);
+      return {
+        value: day.value,
+        enabled: window !== undefined,
+        startTime: window?.startTime ?? "09:00",
+        endTime: window?.endTime ?? "17:00",
+      };
+    }),
   };
 }

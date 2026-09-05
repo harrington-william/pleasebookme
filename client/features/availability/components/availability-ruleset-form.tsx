@@ -18,7 +18,10 @@ import {
   toCreateAvailabilityRulesetInput,
   type CreateAvailabilityFormValues,
 } from "@/features/availability/schemas/availability-schema";
-import { createAvailabilityRuleset } from "@/features/availability/services/availability-api";
+import {
+  createAvailabilityRuleset,
+  updateAvailabilityRuleset,
+} from "@/features/availability/services/availability-api";
 import { DAY_DEFINITIONS } from "@/features/availability/types/availability";
 import { ApiRequestError } from "@/lib/api-error";
 import { cn } from "@/lib/utils";
@@ -41,7 +44,15 @@ function supportedTimezones(): string[] {
   }
 }
 
-export function CreateAvailabilityForm() {
+type AvailabilityRulesetFormProps =
+  | { mode: "create" }
+  | {
+      mode: "edit";
+      scheduleId: number;
+      defaultValues: CreateAvailabilityFormValues;
+    };
+
+export function AvailabilityRulesetForm(props: AvailabilityRulesetFormProps) {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const timezones = useMemo(() => supportedTimezones(), []);
@@ -55,21 +66,22 @@ export function CreateAvailabilityForm() {
   } = useForm<CreateAvailabilityFormValues>({
     resolver: zodResolver(createAvailabilityFormSchema),
     mode: "onBlur",
-    defaultValues: {
-      title: "",
-      timezone: "Asia/Saigon",
-      days: DEFAULT_DAY_VALUES,
-    },
+    defaultValues:
+      props.mode === "edit"
+        ? props.defaultValues
+        : { title: "", timezone: "Asia/Saigon", days: DEFAULT_DAY_VALUES },
   });
 
-  // Detect timezone from browser
+  // Only a brand-new ruleset should adopt the browser's detected timezone —
+  // an existing schedule's saved timezone must not be silently overridden.
   useEffect(() => {
-    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (props.mode === "edit") return;
 
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (detected && timezones.includes(detected)) {
       setValue("timezone", detected);
     }
-  }, [timezones, setValue]);
+  }, [timezones, setValue, props.mode]);
 
   async function onSubmit(values: CreateAvailabilityFormValues) {
     setSubmitError(null);
@@ -80,14 +92,23 @@ export function CreateAvailabilityForm() {
     }
 
     try {
-      await createAvailabilityRuleset(toCreateAvailabilityRulesetInput(values));
+      if (props.mode === "edit") {
+        await updateAvailabilityRuleset(
+          props.scheduleId,
+          toCreateAvailabilityRulesetInput(values)
+        );
+      } else {
+        await createAvailabilityRuleset(
+          toCreateAvailabilityRulesetInput(values)
+        );
+      }
       router.push("/dashboard/availability");
       router.refresh();
     } catch (error) {
       setSubmitError(
         error instanceof ApiRequestError
           ? error.message
-          : "Could not create this availability ruleset. Please try again."
+          : `Could not ${props.mode === "edit" ? "update" : "create"} this availability ruleset. Please try again.`
       );
     }
   }
@@ -229,6 +250,8 @@ export function CreateAvailabilityForm() {
               <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
               Saving…
             </>
+          ) : props.mode === "edit" ? (
+            "Save Changes"
           ) : (
             "Save Availability"
           )}

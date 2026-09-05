@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Database/Schemas/Core/Table Booking Policies.md",
+                "file": "Tasks.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Table Booking Policies"
+              "title": "Tasks"
             }
           }
         ]
@@ -99,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Database/Schemas/Core/Table Booking Policies.md",
+                "file": "Tasks.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Database/Schemas/Core/Table Booking Policies.md",
+                "file": "Tasks.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -161,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Database/Schemas/Core/Table Booking Policies.md",
+                "file": "Tasks.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -191,6 +191,8 @@
   },
   "active": "f0e3ab1f11893adc",
   "lastOpenFiles": [
+    "Database/Schemas/Core/Table Booking Policies.md",
+    "Tasks.md",
     "API/API Template.md",
     "API/API Summary Template.md",
     "API/Auth/Users/User API Summary.md",
@@ -199,7 +201,6 @@
     "API/Core/Attendees/List attendees.md",
     "API/Core/Bookings/Cancel a booking.md",
     "API/Core/Bookings/List bookings.md",
-    "Database/Schemas/Core/Table Booking Policies.md",
     "Hello.md",
     "Database/Schemas/Core/Table Services.md",
     "Services/Resource/Workflows/Assign a Resource to Services.md",
@@ -216,7 +217,6 @@
     "Services/Resource/Decisions/Resource Status Has No Default.md",
     "Services/Resource/Decisions/Utilization Is Not Reported.md",
     "Database/Architecture/Database Architecture Design.md",
-    "Services/Resource/Decisions/Inventory Reads Are Filtered Server Side.md",
     "Services/Resource/Workflows",
     "Services/Resource/Rules",
     "Services/Resource/Overview",
