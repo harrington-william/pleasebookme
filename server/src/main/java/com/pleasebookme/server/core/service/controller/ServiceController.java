@@ -42,7 +42,8 @@ public class ServiceController {
         @PathVariable BigInteger serviceId,
         @Valid @RequestBody ServiceRequest request
     ) {
-        return ServiceResponse.from(businessService.updateService(serviceId, request));
+        var result = businessService.updateService(serviceId, request);
+        return ServiceResponse.from(result.service(), result.bookingPolicy());
     }
 
     @DeleteMapping("/{serviceId}")

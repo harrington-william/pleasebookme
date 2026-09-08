@@ -515,6 +515,62 @@ Non-obvious rules:
   and safe, but not the wording this flow would choose. Fixing it means giving
   the server a mode-aware fallback, which it cannot know once the state is gone.
 
+## The services editor
+
+One route per mode — `/dashboard/services/new` and `/dashboard/services/[id]` —
+with the section carried as `?tabName=`, mirroring cal.com's event-type editor.
+Five tabs in two groups: Setup (Basics, Availability) and Policies (Price &
+Duration, Limits & Buffers, Confirmation). `ServiceEditor` owns the whole form;
+each tab is a panel reading `useFormContext`.
+
+- **⚠ The tab is a query param, never a route segment.** Every tab edits one
+  aggregate saved by one `POST`/`PUT`, so a path segment would imply the sections
+  are separately addressable resources. The practical half matters more: a route
+  segment swaps the page *module* on navigation, React unmounts the old one, and
+  whatever the user typed is gone — which is exactly what happened when this was
+  built as `[id]/policies`. A query param changes a value, not a module, so
+  nothing unmounts.
+- **⚠ Server pages must not read `searchParams`.** The active tab is read
+  client-side via `useSearchParams()` in `ServiceEditor`. If the page or its
+  `generateMetadata` depended on the tab, every switch would round-trip to the
+  server and re-render the page mid-edit. That is also why there is no per-tab
+  `<title>` — it is available, but not worth a round trip per click.
+- **All five panels stay mounted; only the active one is displayed** (`TabPanel`
+  toggles `flex`/`hidden`). Rendering just the active panel would put the
+  unmount problem back, one level down, and hiding preserves per-panel scroll
+  position for free.
+- **Both modes submit the whole form from any tab.** `PUT /api/v1/services/{id}`
+  is full-replace, and a create posts the service and its booking policy in one
+  request — so every field stays registered regardless of which tab is visible.
+  `onInvalid` switches to the tab holding the first error, otherwise a failed
+  submit shows nothing.
+- Tab definitions live in `service-editor-navigation.ts` (id, label, group, icon,
+  and the fields each tab owns — that last one drives `onInvalid`). An unknown
+  or missing `tabName` falls back to Basics.
+- Tab links need `scroll={false}`, or every switch jumps to the top of the page.
+- `useSearchParams` would need a `<Suspense>` boundary on a prerendered route.
+  These routes are dynamic (they read cookies via `getSessionActor()`), so it
+  does not apply — re-check if that ever changes.
+- **Minutes are canonical for `minimumNotice`/`maximumAdvanceBooking`.** Both
+  columns are bare `INTEGER`s with no unit stored anywhere, so the amount/unit
+  pair exists only in the form. `duration-unit.ts` owns the conversion:
+  `toMinutes` on write, `fromMinutes` on read picking the largest unit that
+  divides evenly (120 → "2 Hours").
+- **The slug is frozen on edit.** It is derived from the title on create and
+  round-tripped untouched afterwards; re-deriving it from a retitle would break
+  every booking URL already handed out and can collide with
+  `uq_services_organization_slug`.
+- **`requiresConfirmation` maps to the policy's `autoConfirm`, not to
+  `services.requires_confirmation`.** The two columns duplicate each other, the
+  platform mirrors one onto the other, and `requires_confirmation` is being
+  dropped — so the client writes and reads `autoConfirm` only.
+- **`bookingWindowType` is a plain `VARCHAR(50)`** with no CHECK constraint, no
+  native enum and no server-side consumer yet. `ROLLING`/`FIXED` in
+  `BOOKING_WINDOW_TYPES` is this client's vocabulary, not a platform contract.
+
+Still reserved here: the cover-image upload (`core.services` has no image column
+and the platform exposes no upload endpoint) and the resource-assignment panel.
+
 ## Environment
 
 `lib/env.ts` validates everything at startup with zod, split into two surfaces:

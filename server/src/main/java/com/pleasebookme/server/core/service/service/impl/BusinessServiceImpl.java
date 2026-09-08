@@ -62,7 +62,9 @@ public class BusinessServiceImpl implements BusinessServiceService {
             .minPrice(request.minPrice())
             .maxPrice(request.maxPrice())
             .successRedirectUrl(request.successRedirectUrl())
-            .maxActiveBookingPerBooker(request.maxActiveBookingPerBooker());
+            .maxActiveBookingPerBooker(request.maxActiveBookingPerBooker())
+            .destinationCalendar(resolveDestinationCalendar(request.destinationCalendarId(), null))
+            .destinationSheets(resolveDestinationSheets(request.destinationSheetsId(), null));
 
         if (request.interfaceLanguage() != null) service.interfaceLanguage(request.interfaceLanguage());
         if (request.periodType() != null) service.periodType(request.periodType());
@@ -73,23 +75,12 @@ public class BusinessServiceImpl implements BusinessServiceService {
         if (request.disableRescheduling() != null) service.disableRescheduling(request.disableRescheduling());
         if (request.isInstantService() != null) service.isInstantService(request.isInstantService());
 
-        if (request.destinationCalendarId() != null) {
-            DestinationCalendarEntity destinationCalendar = destinationCalendarRepository.findById(request.destinationCalendarId())
-                .orElseThrow(() -> new DestinationCalendarNotFoundException("Destination calendar not found: " + request.destinationCalendarId()));
-            service.destinationCalendar(destinationCalendar);
-        }
-
-        if (request.destinationSheetsId() != null) {
-            DestinationSheetsEntity destinationSheets = destinationSheetsRepository.findById(request.destinationSheetsId())
-                .orElseThrow(() -> new DestinationSheetsNotFoundException("Destination sheets not found: " + request.destinationSheetsId()));
-            service.destinationSheets(destinationSheets);
-        }
-
         ServiceEntity createdService = serviceRepository.save(service.build());
         BookingPolicyEntity bookingPolicy = null;
 
         if (request.bookingPolicy() != null) {
             bookingPolicy = bookingPolicyRepository.save(buildBookingPolicy(createdService, request.bookingPolicy()));
+            mirrorConfirmationFlag(createdService, bookingPolicy);
         }
 
         return new ServiceCreateResult(createdService, bookingPolicy);
@@ -116,7 +107,7 @@ public class BusinessServiceImpl implements BusinessServiceService {
 
     @Override
     @Transactional
-    public ServiceEntity updateService(
+    public ServiceCreateResult updateService(
         BigInteger serviceId,
         ServiceRequest request
     ) {
@@ -139,6 +130,8 @@ public class BusinessServiceImpl implements BusinessServiceService {
         service.setMaxPrice(request.maxPrice());
         service.setSuccessRedirectUrl(request.successRedirectUrl());
         service.setMaxActiveBookingPerBooker(request.maxActiveBookingPerBooker());
+        service.setDestinationCalendar(resolveDestinationCalendar(request.destinationCalendarId(), service.getDestinationCalendar()));
+        service.setDestinationSheets(resolveDestinationSheets(request.destinationSheetsId(), service.getDestinationSheets()));
 
         if (request.interfaceLanguage() != null) service.setInterfaceLanguage(request.interfaceLanguage());
         if (request.periodType() != null) service.setPeriodType(request.periodType());
@@ -149,23 +142,14 @@ public class BusinessServiceImpl implements BusinessServiceService {
         if (request.disableRescheduling() != null) service.setDisableRescheduling(request.disableRescheduling());
         if (request.isInstantService() != null) service.setIsInstantService(request.isInstantService());
 
-        if (request.destinationCalendarId() != null) {
-            DestinationCalendarEntity destinationCalendar = destinationCalendarRepository.findById(request.destinationCalendarId())
-                .orElseThrow(() -> new DestinationCalendarNotFoundException("Destination calendar not found: " + request.destinationCalendarId()));
-            service.setDestinationCalendar(destinationCalendar);
-        } else {
-            service.setDestinationCalendar(null);
+        ServiceEntity updatedService = serviceRepository.save(service);
+        BookingPolicyEntity bookingPolicy = upsertBookingPolicy(updatedService, request.bookingPolicy());
+
+        if (bookingPolicy != null) {
+            mirrorConfirmationFlag(updatedService, bookingPolicy);
         }
 
-        if (request.destinationSheetsId() != null) {
-            DestinationSheetsEntity destinationSheets = destinationSheetsRepository.findById(request.destinationSheetsId())
-                .orElseThrow(() -> new DestinationSheetsNotFoundException("Destination sheets not found: " + request.destinationSheetsId()));
-            service.setDestinationSheets(destinationSheets);
-        } else {
-            service.setDestinationSheets(null);
-        }
-
-        return serviceRepository.save(service);
+        return new ServiceCreateResult(updatedService, bookingPolicy);
     }
 
     @Override
@@ -176,6 +160,69 @@ public class BusinessServiceImpl implements BusinessServiceService {
     private ServiceEntity findServiceOrThrow(BigInteger serviceId) {
         return serviceRepository.findById(serviceId)
             .orElseThrow(() -> new ServiceNotFoundException("Service not found: " + serviceId));
+    }
+
+    /**
+     * A service owns exactly one booking policy (uq_booking_policies_service), so an
+     * update has to reuse the existing row rather than insert a second one. Keeping
+     * this here rather than calling BookingPolicyService keeps both writes inside the
+     * caller's transaction, matching how createService already persists the pair.
+     */
+    private BookingPolicyEntity upsertBookingPolicy(
+        ServiceEntity service,
+        ServiceBookingPolicyRequest request
+    ) {
+        if (request == null) {
+            return bookingPolicyRepository.findByServiceServiceId(service.getServiceId()).orElse(null);
+        }
+
+        return bookingPolicyRepository.findByServiceServiceId(service.getServiceId())
+            .map(existing -> bookingPolicyRepository.save(applyBookingPolicy(existing, request)))
+            .orElseGet(() -> bookingPolicyRepository.save(buildBookingPolicy(service, request)));
+    }
+
+    /**
+     * TEMPORARY: core.services.requires_confirmation duplicates
+     * core.booking_policies.auto_confirm. The policy column is the one the client
+     * writes, so the service column is mirrored from it to stop the two drifting.
+     * Delete this method together with the requires_confirmation column.
+     */
+    private void mirrorConfirmationFlag(
+        ServiceEntity service,
+        BookingPolicyEntity bookingPolicy
+    ) {
+        service.setRequiresConfirmation(bookingPolicy.getAutoConfirm());
+        serviceRepository.save(service);
+    }
+
+    /**
+     * Update is full-replace everywhere else, but no client surface manages
+     * destination calendars yet, so replacing a missing id with null would silently
+     * unlink a connected calendar on every save. Keep the stored association until
+     * a picker exists that can send an explicit clear.
+     */
+    private DestinationCalendarEntity resolveDestinationCalendar(
+        BigInteger destinationCalendarId,
+        DestinationCalendarEntity current
+    ) {
+        if (destinationCalendarId == null) {
+            return current;
+        }
+
+        return destinationCalendarRepository.findById(destinationCalendarId)
+            .orElseThrow(() -> new DestinationCalendarNotFoundException("Destination calendar not found: " + destinationCalendarId));
+    }
+
+    private DestinationSheetsEntity resolveDestinationSheets(
+        BigInteger destinationSheetsId,
+        DestinationSheetsEntity current
+    ) {
+        if (destinationSheetsId == null) {
+            return current;
+        }
+
+        return destinationSheetsRepository.findById(destinationSheetsId)
+            .orElseThrow(() -> new DestinationSheetsNotFoundException("Destination sheets not found: " + destinationSheetsId));
     }
 
     private BookingPolicyEntity buildBookingPolicy(
@@ -202,5 +249,29 @@ public class BusinessServiceImpl implements BusinessServiceService {
         if (request.autoConfirm() != null) bookingPolicy.autoConfirm(request.autoConfirm());
 
         return bookingPolicy.build();
+    }
+
+    private BookingPolicyEntity applyBookingPolicy(
+        BookingPolicyEntity bookingPolicy,
+        ServiceBookingPolicyRequest request
+    ) {
+        bookingPolicy.setMinimumDuration(request.minimumDuration());
+        bookingPolicy.setMaximumDuration(request.maximumDuration());
+        bookingPolicy.setMinimumNotice(request.minimumNotice());
+        bookingPolicy.setMaximumAdvanceBooking(request.maximumAdvanceBooking());
+        bookingPolicy.setBookingWindowType(request.bookingWindowType());
+        bookingPolicy.setCapacity(request.capacity());
+
+        if (request.bookingMode() != null) bookingPolicy.setBookingMode(request.bookingMode());
+        if (request.defaultDuration() != null) bookingPolicy.setDefaultDuration(request.defaultDuration());
+        if (request.slotInterval() != null) bookingPolicy.setSlotInterval(request.slotInterval());
+        if (request.beforeBuffer() != null) bookingPolicy.setBeforeBuffer(request.beforeBuffer());
+        if (request.afterBuffer() != null) bookingPolicy.setAfterBuffer(request.afterBuffer());
+        if (request.allowOverlap() != null) bookingPolicy.setAllowOverlap(request.allowOverlap());
+        if (request.allowMultipleAttendee() != null) bookingPolicy.setAllowMultipleAttendee(request.allowMultipleAttendee());
+        if (request.requiresPayment() != null) bookingPolicy.setRequiresPayment(request.requiresPayment());
+        if (request.autoConfirm() != null) bookingPolicy.setAutoConfirm(request.autoConfirm());
+
+        return bookingPolicy;
     }
 }

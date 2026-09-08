@@ -1,5 +1,5 @@
 ---
-title: entity-writter
+name: entity-writter
 description: Entity convention
 ---
 

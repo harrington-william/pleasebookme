@@ -10,7 +10,7 @@ export function ServiceCatalogList({
     return (
       <div className="rounded-xl border border-dashed border-border px-md py-2xl text-center">
         <p className="text-body-md text-muted-foreground">
-          No services yet. Create one to start accepting bookings.
+          No service found.
         </p>
       </div>
     );

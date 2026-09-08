@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { listMySchedulesOnPlatform } from "@/features/availability/services/availability-gateway";
 import type { Schedule } from "@/features/availability/types/availability";
-import { CreateServiceForm } from "@/features/services/components/create-service-form";
+import { ServiceEditor } from "@/features/services/components/service-editor";
 import {
   SessionExpiredError,
   withAccessToken,
@@ -35,28 +34,5 @@ export default async function CreateServicePage() {
     }
   }
 
-  return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-lg p-md md:p-2xl">
-      <div className="flex flex-col justify-between gap-md md:flex-row md:items-center">
-        <div className="space-y-xs">
-          <h1 className="text-headline-lg-mobile text-foreground md:text-headline-lg">
-            Create New Service
-          </h1>
-          <p className="text-body-md text-muted-foreground">
-            Configure details, pricing, and availability rules.
-          </p>
-        </div>
-
-        <Link
-          href="/dashboard/services"
-          className="w-auto rounded-lg border border-border text-center text-destructive
-          px-md py-sm text-label-md transition-colors hover:bg-surface-hover"
-        >
-          Cancel
-        </Link>
-      </div>
-
-      <CreateServiceForm schedules={schedules} />
-    </main>
-  );
+  return <ServiceEditor mode="create" schedules={schedules} />;
 }

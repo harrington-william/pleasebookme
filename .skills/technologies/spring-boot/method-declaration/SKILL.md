@@ -1,5 +1,5 @@
 ---
-title: method-declarator
+name: method-declarator
 description: Method convention
 ---
 

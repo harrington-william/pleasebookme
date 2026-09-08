@@ -1,5 +1,5 @@
 ---
-name: code-comment
+name: quality-code-comments
 description: Guidelines for writing effective comments in the codebase.
 ---
 

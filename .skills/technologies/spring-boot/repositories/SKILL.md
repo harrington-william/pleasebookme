@@ -1,9 +1,9 @@
 ---
-title: repository-writter
+name: repository-writter
 description: Repository convention
 ---
 
-file: Repository Convention
+# Repository Convention
 
 - One repository per domain with @Repsitory annotation
 

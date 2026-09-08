@@ -14,7 +14,7 @@ public interface BusinessServiceService {
 
     List<ServiceEntity> getServicesByOrganizationId(BigInteger organizationId);
 
-    ServiceEntity updateService(
+    ServiceCreateResult updateService(
         BigInteger serviceId,
         ServiceRequest request
     );

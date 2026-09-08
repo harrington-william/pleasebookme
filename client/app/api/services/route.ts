@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { servicePayloadSchema } from "@/features/services/schemas/service-schema";
 import { createServiceWithPolicyOnPlatform } from "@/features/services/services/service-gateway";
 import { normalizeApiError } from "@/lib/api-error";
 import {
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: Record<string, unknown>;
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
@@ -27,18 +28,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (
-    typeof body.title !== "string" ||
-    typeof body.slug !== "string" ||
-    typeof body.scheduleId !== "number" ||
-    typeof body.defaultDuration !== "number" ||
-    typeof body.beforeBuffer !== "number" ||
-    typeof body.afterBuffer !== "number" ||
-    typeof body.minimumNotice !== "number" ||
-    typeof body.maximumAdvanceBooking !== "number" ||
-    typeof body.capacity !== "number" ||
-    typeof body.bookingWindowType !== "string"
-  ) {
+  const payload = servicePayloadSchema.safeParse(body);
+  if (!payload.success) {
     return NextResponse.json(
       { message: "Missing or invalid service fields.", status: 400 },
       { status: 400 }
@@ -47,20 +38,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const result = await withAccessToken((accessToken) =>
-      createServiceWithPolicyOnPlatform(accessToken, {
-        title: body.title as string,
-        slug: body.slug as string,
-        description: body.description as string | undefined,
-        scheduleId: body.scheduleId as number,
-        price: body.price as number | undefined,
-        defaultDuration: body.defaultDuration as number,
-        beforeBuffer: body.beforeBuffer as number,
-        afterBuffer: body.afterBuffer as number,
-        minimumNotice: body.minimumNotice as number,
-        maximumAdvanceBooking: body.maximumAdvanceBooking as number,
-        capacity: body.capacity as number,
-        bookingWindowType: body.bookingWindowType as string,
-      })
+      createServiceWithPolicyOnPlatform(accessToken, payload.data)
     );
 
     return NextResponse.json(result, { status: 201 });

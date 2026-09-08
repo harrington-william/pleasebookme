@@ -1,7 +1,6 @@
 import {
   Bell,
   Boxes,
-  Braces,
   CalendarCheck,
   ChartColumn,
   CircleUser,
@@ -87,14 +86,6 @@ export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
     href: "/dashboard/settings/integrations",
     icon: Plug,
     status: "ready",
-  },
-  {
-    label: "API",
-    href: "/dashboard/api",
-    icon: Braces,
-    status: "reserved",
-    reservedReason:
-      "API keys exist as a table but have no functional usage in Platform v1 (AGENTS.md).",
   },
   {
     label: "Settings",
