@@ -5,11 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
 public interface AttendeeRepository extends JpaRepository<AttendeeEntity, BigInteger> {
     List<AttendeeEntity> findByBookingBookingId(BigInteger bookingId);
+
+    List<AttendeeEntity> findByBookingBookingIdIn(Collection<BigInteger> bookingIds);
 
     List<AttendeeEntity> findByBookingServiceOrganizationOrganizationId(BigInteger organizationId);
 }

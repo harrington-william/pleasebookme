@@ -39,7 +39,7 @@ public enum DecisionEffect {
 
 This is the one field every consumer branches on, and the only field with a strict validity requirement — the compact constructor throws if `effect` is `null`, because an `AuthorizationDecision` with no effect isn't a degraded decision, it isn't a decision at all. `code`, `reason`, and `policyName` are just descriptive strings by contrast; nothing enforces they're non-blank, because their entire purpose is human- and log-readability, not control flow.
 
-Three values, three genuinely different roles inside the engine described in **[[Authorization Engine]]**:
+Three values, three genuinely different roles inside the engine described in **[[Security/Authorization/Authorization Engine]]**:
 
 - **`PERMIT`** — this policy actively grants the request. At least one `PERMIT`, with no later `DENY`, is what it takes for the whole engine to grant anything at all.
 - **`DENY`** — this policy actively refuses the request, and does so with veto power: a single `DENY`, from any policy, at any point in the evaluated list, ends the whole call as denied. Nothing that ran before it and nothing that would have run after it changes that.
@@ -98,6 +98,6 @@ That second detail doubles as a debugging tip worth remembering on its own: **`p
 
 # See Also
 
-- **[[Authorization Engine]]** — the full decision algebra (deny-overrides, default-deny) that consumes a whole list of these and produces one final one.
+- **[[Security/Authorization/Authorization Engine]]** — the full decision algebra (deny-overrides, default-deny) that consumes a whole list of these and produces one final one.
 - **[[AuthorizationContext]]** — what a policy is looking at when it produces one of these.
 - **[[AuthorizationPolicyRegistry]]** — how the list of policies that get a chance to produce a decision is assembled in the first place.

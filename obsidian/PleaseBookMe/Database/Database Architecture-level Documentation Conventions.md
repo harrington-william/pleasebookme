@@ -1,4 +1,4 @@
-## 1. Purpose
+# 1. Purpose
 
 This document defines the standard for documenting and validating the architecture-level design of a database.
 

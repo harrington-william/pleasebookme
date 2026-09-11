@@ -14,18 +14,17 @@ export function NativeSelect({
       <select
         disabled={disabled}
         className={cn(
-          "h-9 appearance-none w-auto max-w-37.5 rounded-lg border border-border bg-background px-md pr-xl text-body-md text-foreground transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+          "h-9 w-full appearance-none rounded-lg border border-border bg-background px-md pr-xl text-body-md text-foreground transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         {...props}
       />
-      <ChevronDown
-        className={cn(
-          "pointer-events-none absolute top-1/2 right-sm size-4 -translate-y-1/2 text-muted-foreground",
-          disabled && "opacity-50"
-        )}
-        aria-hidden="true"
-      />
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 flex h-9 items-center justify-end pr-sm">
+        <ChevronDown
+          className={cn("size-4 text-muted-foreground", disabled && "opacity-50")}
+          aria-hidden="true"
+        />
+      </span>
     </div>
   );
 }

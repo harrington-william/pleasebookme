@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import java.util.Collection;
 
 public final class BookingSpecifications {
     private BookingSpecifications() {}
@@ -54,6 +55,25 @@ public final class BookingSpecifications {
 
             return builder.exists(subquery);
         };
+    }
+
+    public static Specification<BookingEntity> startsBetween(Instant from, Instant to) {
+        if (from == null || to == null) {
+            return Specification.unrestricted();
+        }
+
+        return (root, query, builder) -> builder.and(
+            builder.greaterThanOrEqualTo(root.get("startTime"), from),
+            builder.lessThan(root.get("startTime"), to)
+        );
+    }
+
+    public static Specification<BookingEntity> hasStatusIn(Collection<BookingStatus> statuses) {
+        if (statuses == null || statuses.isEmpty()) {
+            return Specification.unrestricted();
+        }
+
+        return (root, query, builder) -> root.get("status").in(statuses);
     }
 
     public static Specification<BookingEntity> matchesText(String text) {

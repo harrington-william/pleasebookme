@@ -189,7 +189,7 @@ class BusinessServiceImplTest {
         when(scheduleRepository.findById(SCHEDULE_ID)).thenReturn(java.util.Optional.of(schedule));
         when(serviceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        ServiceEntity updated = service.updateService(SERVICE_ID, request(null));
+        ServiceEntity updated = service.updateService(SERVICE_ID, request(null)).service();
 
         assertThat(updated.getTitle()).isEqualTo("Consultation");
         assertThat(updated.getOrganization()).isSameAs(organization);

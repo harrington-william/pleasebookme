@@ -8,31 +8,31 @@ Stores the bookable services an organization offers — the central catalog entr
 
 ## Fields
 
-| Field | Type | Description |
-|---|---|---|
-| `id` | `BIGSERIAL` | Internal surrogate primary key. |
-| `title` | `VARCHAR(255)` | Customer-facing service name. |
-| `slug` | `VARCHAR(255)` | URL-safe identifier, unique per organization. |
-| `description` | `TEXT` | Optional customer-facing description. |
-| `interface_language` | `public.locale` | Language the booking flow is presented in. |
-| `location` | `TEXT` | Optional service location. |
-| `user_id` | `BIGINT` | The user who administers this service. |
-| `profile_id` | `BIGINT` | The staff profile presented to customers for this service. |
-| `organization_id` | `BIGINT` | The organization that owns this service. |
-| `schedule_id` | `BIGINT` | The availability schedule this service books against. |
-| `period_type` | `VARCHAR(50)` | Booking period model (defaults to `UNLIMITED`). |
-| `timezone` | `VARCHAR(100)` | Timezone used to interpret this service's availability. |
-| `min_price` / `max_price` | `NUMERIC(10,2)` | Optional customer-facing price range. |
-| `currency` | `public.currency` | Currency the price range is denominated in. |
-| `requires_confirmation` | `BOOLEAN` | Whether a booking needs host approval before being accepted. |
-| `disable_cancelling` / `disable_rescheduling` | `BOOLEAN` | Whether customers may cancel/reschedule their own bookings. |
-| `success_redirect_url` | `TEXT` | Optional post-booking redirect target. |
-| `is_instant_service` | `BOOLEAN` | Whether this service skips the standard scheduling flow. |
-| `max_active_booking_per_booker` | `INTEGER` | Optional cap on concurrent active bookings per customer. |
-| `destination_calendar_id` | `BIGINT` | Optional external calendar this service's bookings sync to. |
-| `destination_sheets_id` | `BIGINT` | Optional external sheet this service's bookings export to. |
-| `metadata` | `JSONB` | Free-form, application-defined data. |
-| `created_at` / `updated_at` | `TIMESTAMPTZ` | Row creation/last-modified timestamps. |
+| Field                                         | Type              | Description                                                  |
+| --------------------------------------------- | ----------------- | ------------------------------------------------------------ |
+| `id`                                          | `BIGSERIAL`       | Internal surrogate primary key.                              |
+| `title`                                       | `VARCHAR(255)`    | Customer-facing service name.                                |
+| `slug`                                        | `VARCHAR(255)`    | URL-safe identifier, unique per organization.                |
+| `description`                                 | `TEXT`            | Optional customer-facing description.                        |
+| `interface_language`                          | `public.locale`   | Language the booking flow is presented in.                   |
+| `location`                                    | `TEXT`            | Optional service location.                                   |
+| `user_id`                                     | `BIGINT`          | The user who administers this service.                       |
+| `profile_id`                                  | `BIGINT`          | The staff profile presented to customers for this service.   |
+| `organization_id`                             | `BIGINT`          | The organization that owns this service.                     |
+| `schedule_id`                                 | `BIGINT`          | The availability schedule this service books against.        |
+| `period_type`                                 | `VARCHAR(50)`     | Booking period model (defaults to `UNLIMITED`).              |
+| `timezone`                                    | `VARCHAR(100)`    | Timezone used to interpret this service's availability.      |
+| `min_price` / `max_price`                     | `NUMERIC(10,2)`   | Optional customer-facing price range.                        |
+| `currency`                                    | `public.currency` | Currency the price range is denominated in.                  |
+| `requires_confirmation`                       | `BOOLEAN`         | Whether a booking needs host approval before being accepted. |
+| `disable_cancelling` / `disable_rescheduling` | `BOOLEAN`         | Whether customers may cancel/reschedule their own bookings.  |
+| `success_redirect_url`                        | `TEXT`            | Optional post-booking redirect target.                       |
+| `is_instant_service`                          | `BOOLEAN`         | Whether this service skips the standard scheduling flow.     |
+| `max_active_booking_per_booker`               | `INTEGER`         | Optional cap on concurrent active bookings per customer.     |
+| `destination_calendar_id`                     | `BIGINT`          | Optional external calendar this service's bookings sync to.  |
+| `destination_sheets_id`                       | `BIGINT`          | Optional external sheet this service's bookings export to.   |
+| `metadata`                                    | `JSONB`           | Free-form, application-defined data.                         |
+| `created_at` / `updated_at`                   | `TIMESTAMPTZ`     | Row creation/last-modified timestamps.                       |
 
 ## Row Semantics
 

@@ -2,7 +2,7 @@
 
 This page is the entry point into how PleaseBookMe issues, verifies, and rotates its own login tokens — read this first, before opening `security/token/jwt/` or `security/token/refresh/`. It covers the access/refresh pair every login, registration, and Google flow ends with, and the two very different ways each half of that pair is actually checked. The claim shape both tokens share has its own dedicated page: **[[JWT Claims]]**.
 
-This is deliberately a different subject from **[[Authorization Engine]]**. That engine answers "is this actor allowed to do this?" once a caller is already known. This page is about how the caller becomes known at all, on every single request, without a database round trip — and the one place a database round trip *is* required regardless.
+This is deliberately a different subject from **[[Security/Authorization/Authorization Engine]]**. That engine answers "is this actor allowed to do this?" once a caller is already known. This page is about how the caller becomes known at all, on every single request, without a database round trip — and the one place a database round trip *is* required regardless.
 
 # The Single Most Important Fact About This Design
 

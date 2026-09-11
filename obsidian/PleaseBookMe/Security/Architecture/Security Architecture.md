@@ -1,38 +1,3 @@
-
-
-```bash
-Spring Filter Chain
-        │
-        ▼
-IdentityLoader
-        │
-        ▼
-AuthenticationAggregation
-        │
-        ▼
-UserPrincipalMapper
-        │
-        ▼
-AuthenticatedPrincipal
-        │
-        ├──────────────► Authorization Engine
-        │
-        ▼
-GrantedAuthorityAdapter
-        │
-        ▼
-UserDetailsAdapter
-        │
-        ▼
-PrincipalUserDetails
-        │
-        ▼
-UsernamePasswordAuthenticationToken
-        │
-        ▼
-SecurityContextHolder
-```
-
 # 1. Overview
 
 The security architecture defines how untrusted actors can be authenticated and converted into a canonical business domain identity before falling into authorization engine, while maintaining a strict separation between the business and framework boundaries. You can inspect the flow by seeing **[[The Security Big Picture]]**.

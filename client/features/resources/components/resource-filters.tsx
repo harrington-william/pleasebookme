@@ -81,6 +81,7 @@ export function ResourceFilters({
           })
         }
         aria-label="Filter by resource type"
+        className="w-full xl:max-w-37.5"
       >
         <option value="">All types</option>
 
@@ -105,6 +106,7 @@ export function ResourceFilters({
           })
         }
         aria-label="Filter by status"
+        className="w-full xl:max-w-37.5"
       >
         <option value="">All statuses</option>
 

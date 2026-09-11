@@ -166,23 +166,12 @@ Responsibilities include:
 
 This layer acts as the first application-aware security boundary.
 
-  
-
 ---
-
-  
-
 ## Load Balancer
-
-  
 
 The load balancer distributes incoming traffic across multiple application instances.
 
-  
-
 This enables:
-
-  
 
 - Horizontal scaling
 
@@ -192,27 +181,15 @@ This enables:
 
 - Fault tolerance
 
-  
-
 ---
-
-  
 
 # 3. Application Layer
 
-  
-
 The application layer hosts the centralized reservation platform.
-
-  
 
 Initially, the platform is implemented as a **modular monolith** using Spring Boot.
 
-  
-
 Multiple application instances (Pods) run identical deployments.
-
-  
 
 ```
 
@@ -224,23 +201,12 @@ Centralized Booking Platform
 
 ```
 
-  
-
 ---
-
-  
-
 ## API Gateway
-
-  
 
 Each application instance exposes a unified API Gateway.
 
-  
-
 Responsibilities include:
-
-  
 
 - Authentication
 
@@ -256,27 +222,15 @@ Responsibilities include:
 
 - Internal routing
 
-  
-
 Although currently deployed together with the application, the gateway prepares the platform for future service decomposition.
-
-  
 
 ---
 
-  
-
 ## Centralized Reservation Platform
-
-  
 
 The centralized backend contains all business logic.
 
-  
-
 Core responsibilities include:
-
-  
 
 - Reservation management
 
@@ -298,35 +252,17 @@ Core responsibilities include:
 
 - Business workflows
 
-  
-
 Every client—including widgets, dashboards, and future mobile applications—communicates exclusively through this platform.
 
-  
-
 ---
-
-  
-
 # 4. Platform Services
 
-  
-
 Several infrastructure services support the core platform.
-
-  
-
 ## Redis
-
-  
 
 Redis provides high-speed in-memory storage for transient platform data.
 
-  
-
 Typical use cases include:
-
-  
 
 - Session storage
 
@@ -340,27 +276,15 @@ Typical use cases include:
 
 - Frequently accessed configuration
 
-  
-
 Redis reduces database load while improving response latency.
-
-  
 
 ---
 
-  
-
 ## PostgreSQL
-
-  
 
 PostgreSQL serves as the authoritative system of record.
 
-  
-
 Major schemas include:
-
-  
 
 ```
 
@@ -400,69 +324,34 @@ Audit
 
 ```
 
-  
-
 The database stores only durable business data while transient operational data remains inside Redis.
 
-  
-
 ---
-
-  
-
 # 5. Integration Layer
-
-  
 
 The integration layer connects the reservation platform with external providers.
 
-  
-
 This layer is intentionally separated from transactional booking logic because integrations are inherently asynchronous and failure-prone.
 
-  
-
 Current planned integrations include:
-
-  
-
 ## Google OAuth2
-
-  
 
 Provides secure delegated authorization.
 
-  
-
 Business owners grant access to:
-
-  
 
 - Google Calendar
 
 - Google Workspace
 
-  
-
 without exposing account credentials.
 
-  
-
 ---
-
-  
-
 ## Google Calendar Synchronization
-
-  
 
 Synchronizes reservations between the booking platform and external calendars.
 
-  
-
 Synchronization includes:
-
-  
 
 - Booking creation
 
@@ -470,23 +359,13 @@ Synchronization includes:
 
 - Booking cancellation
 
-  
-
 ---
-
-  
 
 ## SMS / Zalo Integration
 
-  
-
 Provides outbound customer communication.
 
-  
-
 Typical events include:
-
-  
 
 - Booking confirmation
 
@@ -496,19 +375,10 @@ Typical events include:
 
 - Schedule changes
 
-  
-
 ---
-
-  
-
 ## Notification Service
 
-  
-
 The Notification Service consumes business events and determines:
-
-  
 
 - Delivery channel
 
@@ -520,35 +390,18 @@ The Notification Service consumes business events and determines:
 
 - Provider selection
 
-  
-
 The service is independent of the booking workflow.
 
-  
-
 ---
-
-  
-
 # 6. Event Infrastructure
-
-  
 
 As the platform evolves, asynchronous communication becomes increasingly important.
 
-  
-
 Apache Kafka functions as the platform's event backbone.
-
-  
 
 Rather than allowing application modules to communicate directly, they publish immutable business events.
 
-  
-
 Typical events include:
-
-  
 
 ```
 
@@ -576,15 +429,9 @@ NotificationRequested
 
 ```
 
-  
-
 Consumers subscribe independently without increasing coupling.
 
-  
-
 Future consumers include:
-
-  
 
 - Notification Service
 
@@ -594,19 +441,10 @@ Future consumers include:
 
 - Automation Engine
 
-  
-
 ---
-
-  
-
 # 7. Analytics Platform
 
-  
-
 Operational data is gradually transformed into analytical data.
-
-  
 
 ```
 
@@ -630,39 +468,20 @@ Dashboard
 
 ```
 
-  
-
 ---
-
-  
-
 ## ETL Pipeline
-
-  
 
 The ETL pipeline extracts transactional data, transforms it into analytical models, and loads it into the data warehouse.
 
-  
-
 Transactional databases remain optimized for operational workloads while analytical workloads execute independently.
-
-  
 
 ---
 
-  
-
 ## Data Warehouse
-
-  
 
 The warehouse stores historical business data optimized for reporting.
 
-  
-
 Examples include:
-
-  
 
 - Booking trends
 
@@ -674,35 +493,17 @@ Examples include:
 
 - Cancellation rates
 
-  
-
 ---
-
-  
-
 ## Analytics Service
-
-  
 
 The Analytics Service exposes reporting APIs used by internal dashboards.
 
-  
-
 This separation prevents expensive analytical queries from impacting production booking performance.
 
-  
-
 ---
-
-  
-
 # 8. Deployment Pipeline
 
-  
-
 The platform follows a fully automated CI/CD workflow.
-
-  
 
 ```
 
@@ -730,15 +531,9 @@ Production Deployment
 
 ```
 
-  
-
 Every production deployment is generated automatically from version-controlled source code.
 
-  
-
 This workflow enables:
-
-  
 
 - Repeatable deployments
 
@@ -750,19 +545,10 @@ This workflow enables:
 
 - Infrastructure consistency
 
-  
-
 ---
-
-  
-
 # End-to-End Request Flow
 
-  
-
 A typical reservation request follows this sequence:
-
-  
 
 ```
 
@@ -822,11 +608,7 @@ Google Calendar / SMS / Zalo
 
 ```
 
-  
-
 Simultaneously, completed reservation events are streamed into the analytical pipeline:
-
-  
 
 ```
 
@@ -850,22 +632,12 @@ Business Dashboard
 
 ```
 
-  
-
 ---
-
-  
 
 # Architectural Philosophy
 
-  
-
 The architecture intentionally follows an **API-first, platform-oriented design**. Every user interface—including the embedded booking widget, business dashboard, customer portal, and future mobile applications—is treated as a client of the same centralized reservation platform. The backend remains the single source of truth for business rules, reservation policies, resource allocation, and tenant management.
 
-  
-
 Although the long-term vision includes event-driven services and independently deployable components, the platform is intentionally developed as a **modular monolith** during its early commercial stages. This provides operational simplicity while preserving clear module boundaries for future service extraction. As customer adoption and infrastructure demands grow, individual modules such as Notifications, Analytics, Identity, and Reservation Management can be evolved into independent services without requiring fundamental changes to the core business domain.
-
-  
 
 This architecture aligns well with your strategic objective of evolving from a booking application into a **reservation infrastructure platform**, where the booking widget is merely one client of a reusable API capable of serving websites, mobile applications, partner systems, and future third-party developers.

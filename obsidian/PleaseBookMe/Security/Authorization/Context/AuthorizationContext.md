@@ -1,6 +1,6 @@
 # What It Is
 
-`AuthorizationContext` is the complete authorization question, assembled once by whoever wants an answer and then passed unchanged through the entire engine described in **[[Authorization Engine]]**. Every `AuthorizationPolicy` sees the same instance; nothing rebuilds or mutates it mid-evaluation. If a policy needs a piece of information to make its decision, that information is either already on this record, or the policy abstains — there is no side channel a policy can reach for instead.
+`AuthorizationContext` is the complete authorization question, assembled once by whoever wants an answer and then passed unchanged through the entire engine described in **[[Security/Authorization/Authorization Engine]]**. Every `AuthorizationPolicy` sees the same instance; nothing rebuilds or mutates it mid-evaluation. If a policy needs a piece of information to make its decision, that information is either already on this record, or the policy abstains — there is no side channel a policy can reach for instead.
 
 Package: `com.pleasebookme.server.security.authorization.context`.
 
@@ -88,7 +88,7 @@ public String permissionSlug() {
 }
 ```
 
-This is the bridge between the context and the permission vocabulary the rest of the platform already speaks: `auth.permissions` rows are seeded as exactly this shape, `<RESOURCE>.<ACTION>` (`BOOKING.CREATE`, `SERVICE.READ`, and so on — see `AGENTS.md`'s permission-seed notes). `AuthorizationPolicy.evaluatePermission()` (the default method most resource-specific policies lean on) calls this once and checks the result against both `UserPrincipal.hasPermission(...)` and `MembershipSnapshot.hasPermission(...)` — see **[[Authorization Engine]]** for that reconciliation in full.
+This is the bridge between the context and the permission vocabulary the rest of the platform already speaks: `auth.permissions` rows are seeded as exactly this shape, `<RESOURCE>.<ACTION>` (`BOOKING.CREATE`, `SERVICE.READ`, and so on — see `AGENTS.md`'s permission-seed notes). `AuthorizationPolicy.evaluatePermission()` (the default method most resource-specific policies lean on) calls this once and checks the result against both `UserPrincipal.hasPermission(...)` and `MembershipSnapshot.hasPermission(...)` — see **[[Security/Authorization/Authorization Engine]]** for that reconciliation in full.
 
 # `hasMembership()`
 
@@ -130,11 +130,11 @@ AuthorizationContext context = new AuthorizationContext(
 );
 ```
 
-This is the wiring gap already flagged in **[[Authorization Engine]]**: nothing yet resolves a real `ResourceScope`/`MembershipSnapshot` before handing a context to the engine through this path, which means any scoped policy reached this way can only ever see an unscoped, membership-less context. A future caller that wants scoped enforcement has two options: resolve `scope`/`membership` itself and build a context via `forResource(...)`/`forCreate(...)` before calling `AuthorizationService.require(...)` directly, or wait for `AuthorizationPermissionEvaluator` itself to be extended to call `ScopeResolverRegistry`/`MembershipResolver` before building its context.
+This is the wiring gap already flagged in **[[Security/Authorization/Authorization Engine]]**: nothing yet resolves a real `ResourceScope`/`MembershipSnapshot` before handing a context to the engine through this path, which means any scoped policy reached this way can only ever see an unscoped, membership-less context. A future caller that wants scoped enforcement has two options: resolve `scope`/`membership` itself and build a context via `forResource(...)`/`forCreate(...)` before calling `AuthorizationService.require(...)` directly, or wait for `AuthorizationPermissionEvaluator` itself to be extended to call `ScopeResolverRegistry`/`MembershipResolver` before building its context.
 
 # See Also
 
-- **[[Authorization Engine]]** — the full engine this context is the input to, including the decision algebra that consumes it.
+- **[[Security/Authorization/Authorization Engine]]** — the full engine this context is the input to, including the decision algebra that consumes it.
 - **[[AuthorizationDecision]]** — what a policy hands back after looking at one of these.
 - **[[AuthorizationPolicyRegistry]]** — how `resourceType`/`action` on this record select which policies even get a chance to look at it.
 - **[[AuthenticatedPrincipal]]** — the `principal` field, and why it alone doesn't carry organization/tenant data (the reason `scope`/`membership` exist as separate fields here at all).

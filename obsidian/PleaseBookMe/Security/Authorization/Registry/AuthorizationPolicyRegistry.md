@@ -1,6 +1,6 @@
 # What It Is
 
-`AuthorizationPolicyRegistry` is the component that turns "every `AuthorizationPolicy` bean Spring happens to know about" into "the specific, ordered list of policies relevant to this one resource type and action." It's the piece that makes the promise in **[[Authorization Engine]]** literally true — that new authorization logic is added by registering a bean, never by editing existing code — because nothing else in the engine has to change when a new policy shows up; the registry just picks it up automatically and starts including it in the right resolutions.
+`AuthorizationPolicyRegistry` is the component that turns "every `AuthorizationPolicy` bean Spring happens to know about" into "the specific, ordered list of policies relevant to this one resource type and action." It's the piece that makes the promise in **[[Security/Authorization/Authorization Engine]]** literally true — that new authorization logic is added by registering a bean, never by editing existing code — because nothing else in the engine has to change when a new policy shows up; the registry just picks it up automatically and starts including it in the right resolutions.
 
 Package: `com.pleasebookme.server.security.authorization.registry` (interface), `.impl` (the one implementation).
 
@@ -90,7 +90,7 @@ This one line exists to prevent a very specific kind of duplication. Because `in
 
 # Ordering and Ties
 
-The engine's decision algebra evaluates policies strictly in the order this method returns them (see **[[Authorization Engine]]** and **[[AuthorizationDecision]]**), so the sort here isn't cosmetic — it's what makes the cheap actor-status/widget-capability vetoes run before the more expensive scope/membership reasoning, for instance. `resolve(...)` sorts explicitly rather than trusting the order Spring happened to inject the policies in — there's a dedicated test for this too (`resolve_mergesWildcardAndResourceSpecificPolicies_sortedByOrderRegardlessOfInjectionOrder`), which deliberately injects policies in scrambled order and asserts the registry still returns them sorted correctly.
+The engine's decision algebra evaluates policies strictly in the order this method returns them (see **[[Security/Authorization/Authorization Engine]]** and **[[AuthorizationDecision]]**), so the sort here isn't cosmetic — it's what makes the cheap actor-status/widget-capability vetoes run before the more expensive scope/membership reasoning, for instance. `resolve(...)` sorts explicitly rather than trusting the order Spring happened to inject the policies in — there's a dedicated test for this too (`resolve_mergesWildcardAndResourceSpecificPolicies_sortedByOrderRegardlessOfInjectionOrder`), which deliberately injects policies in scrambled order and asserts the registry still returns them sorted correctly.
 
 One thing the sort doesn't resolve: two policies sharing the exact same `order()` value. Java's `List.sort` is a stable sort, so equal-order policies keep whatever relative order they arrived in — which, upstream of this class, is simply whatever order Spring's dependency injection happened to hand the `List<AuthorizationPolicy>` constructor parameter, and that ordering isn't something this codebase specifies or relies on anywhere. In practice this rarely matters: the deny-overrides algebra means a `DENY` from a same-order policy wins regardless of exactly where in the tie it sits, and `ABSTAIN` never affects ordering-sensitive outcomes at all. It would only become a real concern if two same-order policies could both legitimately `PERMIT` the same request for different reasons and something downstream cared which one's `policyName` got remembered first — worth keeping in mind if a future policy is given the same `order()` as an existing one on purpose.
 
@@ -100,7 +100,7 @@ One thing the sort doesn't resolve: two policies sharing the exact same `order()
 void resolve_returnsEmptyList_whenNoPolicyIsRegisteredAtAll() { ... }
 ```
 
-An empty resolved list is a completely normal, expected outcome — it isn't a special case the registry has to guard against, and it isn't treated as an error here. `DefaultAuthorizationService` (see **[[Authorization Engine]]**) simply iterates over whatever list it received; an empty list means the loop body never runs at all, `permitted` stays `null`, and the engine falls through to its own default-deny (`NO_POLICY`) — exactly the same outcome as if every policy in a non-empty list had abstained. The registry doesn't need to distinguish "nobody's registered for this" from "everyone who is registered had nothing to say" — both collapse into the same downstream behavior, correctly.
+An empty resolved list is a completely normal, expected outcome — it isn't a special case the registry has to guard against, and it isn't treated as an error here. `DefaultAuthorizationService` (see **[[Security/Authorization/Authorization Engine]]**) simply iterates over whatever list it received; an empty list means the loop body never runs at all, `permitted` stays `null`, and the engine falls through to its own default-deny (`NO_POLICY`) — exactly the same outcome as if every policy in a non-empty list had abstained. The registry doesn't need to distinguish "nobody's registered for this" from "everyone who is registered had nothing to say" — both collapse into the same downstream behavior, correctly.
 
 # A Deliberate Contrast: No Uniqueness Enforcement Here
 
@@ -108,6 +108,6 @@ It's worth knowing this registry does **not** validate anything about the polici
 
 # See Also
 
-- **[[Authorization Engine]]** — the decision algebra that consumes whatever list this registry resolves.
+- **[[Security/Authorization/Authorization Engine]]** — the decision algebra that consumes whatever list this registry resolves.
 - **[[AuthorizationContext]]** — `resourceType`/`action` on this record are exactly what gets passed into `resolve(...)`.
 - **[[AuthorizationDecision]]** — what each resolved policy produces once it actually runs.

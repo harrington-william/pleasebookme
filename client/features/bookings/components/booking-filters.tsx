@@ -78,6 +78,7 @@ export function BookingFilters({
           })
         }
         aria-label="Filter by service"
+        className="w-full xl:max-w-37.5"
       >
         <option value="">All services</option>
         {services.map((service) => (
@@ -98,6 +99,7 @@ export function BookingFilters({
           })
         }
         aria-label="Filter by staff"
+        className="w-full xl:max-w-37.5"
       >
         <option value="">All staff</option>
         {resources.map((resource) => (
@@ -113,8 +115,9 @@ export function BookingFilters({
           navigate({ sort: event.target.value || undefined })
         }
         aria-label="Sort bookings"
+        className="w-full xl:max-w-37.5"
       >
-        <option value="">Newest start first</option>
+        <option value="">Newest start</option>
         <option value="startTime,asc">Soonest start first</option>
         <option value="title,asc">Title A-Z</option>
         <option value="status,asc">Status A-Z</option>

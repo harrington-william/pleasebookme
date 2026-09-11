@@ -31,4 +31,4 @@ A pure veto, like `ActorStatusPolicy` — it never grants, only narrows. Since `
 
 `PLATFORM_OWNER`/`PLATFORM_MANAGER` — the system-level roles from **[[Role Design]]** — bypass this check entirely, since those roles are meant to act across every organization by definition. Everyone else abstains only after passing the scope/membership check; the actual grant still has to come from a resource-specific policy's `evaluatePermission()` call.
 
-See **[[Authorization Engine]]** for the full decision algebra this fits into.
+See **[[Security/Authorization/Authorization Engine]]** for the full decision algebra this fits into.

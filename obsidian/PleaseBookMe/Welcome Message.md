@@ -1,4 +1,4 @@
-Hello there, welcome to PleaseBookMe documentation. You can learn everything about PleaseBookMe in here, including [[Business Model]], [[Architecture]], [[The Security Big Picture]], and much more.
+Hello there, welcome to PleaseBookMe documentation. You can learn everything about PleaseBookMe in here, including [[Business Model]], [[Architecture/Architecture]], [[The Security Big Picture]], and much more.
 
 ---
 

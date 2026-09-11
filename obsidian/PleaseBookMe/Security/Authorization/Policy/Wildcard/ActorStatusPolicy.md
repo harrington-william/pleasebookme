@@ -26,4 +26,4 @@ It's a pure veto, never a grant — an active actor gets `ABSTAIN`, not `PERMIT`
 
 The exhaustive `switch` over the sealed `AuthenticatedPrincipal` (see **[[AuthenticatedPrincipal]]**) is what lets one policy cover both actor types without an `instanceof` chain — `UserPrincipal.isActive()` checks `accountStatus == ACTIVE`, `WidgetPrincipal.isActive()` checks `status == ACTIVE`.
 
-See **[[Authorization Engine]]** for how this fits into the full decision algebra.
+See **[[Security/Authorization/Authorization Engine]]** for how this fits into the full decision algebra.

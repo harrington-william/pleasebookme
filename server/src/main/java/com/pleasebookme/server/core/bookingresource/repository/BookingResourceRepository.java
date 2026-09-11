@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,8 @@ public interface BookingResourceRepository extends JpaRepository<BookingResource
     List<BookingResourceEntity> findByBookingServiceOrganizationOrganizationId(BigInteger organizationId);
 
     Optional<BookingResourceEntity> findByBookingBookingIdAndIsPrimaryTrue(BigInteger bookingId);
+
+    List<BookingResourceEntity> findByBookingBookingIdInAndIsPrimaryTrue(
+        Collection<BigInteger> bookingIds
+    );
 }

@@ -28,4 +28,4 @@ A pure veto, never a grant. Widgets are always bound to exactly one tenant (see 
 
 Note it compares against `widgetPrincipal.tenantId()` — the `BigInteger` surrogate PK, not `tenantUid()` (`UUID`) — because `ResourceScope.tenantId()` is itself keyed by the DB-native id, resolved by walking JPA entity graphs rather than external identifiers. See **[[AuthenticatedPrincipal]]** for why `WidgetPrincipal` carries both id forms.
 
-See **[[Authorization Engine]]** for the full decision algebra this fits into.
+See **[[Security/Authorization/Authorization Engine]]** for the full decision algebra this fits into.
