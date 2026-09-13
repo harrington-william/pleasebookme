@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import java.util.List;
 
 @Repository
 public interface SelectedSlotRepository extends JpaRepository<SelectedSlotEntity, BigInteger> {
@@ -14,5 +15,12 @@ public interface SelectedSlotRepository extends JpaRepository<SelectedSlotEntity
         BigInteger userId,
         Instant slotStart,
         Instant slotEnd
+    );
+
+    List<SelectedSlotEntity> findByServiceUserUserIdAndReleaseAtAfterAndSlotStartBeforeAndSlotEndAfter(
+        BigInteger hostUserId,
+        Instant now,
+        Instant slotStartBefore,
+        Instant slotEndAfter
     );
 }

@@ -36,7 +36,7 @@ Availabilities
 - start_time
 - end_time
 
-`days` implemented as `INTEGER[]` (weekday numbers, 0-6) — not specified
+`days` implemented as `INTEGER[]` (ISO weekday numbers, Monday=1 … Sunday=7, matching `java.time.DayOfWeek`) — decided in TASK-0009; previously recorded as "0-6, not specified"
 here originally, revisit if a different representation was intended.
 
 ### Indexes
