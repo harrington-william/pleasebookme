@@ -24,7 +24,6 @@ Stores the bookable services an organization offers — the central catalog entr
 | `timezone`                                    | `VARCHAR(100)`    | Timezone used to interpret this service's availability.      |
 | `min_price` / `max_price`                     | `NUMERIC(10,2)`   | Optional customer-facing price range.                        |
 | `currency`                                    | `public.currency` | Currency the price range is denominated in.                  |
-| `requires_confirmation`                       | `BOOLEAN`         | Whether a booking needs host approval before being accepted. |
 | `disable_cancelling` / `disable_rescheduling` | `BOOLEAN`         | Whether customers may cancel/reschedule their own bookings.  |
 | `success_redirect_url`                        | `TEXT`            | Optional post-booking redirect target.                       |
 | `is_instant_service`                          | `BOOLEAN`         | Whether this service skips the standard scheduling flow.     |
@@ -53,6 +52,7 @@ Created by an authorized organization member through the standard CRUD service (
 - `(organization_id, slug)` is unique.
 - `period_type` is a plain `VARCHAR`, not a native Postgres enum, despite reading like one.
 - `destination_calendar_id`/`destination_sheets_id` are both nullable and `ON DELETE SET NULL` — losing the connected external destination does not delete the service.
+- `requires_confirmation` was dropped (`V142`). It briefly duplicated `core.booking_policies.auto_confirm`; that column is now the single source of truth for whether a booking needs host approval.
 
 ## Relationships
 

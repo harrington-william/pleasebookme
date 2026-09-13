@@ -41,8 +41,6 @@ public record ServiceRequest(
 
     Currency currency,
 
-    Boolean requiresConfirmation,
-
     Boolean disableCancelling,
 
     Boolean disableRescheduling,
