@@ -1,21 +1,34 @@
 package com.pleasebookme.server.widget.widgets.service;
 
-import com.pleasebookme.server.widget.widgets.dto.WidgetRequest;
-import com.pleasebookme.server.widget.widgets.entity.WidgetEntity;
+import com.pleasebookme.server.widget.widgets.credential.WidgetCredentialPair;
+import com.pleasebookme.server.widget.widgets.dto.WidgetCreateRequest;
+import com.pleasebookme.server.widget.widgets.dto.WidgetDetail;
+import com.pleasebookme.server.widget.widgets.dto.WidgetFilter;
+import com.pleasebookme.server.widget.widgets.dto.WidgetStatsResponse;
+import com.pleasebookme.server.widget.widgets.dto.WidgetUpdateRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigInteger;
-import java.util.List;
 
 public interface WidgetService {
-    WidgetEntity createWidget(WidgetRequest request);
+    WidgetCredentialPair generateCredentials();
 
-    WidgetEntity getWidgetById(BigInteger widgetId);
+    WidgetDetail createWidget(WidgetCreateRequest request);
 
-    List<WidgetEntity> getAllWidgets();
+    WidgetDetail getWidgetById(BigInteger widgetId);
 
-    WidgetEntity updateWidget(
+    Page<WidgetDetail> getWidgetsByOrganizationId(
+        BigInteger organizationId,
+        WidgetFilter filter,
+        Pageable pageable
+    );
+
+    WidgetStatsResponse getWidgetStatsByOrganizationId(BigInteger organizationId);
+
+    WidgetDetail updateWidget(
         BigInteger widgetId,
-        WidgetRequest request
+        WidgetUpdateRequest request
     );
 
     void deleteWidget(BigInteger widgetId);

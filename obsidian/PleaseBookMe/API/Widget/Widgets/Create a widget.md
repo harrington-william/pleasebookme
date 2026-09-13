@@ -1,6 +1,10 @@
+# Create a widget
+
 ## Description
 
-Registers a new embeddable widget for a tenant. `publicKey` must be unique across every widget. `status` defaults to `REGISTERING`, `type` defaults to `EMBEDDED`, and `originValidation` defaults to `false` when omitted.
+Creates an active widget for the caller's provisioned tenant. The client first obtains a credential pair from [[Generate widget credentials]] and sends it under `credentials`; the secret is BCrypt-hashed at rest and is never returned by this endpoint.
+
+`type` defaults to `EMBEDDED`. A supplied origin is normalized to `scheme://host[:non-default-port]`; paths, queries, fragments, and default ports are removed. A missing or blank origin creates no origin row and disables origin validation. `expiresAt` and `lastUsedAt` remain `null` because they are server-owned and this flow does not set them.
 
 ---
 
@@ -31,17 +35,17 @@ Required **Bearer Token**
 
 ```json
 {
-	"tenantId": 0,
-	"name": "",
-	"status": "",
-	"type": "",
-	"originValidation": false,
-	"publicKey": "",
-	"secretKey": "",
-	"expiresAt": "",
-	"lastUsedAt": ""
+	"name": "Dashboard Widget",
+	"type": "INLINE",
+	"origin": "Barbershop.com/book?x=1",
+	"credentials": {
+		"publicKey": "pbm_pk_FjqMnajjAJXQM0AGIIHQAQ",
+		"secretKey": "pbm_sk_<43 URL-safe Base64 characters>"
+	}
 }
 ```
+
+`name` and `credentials` are required. `publicKey` must match `^pbm_pk_[A-Za-z0-9_-]{22}$`; `secretKey` must match `^pbm_sk_[A-Za-z0-9_-]{43}$`.
 
 ## Successful Response
 
@@ -51,19 +55,20 @@ Required **Bearer Token**
 
 ```json
 {
-	"widgetId": 0,
-	"widgetUid": "",
-	"tenantId": 0,
-	"name": "",
-	"status": "",
-	"type": "",
-	"originValidation": false,
-	"publicKey": "",
-	"issuedAt": "",
-	"expiresAt": "",
-	"lastUsedAt": "",
-	"createdAt": "",
-	"updatedAt": ""
+	"widgetId": 3,
+	"widgetUid": "1076a995-6814-4b25-a255-c67949809f25",
+	"tenantId": 4,
+	"name": "Dashboard Widget",
+	"status": "ACTIVE",
+	"type": "INLINE",
+	"originValidation": true,
+	"publicKey": "pbm_pk_FjqMnajjAJXQM0AGIIHQAQ",
+	"origin": "https://barbershop.com",
+	"issuedAt": "2026-09-11T18:13:15.157954Z",
+	"expiresAt": null,
+	"lastUsedAt": null,
+	"createdAt": "2026-09-11T18:13:15.158232Z",
+	"updatedAt": "2026-09-11T18:13:15.158237Z"
 }
 ```
 
@@ -71,45 +76,11 @@ Required **Bearer Token**
 
 ## Possible Errors
 
-- 400 INVALID_REQUEST
-- 401 UNAUTHORIZED
-- 403 FORBIDDEN
-- 404 TENANT_NOT_FOUND
-- 409 WIDGET_PUBLIC_KEY_ALREADY_EXISTS
-- 429 RATE_LIMIT_EXCEEDED
-
----
-
-## Error Message
-
-```json
-{
-	"code": "WIDGET_PUBLIC_KEY_ALREADY_EXISTS"
-}
-```
-
----
-
-## Example Request
-
-```bash
-curl \
--X POST \
-<https://api.pleasebookme.com/api/v1/widgets> \
--H "Authorization: Bearer xxx" \
--H "Idempotency-Key: 123456" \
--H "Content-Type: application/json" \
--d '{
-    "tenantId": 1,
-	"name": "Barbershop Booking Widget",
-	"status": "REGISTERING",
-	"type": "EMBEDDED",
-	"originValidation": true,
-	"publicKey": "pk_live_51H8x2K",
-	"secretKey": "sk_live_9f8a7b6c5d4e",
-	"expiresAt": "2027-08-24T00:00:00Z"
-}'
-```
+- 400 invalid request or origin
+- 401 unauthenticated
+- 403 no accepted organization membership
+- 404 organization has no provisioned tenant
+- 409 public key already exists or organization context is ambiguous
 
 ---
 

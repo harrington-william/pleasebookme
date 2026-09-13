@@ -1,6 +1,8 @@
+# Get a widget
+
 ## Description
 
-Retrieves a single widget by its numeric ID.
+Retrieves a widget and its normalized registered origin by numeric ID. Direct reads include revoked widgets; revocation only removes them from the paginated list and active total.
 
 ---
 
@@ -34,19 +36,20 @@ Required **Bearer Token**
 
 ```json
 {
-	"widgetId": 0,
-	"widgetUid": "",
-	"tenantId": 0,
-	"name": "",
-	"status": "",
-	"type": "",
-	"originValidation": false,
-	"publicKey": "",
-	"issuedAt": "",
-	"expiresAt": "",
-	"lastUsedAt": "",
-	"createdAt": "",
-	"updatedAt": ""
+	"widgetId": 3,
+	"widgetUid": "1076a995-6814-4b25-a255-c67949809f25",
+	"tenantId": 4,
+	"name": "Dashboard Widget",
+	"status": "REVOKED",
+	"type": "INLINE",
+	"originValidation": true,
+	"publicKey": "pbm_pk_FjqMnajjAJXQM0AGIIHQAQ",
+	"origin": "https://barbershop.com",
+	"issuedAt": "2026-09-11T18:13:15.157954Z",
+	"expiresAt": null,
+	"lastUsedAt": null,
+	"createdAt": "2026-09-11T18:13:15.158232Z",
+	"updatedAt": "2026-09-11T18:13:15.158237Z"
 }
 ```
 
@@ -54,20 +57,8 @@ Required **Bearer Token**
 
 ## Possible Errors
 
-- 401 UNAUTHORIZED
-- 403 FORBIDDEN
-- 404 WIDGET_NOT_FOUND
-- 429 RATE_LIMIT_EXCEEDED
-
----
-
-## Error Message
-
-```json
-{
-	"code": "WIDGET_NOT_FOUND"
-}
-```
+- 401 unauthenticated
+- 404 widget not found
 
 ---
 
@@ -75,7 +66,6 @@ Required **Bearer Token**
 
 ```bash
 curl \
--X GET \
-<https://api.pleasebookme.com/api/v1/widgets/1> \
+<https://api.pleasebookme.com/api/v1/widgets/3> \
 -H "Authorization: Bearer xxx"
 ```

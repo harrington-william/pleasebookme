@@ -41,16 +41,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Database/Schemas/Tenant/Table Plans.md",
+                "file": "Reading List/Complex Project Structure.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Table Plans"
+              "title": "Complex Project Structure"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -128,7 +127,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Database/Schemas/Tenant/Table Plans.md",
+                "file": "Tasks.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -147,7 +146,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Database/Schemas/Tenant/Table Plans.md",
+                "file": "Tasks.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -190,7 +189,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Database/Schemas/Tenant/Table Plans.md",
+                "file": "Tasks.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -218,10 +217,22 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "654f3ce75e899093",
+  "active": "f0e3ab1f11893adc",
   "lastOpenFiles": [
+    "API/Widget/Widgets/Widget API Summary.md",
+    "API/Widget/Widgets/Get widget stats.md",
+    "API/Widget/Widgets/Generate widget credentials.md",
+    "API/Widget/Widgets/Delete a widget.md",
+    "API/Widget/Widgets/Update a widget.md",
+    "API/Widget/Widgets/Get a widget.md",
+    "API/Widget/Widgets/Create a widget.md",
+    "API/Widget/Widgets/List widgets.md",
+    "AI Task Contract.md",
+    "Reading List/Complex Postgres Service.md",
     "Tasks.md",
     "DB.md",
+    "Reading List/Complex Project Structure.md",
+    "Database/Schemas/Tenant/Table Plans.md",
     "Security/Architecture/Security Architecture.md",
     "Services/Service",
     "Database/Schemas/Core/Table Services.md",
@@ -235,17 +246,6 @@
     "Database/Schema Design Template.md",
     "Security/Authorization/Role/Role Design.md",
     "Security/Authorization/Registry/AuthorizationPolicyRegistry.md",
-    "Security/Authorization/Context/AuthorizationContext.md",
-    "Security/Authorization/Decision/AuthorizationDecision.md",
-    "Security/Authorization/Authorization Engine.md",
-    "Security/Token/Access & Refresh Architecture.md",
-    "Security/Identity/WidgetPrincipal.md",
-    "Security/Identity/UserPrincipal.md",
-    "Security/Identity/AuthenticatedPrincipal.md",
-    "Architecture/Low-level Architecture.md",
-    "Welcome Message.md",
-    "Issue Template.md",
-    "Documentation Structure.md",
     "Services/Resource/Workflows",
     "Services/Resource/Rules",
     "Services/Resource/Overview",

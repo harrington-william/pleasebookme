@@ -113,6 +113,7 @@ import com.pleasebookme.server.tenant.plan.exception.TenantPlanNotFoundException
 import com.pleasebookme.server.tenant.tenants.exception.DuplicateTenantException;
 import com.pleasebookme.server.tenant.tenants.exception.TenantNotFoundException;
 import com.pleasebookme.server.widget.widgetorigin.exception.DuplicateWidgetOriginException;
+import com.pleasebookme.server.widget.widgetorigin.exception.InvalidWidgetOriginException;
 import com.pleasebookme.server.widget.widgetorigin.exception.WidgetOriginNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -855,6 +856,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(WidgetRevokedException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetRevokedException(
+        WidgetRevokedException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(EcosystemNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleEcosystemNotFoundException(
         EcosystemNotFoundException exception,
@@ -981,6 +998,22 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidWidgetOriginException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidWidgetOriginException(
+        InvalidWidgetOriginException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ResourceTypeNotFoundException.class)

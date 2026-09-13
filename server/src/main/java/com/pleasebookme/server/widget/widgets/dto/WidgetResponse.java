@@ -2,8 +2,6 @@ package com.pleasebookme.server.widget.widgets.dto;
 
 import com.pleasebookme.server.widget.enums.WidgetStatus;
 import com.pleasebookme.server.widget.enums.WidgetType;
-import com.pleasebookme.server.widget.widgets.entity.WidgetEntity;
-
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
@@ -17,13 +15,16 @@ public record WidgetResponse(
     WidgetType type,
     Boolean originValidation,
     String publicKey,
+    String origin,
     Instant issuedAt,
     Instant expiresAt,
     Instant lastUsedAt,
     Instant createdAt,
     Instant updatedAt
 ) {
-    public static WidgetResponse from(WidgetEntity widget) {
+    public static WidgetResponse from(WidgetDetail detail) {
+        var widget = detail.widget();
+
         return new WidgetResponse(
             widget.getWidgetId(),
             widget.getWidgetUid(),
@@ -33,6 +34,7 @@ public record WidgetResponse(
             widget.getType(),
             widget.getOriginValidation(),
             widget.getPublicKey(),
+            detail.origin() != null ? detail.origin().getOrigin() : null,
             widget.getIssuedAt(),
             widget.getExpiresAt(),
             widget.getLastUsedAt(),

@@ -65,11 +65,10 @@ public class WidgetEntity {
     @Column(name = "secret_key", nullable = false)
     private String secretKey;
 
-    @CreationTimestamp
     @Column(name = "issued_at", nullable = false)
     private Instant issuedAt;
 
-    @Column(name = "expires_at", nullable = false)
+    @Column(name = "expires_at")
     private Instant expiresAt;
 
     @Column(name = "last_used_at")

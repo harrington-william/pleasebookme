@@ -1,6 +1,10 @@
+# Update a widget
+
 ## Description
 
-Full-replace semantics — the caller is expected to send the complete resource. `status`, `type`, and `originValidation` are only overwritten when supplied; a missing field keeps its current stored value. `publicKey` is not re-checked for uniqueness on update.
+Replaces the caller-managed widget configuration. `name` is required; a missing `type` keeps the stored type. Only `ACTIVE` and `DISABLED` are applied from `status`; `REGISTERING`, `REVOKED`, and `null` leave the current status unchanged.
+
+Credentials are optional. Omitting them keeps `publicKey`, the stored secret hash, and `issuedAt` unchanged. Supplying them rotates both keys and advances `issuedAt`. A null or blank `origin` removes every registered origin and disables origin validation; a supplied origin is normalized and upserted. Revoked widgets cannot be updated.
 
 ---
 
@@ -31,15 +35,11 @@ Required **Bearer Token**
 
 ```json
 {
-	"tenantId": 0,
-	"name": "",
-	"status": "",
-	"type": "",
-	"originValidation": false,
-	"publicKey": "",
-	"secretKey": "",
-	"expiresAt": "",
-	"lastUsedAt": ""
+	"name": "Popup Widget",
+	"type": "POPUP",
+	"status": "DISABLED",
+	"origin": "https://example.com/path",
+	"credentials": null
 }
 ```
 
@@ -49,67 +49,16 @@ Required **Bearer Token**
 200 OK
 ```
 
-```json
-{
-	"widgetId": 0,
-	"widgetUid": "",
-	"tenantId": 0,
-	"name": "",
-	"status": "",
-	"type": "",
-	"originValidation": false,
-	"publicKey": "",
-	"issuedAt": "",
-	"expiresAt": "",
-	"lastUsedAt": "",
-	"createdAt": "",
-	"updatedAt": ""
-}
-```
+The response uses the same field-for-field `WidgetResponse` shape documented in [[Get a widget]]. It never contains `secretKey`.
 
 ---
 
 ## Possible Errors
 
-- 400 INVALID_REQUEST
-- 401 UNAUTHORIZED
-- 403 FORBIDDEN
-- 404 WIDGET_NOT_FOUND
-- 404 TENANT_NOT_FOUND
-- 429 RATE_LIMIT_EXCEEDED
-
----
-
-## Error Message
-
-```json
-{
-	"code": "WIDGET_NOT_FOUND"
-}
-```
-
----
-
-## Example Request
-
-```bash
-curl \
--X PUT \
-<https://api.pleasebookme.com/api/v1/widgets/1> \
--H "Authorization: Bearer xxx" \
--H "Idempotency-Key: 123456" \
--H "Content-Type: application/json" \
--d '{
-    "tenantId": 1,
-	"name": "Barbershop Booking Widget",
-	"status": "ACTIVE",
-	"type": "EMBEDDED",
-	"originValidation": true,
-	"publicKey": "pk_live_51H8x2K",
-	"secretKey": "sk_live_9f8a7b6c5d4e",
-	"expiresAt": "2027-08-24T00:00:00Z"
-}'
-```
+- 400 invalid request or origin
+- 401 unauthenticated
+- 404 widget not found
+- 409 widget is revoked or rotated public key already exists
 
 ---
 

@@ -1,6 +1,10 @@
+# Delete a widget
+
 ## Description
 
-Deletes a widget.
+Soft-deletes a widget by setting its status to `REVOKED`. The widget row and registered origins remain for direct reads and audit history, while the widget disappears from list results and the active total.
+
+The operation is idempotent: deleting an already revoked widget returns `204` without another write.
 
 ---
 
@@ -36,34 +40,11 @@ Required **Bearer Token**
 
 ## Possible Errors
 
-- 401 UNAUTHORIZED
-- 403 FORBIDDEN
-- 404 WIDGET_NOT_FOUND
-- 429 RATE_LIMIT_EXCEEDED
-
----
-
-## Error Message
-
-```json
-{
-	"code": "WIDGET_NOT_FOUND"
-}
-```
-
----
-
-## Example Request
-
-```bash
-curl \
--X DELETE \
-<https://api.pleasebookme.com/api/v1/widgets/1> \
--H "Authorization: Bearer xxx"
-```
+- 401 unauthenticated
+- 404 widget not found
 
 ---
 
 ## Event Produced
 
-- WidgetDeleted
+- WidgetRevoked

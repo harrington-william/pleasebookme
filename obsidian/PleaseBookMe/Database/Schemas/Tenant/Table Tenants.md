@@ -38,13 +38,14 @@ Each row represents one active subscription an organization holds to a plan — 
 
 ## Lifecycle
 
-**Not yet created automatically at registration** — this is a known, documented gap (`SERVER_AGENTS.md`'s "Workspace provisioning" section): `UserProvisioningService.provisionUser()` does not currently write a `tenant.tenants` row, so a freshly registered user's organization has no tenant by default. Every account today therefore has a null tenant relationship from `UserPrincipal`'s perspective. Creating a tenant (e.g. onto the `FREE` plan) is planned future provisioning work, blocked on several schema/seed gaps documented in `SERVER_AGENTS.md` (missing `max_*` values on the seeded `FREE` plan, only one ecosystem seeded, no default `region`/`status` chosen for self-serve signup). Tenants can be created directly via generic CRUD today.
+Created automatically inside the same transaction as user registration. New organizations receive an `ACTIVE` tenant on the `FREE` plan and `GENERAL` ecosystem; quotas are copied from the plan, timezone/locale come from the user, and region derives from timezone with `VN` as the fallback. V141 backfills organizations that predate provisioning. Tenants can also be managed through generic CRUD.
 
 ## Invariants
 
 - `slug` is globally unique.
+- `organization_id` is unique since V138, enforcing one tenant subscription overlay per organization.
 - `ecosystem_id`/`plan_id` are resolved via real repository lookups in `TenantServiceImpl` (upgraded from an earlier bare-reference-entity workaround once `EcosystemRepository`/`TenantPlanRepository` were built).
-- A `UserPrincipal` is not guaranteed to have a corresponding tenant — code reading `tenantUid` off a principal must null-check it and treat `null` as "no active plan," per `SECURITY.md`'s Tenant Optionality section.
+- `UserPrincipal.tenantUid` remains null by design in the current identity loader; request-time tenant resolution uses `CurrentTenantProvider` over organization context instead.
 
 ## Relationships
 
@@ -56,7 +57,7 @@ Each row represents one active subscription an organization holds to a plan — 
 ## Usage Rules
 
 - Writes go through `TenantServiceImpl` (`tenant/tenants/`).
-- Do not assume every organization or every `UserPrincipal` has a tenant — see Lifecycle and Invariants.
+- New registrations have a tenant; legacy data relies on V141 and missing rows fail explicitly rather than being created lazily.
 
 ## Important Fields
 
@@ -64,4 +65,4 @@ Each row represents one active subscription an organization holds to a plan — 
 
 ## Flagged for Follow-up
 
-- `UserProvisioningService.provisionUser()` does not write a `tenant.tenants` row — automatic tenant creation at registration is not implemented. Before building it, three seed/schema gaps need resolving: (1) [[Table Plans]]'s seeded `FREE` row is missing `max_users`/`max_widgets`/`max_api_keys`; (2) [[Table Ecosystems]] seeds only `BARBERSHOP`, no neutral fallback for other business types; (3) no default `region`/`status` has been chosen for self-serve signup. All three are pre-existing, documented in `SERVER_AGENTS.md`, not new findings from this pass — flagged here for visibility alongside the rest of the schema docs.
+- Schedule, availability, and notification-preference provisioning remain open in ISSUE-0002.

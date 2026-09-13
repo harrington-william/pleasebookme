@@ -1,6 +1,8 @@
+# Widget API Summary
+
 # Overview
 
-The Widget API allows application to create, retrieve, update, and delete embeddable booking widgets registered against a tenant. `secretKey` is a bearer credential — it is required to create/update a widget but never echoed back in a response.
+The Widget API manages organization-scoped dashboard widgets, one-time credential issuance, normalized embed origins, status counts, and soft revocation. Tenant ownership is derived from the caller; clients never submit a tenant ID. The former unscoped list-all capability no longer exists.
 
 ## Base URL
 
@@ -38,8 +40,10 @@ Every endpoint in this resource requires a **Bearer Token**
 
 | Method | Endpoint | Description |
 |---|---|---|
+| POST | /api/v1/widgets/credentials | [[Generate widget credentials]] |
 | POST | /api/v1/widgets | [[Create a widget]] |
+| GET | /api/v1/widgets/stats?organizationId= | [[Get widget stats]] |
+| GET | /api/v1/widgets?organizationId= | [[List widgets]] |
 | GET | /api/v1/widgets/{widgetId} | [[Get a widget]] |
-| GET | /api/v1/widgets | [[Get all widgets]] |
 | PUT | /api/v1/widgets/{widgetId} | [[Update a widget]] |
 | DELETE | /api/v1/widgets/{widgetId} | [[Delete a widget]] |

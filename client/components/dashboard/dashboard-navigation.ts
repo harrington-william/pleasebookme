@@ -63,8 +63,7 @@ export const DASHBOARD_NAV_ITEMS: readonly DashboardNavItem[] = [
     label: "Widgets",
     href: "/dashboard/widgets",
     icon: LayoutTemplate,
-    status: "reserved",
-    reservedReason: "Widget management has not been built yet.",
+    status: "ready",
   },
   {
     label: "Analytics",

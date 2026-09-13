@@ -31,12 +31,12 @@ Each row represents one business-category vertical a tenant can be classified un
 
 ## Lifecycle
 
-Seeded via migration (`V100__seed_ecosystems.sql`), which currently contains only one row: `BARBERSHOP`. Additional ecosystems can be created through the standard CRUD service. This is a known, documented gap — a rental, court, or coworking business currently has no valid, purpose-fit ecosystem to point at; `tenant.tenants.ecosystem_id` is `NOT NULL`.
+Seeded with the vertical-specific `BARBERSHOP` row in V100 and the neutral active `GENERAL` row in V140. Registration assigns `GENERAL`; additional ecosystems can be created through the standard CRUD service.
 
 ## Invariants
 
 - `code` is globally unique.
-- Only one ecosystem exists in the seeded data as of the current migration state (`BARBERSHOP`) — every non-barbershop tenant is currently forced to use it or block on a new ecosystem being added.
+- `GENERAL` is the neutral fallback for self-serve tenants that have not selected a listed vertical.
 
 ## Relationships
 

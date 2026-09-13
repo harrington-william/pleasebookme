@@ -12,7 +12,7 @@ Registers the website domain(s) a widget is permitted to be embedded on, defendi
 |---|---|---|
 | `id` | `BIGSERIAL` | Internal surrogate primary key. |
 | `widget_id` | `BIGINT` | The widget this origin is registered for. |
-| `origin` | `VARCHAR(255)` | The registered domain/origin. |
+| `origin` | `VARCHAR(255)` | Browser-origin form: lowercase `scheme://host[:non-default-port]`. |
 | `verified` | `BOOLEAN` | Whether the origin has been verified. |
 | `created_by` | `BIGINT` | Optional user who registered this origin. |
 | `created_at` | `TIMESTAMPTZ` | When the origin was registered. |
@@ -29,12 +29,13 @@ Each row represents one domain a specific widget is registered to be embedded on
 
 ## Lifecycle
 
-Created when a widget's allowed origin is registered. Updatable and deletable — despite having only `created_at` and no `updated_at`, the table has real mutable columns (`widget`, `origin`, `verified`, `createdBy`).
+Dashboard widget create/update normalizes and upserts one effective origin in the parent widget transaction. A null/blank origin removes all rows for that widget and disables origin validation. Soft-deleting the parent keeps origin rows as the historical allow-list. The generic widget-origin CRUD endpoints remain available separately.
 
 ## Invariants
 
 - `(widget_id, origin)` is unique — the same origin cannot be registered twice for the same widget.
 - `created_by` is nullable with `ON DELETE SET NULL`.
+- Dashboard-managed values omit paths, queries, fragments, and default ports because browser `Origin` headers never contain them.
 
 ## Relationships
 

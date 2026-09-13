@@ -32,12 +32,12 @@ Each row represents one subscription plan tier a tenant can be placed on.
 
 ## Lifecycle
 
-Seeded via migration (`V102__seed_plans.sql`), which currently seeds only `FREE`. Additional plans can be created through the standard CRUD service.
+Seeded via migration (`V102__seed_plans.sql`), which currently seeds only `FREE`; V139 completes its provisional free-tier limits. Additional plans can be created through the standard CRUD service.
 
 ## Invariants
 
 - `code` is globally unique.
-- All five `max_*` columns were originally `NOT NULL` but were relaxed to nullable by `V101__drop_plans_not_null.sql`. The seeded `FREE` plan only populates `max_services`/`max_resources` — `max_users`, `max_widgets`, and `max_api_keys` are currently `NULL` on it. This is a known, documented blocker: `tenant.tenants`'s own `max_users`/`max_services`/`max_widgets` columns are `NOT NULL`, so copying the `FREE` plan's limits onto a new tenant would fail on the two unset columns until the seed is completed or the provisioning code adds fallbacks.
+- All five `max_*` columns are nullable at the schema level after V101, but provisioning requires the FREE plan's tenant quotas to be present. V139 sets FREE to `max_users = 1`, `max_services = 10`, `max_widgets = 3`, `max_resources = 10`, and `max_api_keys = 1`; missing tenant-required limits fail registration loudly.
 
 ## Relationships
 
