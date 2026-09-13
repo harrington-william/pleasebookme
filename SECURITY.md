@@ -182,7 +182,7 @@ JwtClaims and JwtClaimsFactory are actor-agnostic (actorType, subject, tenant, t
 
 Not Yet Implemented
 
-WidgetPrincipal currently has no scopes or authority set — a widget authenticates successfully but AuthenticationTokenFactory grants it an empty GrantedAuthority collection. A capability model (e.g. reusing the auth.permissions slug vocabulary as a fixed, non-RBAC scope set per widget) is expected but not yet built. The widget bootstrap flow does exist at `POST /api/v1/auth/widget/bootstrap`: it exchanges the public/secret key pair and request origin for a JWT through `WidgetIdentityLoader.loadByPublicKey`.
+WidgetPrincipal currently has no scopes or authority set — a widget authenticates successfully but AuthenticationTokenFactory grants it an empty GrantedAuthority collection. A capability model (e.g. reusing the auth.permissions slug vocabulary as a fixed, non-RBAC scope set per widget) is expected but not yet built. The widget bootstrap flow does exist at `POST /api/v1/auth/widget/bootstrap`: it exchanges the public/secret key pair and request origin for a JWT through `WidgetIdentityLoader.loadByPublicKey`. The first read endpoint built for widgets, `GET /api/v1/slots` (TASK-0009), is reachable by any authenticated actor — user or widget — for any `serviceId`, with no tenant, origin, or service scoping, by explicit decision pending the cross-domain authorization policy plan; it exposes only time intervals, never the bookings, holds, or absences that produced them.
 
 ## Google Sign-In (Authentication)
 
