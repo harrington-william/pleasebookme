@@ -2,11 +2,13 @@ package com.pleasebookme.server.core.attendee.controller;
 
 import com.pleasebookme.server.core.attendee.dto.AttendeeRequest;
 import com.pleasebookme.server.core.attendee.dto.AttendeeResponse;
+import com.pleasebookme.server.core.attendee.entity.AttendeeEntity;
 import com.pleasebookme.server.core.attendee.service.AttendeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -29,8 +31,24 @@ public class AttendeeController {
     }
 
     @GetMapping
-    public List<AttendeeResponse> getAttendees() {
-        return attendeeService.getAllAttendees().stream()
+    public List<AttendeeResponse> getAttendees(
+        @RequestParam(required = false) BigInteger bookingId,
+        @RequestParam(required = false) BigInteger organizationId
+    ) {
+        List<AttendeeEntity> attendees;
+
+        if (bookingId != null) {
+            attendees = attendeeService.getAttendeesByBookingId(bookingId);
+        } else if (organizationId != null) {
+            attendees = attendeeService.getAttendeesByOrganizationId(organizationId);
+        } else {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Booking ID or Organization ID is required."
+            );
+        }
+
+        return attendees.stream()
             .map(AttendeeResponse::from)
             .toList();
     }

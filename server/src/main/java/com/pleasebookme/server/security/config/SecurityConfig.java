@@ -5,6 +5,8 @@ import com.pleasebookme.server.security.token.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -15,6 +17,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -39,11 +42,33 @@ public class SecurityConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(
+                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
+                )
+            )
+
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.POST,
+                    "/api/v1/auth/login",
+                    "/api/v1/auth/register",
+                    "/api/v1/auth/refresh",
+                    "/api/v1/auth/widget/bootstrap",
+                    "/api/v1/auth/google",
+                    "/api/v1/auth/google/authorize",
+                    "/api/v1/auth/google/handoff"
+                ).permitAll()
                 .requestMatchers(
-                    "/api/v1/auth/**",
+                    HttpMethod.GET,
                     "/api/v1/integrations/google/callback"
                 ).permitAll()
+
+                // Spring Boot forwards unhandled exceptions to /error. Without this,
+                // that forward is itself rejected as unauthenticated and the real 500
+                // leaves the server as an empty-bodied 401 — which the client cannot
+                // distinguish from an expired token, so it signs the user out instead
+                // of showing the error.
+                .requestMatchers("/error").permitAll()
 
                 .anyRequest().authenticated()
             )

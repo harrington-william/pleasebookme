@@ -1,4 +1,4 @@
----
+```bash
 name: Obsidian Infrastructure
 colors:
   surface: '#101419'
@@ -114,7 +114,7 @@ spacing:
   2xl: 48px
   container-max: 1440px
   gutter: 24px
----
+```
 
 ## Brand & Style
 

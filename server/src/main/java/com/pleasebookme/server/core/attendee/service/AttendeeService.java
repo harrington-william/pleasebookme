@@ -11,7 +11,9 @@ public interface AttendeeService {
 
     AttendeeEntity getAttendeeById(BigInteger attendeeId);
 
-    List<AttendeeEntity> getAllAttendees();
+    List<AttendeeEntity> getAttendeesByBookingId(BigInteger bookingId);
+
+    List<AttendeeEntity> getAttendeesByOrganizationId(BigInteger organizationId);
 
     AttendeeEntity updateAttendee(
         BigInteger attendeeId,

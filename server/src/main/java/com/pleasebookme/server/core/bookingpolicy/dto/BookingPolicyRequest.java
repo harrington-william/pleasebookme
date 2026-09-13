@@ -13,10 +13,6 @@ public record BookingPolicyRequest(
 
     BookingMode bookingMode,
 
-    @NotBlank
-    @Size(max = 50)
-    String durationType,
-
     Integer defaultDuration,
 
     Integer minimumDuration,

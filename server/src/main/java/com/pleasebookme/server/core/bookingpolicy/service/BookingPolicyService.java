@@ -5,11 +5,14 @@ import com.pleasebookme.server.core.bookingpolicy.entity.BookingPolicyEntity;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingPolicyService {
     BookingPolicyEntity createBookingPolicy(BookingPolicyRequest request);
 
     BookingPolicyEntity getBookingPolicyById(BigInteger bookingPolicyId);
+
+    Optional<BookingPolicyEntity> getBookingPolicyByServiceId(BigInteger serviceId);
 
     List<BookingPolicyEntity> getAllBookingPolicies();
 

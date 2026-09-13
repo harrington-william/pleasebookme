@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Availability - PleaseBookMe</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#424754",
+                        "tertiary": "#ffb786",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-secondary-container": "#00311f",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-lowest": "#0a0e14",
+                        "surface-bright": "#353940",
+                        "on-background": "#dfe2eb",
+                        "surface-container": "#1c2026",
+                        "secondary": "#4edea3",
+                        "on-primary": "#002e6a",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#31353b",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-container-high": "#262a30",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-fixed": "#6ffbbe",
+                        "inverse-primary": "#005ac2",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#00285d",
+                        "on-tertiary-container": "#461f00",
+                        "on-primary-fixed": "#001a42",
+                        "error-container": "#93000a",
+                        "surface-dim": "#101419",
+                        "tertiary-fixed": "#ffdcc6",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-tint": "#adc6ff",
+                        "inverse-on-surface": "#2d3137",
+                        "on-primary-fixed-variant": "#004395",
+                        "secondary-container": "#00a572",
+                        "surface": "#101419",
+                        "surface-container-low": "#181c22",
+                        "primary": "#adc6ff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary": "#502400",
+                        "primary-container": "#4d8eff",
+                        "outline": "#8c909f",
+                        "surface-variant": "#31353b",
+                        "on-tertiary-fixed": "#311400",
+                        "tertiary-container": "#df7412",
+                        "inverse-surface": "#dfe2eb",
+                        "on-error": "#690005",
+                        "background": "#101419",
+                        "on-surface": "#dfe2eb",
+                        "on-secondary": "#003824"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "sm": "12px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "2xl": "48px",
+                        "xs": "8px",
+                        "md": "16px",
+                        "container-max": "1440px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-md": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "mono-label": ["Geist Mono"],
+                        "display": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "headline-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0B0D10; color: #dfe2eb; }
+        .panel { background-color: #12151A; border: 1px solid #1F2329; border-radius: 0.5rem; }
+        .btn-primary { background-color: #3B82F6; color: white; border-radius: 0.25rem; padding: 8px 16px; font-weight: 500; font-size: 14px; transition: opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.9; }
+        .input-base { background-color: #0B0D10; border: 1px solid #1F2329; border-radius: 10px; color: #dfe2eb; }
+        .input-base:focus { outline: none; border-color: #3B82F6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        .table-header { border-bottom: 1px solid #1F2329; }
+        .table-row { border-bottom: 1px solid #1F2329; transition: background-color 0.2s, border-color 0.2s; }
+        .table-row:hover { background-color: #1C2026; border-color: #2D333B; }
+        .toggle-switch { width: 36px; height: 20px; background-color: #31353b; border-radius: 9999px; position: relative; cursor: pointer; transition: background-color 0.2s; }
+        .toggle-switch.active { background-color: #3B82F6; }
+        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background-color: white; border-radius: 50%; transition: transform 0.2s; }
+        .toggle-switch.active::after { transform: translateX(16px); }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased overflow-x-hidden flex h-screen">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-surface-container dark:bg-surface-container text-primary dark:text-primary font-body-md text-body-md fixed left-0 top-0 h-full w-[280px] border-r border-outline-variant dark:border-outline-variant flex flex-col h-full py-lg px-md z-50">
+<div class="mb-xl">
+<div class="flex items-center gap-xs">
+<img class="w-8 h-8 rounded" data-alt="A sleek, minimalist geometric logo for an enterprise software platform. Sharp lines, high contrast, monochromatic with a subtle blue accent. Professional, clean, and highly polished." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnNZPxn2hg8E6i0sEkC78AwNILHGBw8P1f7M7q9KWPdOhSStWWisDbsPlgAyUcBIBdRGpTO8z-izrZnSyn_momIysx36-3LhznMHhLOyAkAPijl6VgKUGGMlJGvEaffb7SugxJl1jWE0kwzGKeweJveGjJj4CMemKLtJVRkeEtfrIBAZmutFOXQRWaD_jRfYMCnVRnJx-geNnw9UFMB9wlqZr-UVIb3jpfasJbb7tbaiCGYChHUd_bBg"/>
+<div>
+<div class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface">PleaseBookMe</div>
+<div class="text-on-surface-variant font-label-md text-label-md">Enterprise Infrastructure</div>
+</div>
+</div>
+<button class="w-full mt-gutter bg-primary-container/10 text-primary border border-primary/20 rounded-md py-sm font-label-md text-label-md hover:bg-primary-container/20 transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span> Quick Create
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto overflow-x-hidden space-y-base">
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">event_available</span> Bookings
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-primary dark:text-primary bg-primary-container/10 font-bold border-r-2 border-primary scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">schedule</span> Availability
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">category</span> Services
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span> Resources
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">group</span> Customers
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">calendar_month</span> Calendar
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">widgets</span> Widgets
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span> Analytics
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">notifications</span> Notifications
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">extension</span> Integrations
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">api</span> API
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+</div>
+<div class="mt-gutter pt-gutter border-t border-outline-variant space-y-base">
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span> Profile
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">dark_mode</span> Theme
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">help</span> Support
+            </a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors text-error hover:text-error" href="#">
+<span class="material-symbols-outlined">logout</span> Logout
+            </a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="hidden md:flex bg-surface dark:bg-surface text-primary dark:text-primary font-label-md text-label-md fixed top-0 right-0 z-40 border-b border-outline-variant dark:border-outline-variant flex justify-between items-center h-16 px-lg left-[280px] w-[calc(100%-280px)]">
+<div class="flex items-center w-96 relative">
+<span class="material-symbols-outlined absolute left-sm text-on-surface-variant">search</span>
+<input class="input-base w-full pl-xl pr-sm py-xs text-sm" placeholder="Search PleaseBookMe..." type="text"/>
+</div>
+<div class="flex items-center gap-md">
+<button class="btn-primary">Quick Create</button>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-on-surface transition-colors">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-on-surface transition-colors">settings</span>
+</div>
+<img class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A small, circular profile picture of an individual in professional attire against a neutral background. High-quality corporate headshot style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxTTPAdxEjaggYetG6RLLMzDJSu3WUzonYnpGjlP0NH8ywEjMicZ_ziafo14Eqs3H6VCjIq7tt1Bh4B6L5dE3sechL72CrTv0tPP3pMgaqTRj5cJ85eIgGoHZKYIijnNgGpdzY_xXVqdFzi-JVvNJRugRoZzz9eXtYK4E1RG5wWb9gqSI-JoibaNrzASerJOx8Dj5WYR8eHRhzel0hSbYuJz9pV25guhBcgI4g6KPO-5jSpNKkq55HcQ"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-[280px] mt-16 p-md lg:p-2xl max-w-container-max mx-auto w-full">
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-md mb-xl">
+<div>
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Availability</h1>
+<p class="text-on-surface-variant mt-xs">Manage your organization's working hours and scheduling rules.</p>
+</div>
+<button class="btn-primary flex items-center gap-xs w-max">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span> Create Availability
+            </button>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-xl">
+<div class="panel p-md flex flex-col justify-between h-24">
+<div class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Active Rulesets</div>
+<div class="font-display text-display text-on-surface flex items-baseline gap-xs">
+                    4 <span class="text-secondary text-sm flex items-center"><span class="material-symbols-outlined" style="font-size: 14px;">arrow_upward</span> 1</span>
+</div>
+</div>
+<div class="panel p-md flex flex-col justify-between h-24">
+<div class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Global Buffer</div>
+<div class="font-display text-display text-on-surface flex items-baseline gap-xs">
+                    15<span class="text-lg font-normal text-on-surface-variant">m</span>
+</div>
+</div>
+<div class="panel p-md flex flex-col justify-between h-24">
+<div class="text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Timezone</div>
+<div class="font-headline-lg text-headline-lg text-on-surface mt-auto">
+                    UTC <span class="text-sm font-normal text-on-surface-variant">+00:00</span>
+</div>
+</div>
+</div>
+<!-- Main List Section -->
+<div class="panel overflow-hidden flex flex-col">
+<!-- Filter Bar -->
+<div class="p-md border-b border-outline-variant flex flex-col sm:flex-row justify-between items-center gap-sm bg-surface-container/50">
+<div class="relative w-full sm:w-64">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 18px;">search</span>
+<input class="input-base w-full pl-xl pr-sm py-xs text-sm bg-transparent" placeholder="Filter rulesets..." type="text"/>
+</div>
+<div class="flex gap-sm w-full sm:w-auto">
+<button class="input-base px-sm py-xs text-sm flex items-center gap-xs hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined" style="font-size: 16px;">filter_list</span> Filter</button>
+<button class="input-base px-sm py-xs text-sm flex items-center gap-xs hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined" style="font-size: 16px;">sort</span> Sort</button>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="table-header bg-surface-container/20">
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Name</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Weekly Schedule</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Applied Services</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase w-24">Status</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase w-12"></th>
+</tr>
+</thead>
+<tbody class="font-mono-label text-mono-label">
+<!-- Row 1 -->
+<tr class="table-row">
+<td class="py-sm px-md">
+<div class="font-body-md text-on-surface font-medium">Standard Business Hours</div>
+<div class="text-on-surface-variant text-xs mt-0.5">Default company availability</div>
+</td>
+<td class="py-sm px-md text-on-surface-variant">Mon-Fri, 09:00 - 17:00</td>
+<td class="py-sm px-md">
+<span class="bg-surface-variant text-on-surface px-2 py-0.5 rounded text-xs border border-outline-variant">All Services (12)</span>
+</td>
+<td class="py-sm px-md">
+<div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+</td>
+<td class="py-sm px-md text-right text-on-surface-variant hover:text-on-surface cursor-pointer">
+<span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="table-row">
+<td class="py-sm px-md">
+<div class="font-body-md text-on-surface font-medium">Weekend Support</div>
+<div class="text-on-surface-variant text-xs mt-0.5">Customer success weekend coverage</div>
+</td>
+<td class="py-sm px-md text-on-surface-variant">Sat-Sun, 10:00 - 14:00</td>
+<td class="py-sm px-md">
+<div class="flex gap-1 flex-wrap">
+<span class="bg-surface-variant text-on-surface px-2 py-0.5 rounded text-xs border border-outline-variant">Tech Support</span>
+<span class="bg-surface-variant text-on-surface px-2 py-0.5 rounded text-xs border border-outline-variant">+2</span>
+</div>
+</td>
+<td class="py-sm px-md">
+<div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+</td>
+<td class="py-sm px-md text-right text-on-surface-variant hover:text-on-surface cursor-pointer">
+<span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="table-row">
+<td class="py-sm px-md">
+<div class="font-body-md text-on-surface font-medium">VIP Consultation Hours</div>
+<div class="text-on-surface-variant text-xs mt-0.5">Exclusive evening slots</div>
+</td>
+<td class="py-sm px-md text-on-surface-variant">Tue, Thu, 18:00 - 20:00</td>
+<td class="py-sm px-md">
+<span class="bg-surface-variant text-on-surface px-2 py-0.5 rounded text-xs border border-outline-variant">Executive Coaching</span>
+</td>
+<td class="py-sm px-md">
+<div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+</td>
+<td class="py-sm px-md text-right text-on-surface-variant hover:text-on-surface cursor-pointer">
+<span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="table-row border-b-0">
+<td class="py-sm px-md">
+<div class="font-body-md text-on-surface font-medium">Holiday Schedule 2024</div>
+<div class="text-on-surface-variant text-xs mt-0.5">Reduced hours for Q4 holidays</div>
+</td>
+<td class="py-sm px-md text-on-surface-variant">Mon-Wed, 10:00 - 15:00</td>
+<td class="py-sm px-md">
+<span class="bg-surface-variant text-on-surface px-2 py-0.5 rounded text-xs border border-outline-variant">All Services (12)</span>
+</td>
+<td class="py-sm px-md">
+<div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+</td>
+<td class="py-sm px-md text-right text-on-surface-variant hover:text-on-surface cursor-pointer">
+<span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination / Footer -->
+<div class="p-sm px-md border-t border-outline-variant flex justify-between items-center text-xs text-on-surface-variant">
+<span>Showing 1 to 4 of 4 rulesets</span>
+<div class="flex gap-sm">
+<button class="hover:text-on-surface disabled:opacity-50" disabled="">Previous</button>
+<button class="hover:text-on-surface disabled:opacity-50" disabled="">Next</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

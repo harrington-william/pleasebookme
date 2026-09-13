@@ -1,0 +1,17 @@
+# Long-term Orientation (High-level)
+
+The long-term strategic direction of the business has evolved from a Vietnam-only platform into a **regionally** scalable appointment infrastructure product. The initial operational phase will remain focused entirely on Vietnam for approximately 2–3 years in order to stabilize the infrastructure, normalize operational workflows, validate the business model, and mature the engineering architecture. After the Vietnam operational phase becomes stable, the system is planned to expand into the Australian market, which introduces time zone complexity from UTC+8 to UTC+10 and eventually requires more sophisticated temporal abstractions, time zone conversions, and infrastructure scalability.
+
+The roadmap is intentionally divided into multiple MVP phases because the platform is treated as a serious infrastructure engineering project rather than a simple CRUD application. Each MVP phase isolates one major architectural concern so that the system evolves through controlled complexity growth instead of attempting premature enterprise-scale engineering.
+
+---
+
+# Australian Orientation
+
+This stage is not intended to discover core architectural concepts anymore because the earlier MVP phases already isolate and validate each major subsystem independently. Instead, the production-grade phase focuses on operational stabilization, commercial scaling, infrastructure hardening, deployment reliability, tenant scalability, and regional expansion.
+
+The time zone expansion strategy is intentionally staged and controlled. During the Vietnam operational phase, the platform will initially operate entirely in UTC+7 in order to simplify temporal complexity and accelerate infrastructure maturity. However, the architecture is intentionally designed from the beginning to avoid irreversible time zone assumptions. All temporal operations are planned around canonical UTC storage internally even while frontend displays remain localized to Vietnam time. This means booking timestamps, availability windows, audit events, and operational records should eventually be normalized into UTC-based storage and converted dynamically for presentation layers.
+
+The future Australian expansion significantly changes the temporal complexity of the system because Australia introduces multiple time zones and daylight saving behavior. For that reason, time zone logic is treated as a future infrastructure concern that must be prepared architecturally early, even if operationally postponed. The platform must eventually support timezone-aware APIs, centralized temporal conversion services, canonical UTC storage, region-aware slot generation, and localized presentation layers. The engineering philosophy is to keep operational complexity simple during the Vietnam phase while preserving architectural flexibility for future regional expansion.
+
+The roadmap is intentionally locked to preserve engineering discipline. One of the major risks in infrastructure-heavy projects is endless architectural redesign and premature optimization. Therefore, each MVP phase is isolated with strict architectural objectives, and feature expansion is intentionally constrained in order to maintain forward momentum. The project philosophy prioritizes systems understanding, operational maturity, infrastructure normalization, and architectural clarity over rapid feature accumulation.

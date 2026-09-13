@@ -4,6 +4,7 @@ import com.pleasebookme.server.auth.account.entity.AccountEntity;
 import com.pleasebookme.server.auth.account.repository.AccountRepository;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.repository.UserRepository;
+import com.pleasebookme.server.global.enums.Locale;
 import com.pleasebookme.server.security.oauth.google.identity.GoogleIdentity;
 import com.pleasebookme.server.service.auth.exception.GoogleAccountEmailNotVerifiedException;
 import com.pleasebookme.server.service.auth.service.impl.DefaultGoogleAccountResolver;
@@ -120,7 +121,7 @@ class DefaultGoogleAccountResolverTest {
 
         UserEntity newUser = UserEntity.builder().username("nobody").build();
         when(userProvisioningService.provisionUser(
-            eq("nobody"), anyString(), anyString(), isNull(), isNull(), isNull()
+            eq("nobody"), anyString(), anyString(), isNull(), eq(Locale.en), isNull()
         )).thenReturn(newUser);
 
         assertThat(resolver.resolve(identity)).isEqualTo(newUser);
@@ -139,13 +140,13 @@ class DefaultGoogleAccountResolverTest {
         UserEntity newUser = UserEntity.builder()
             .username("janedoe").email("jane.doe@example.com").build();
         when(userProvisioningService.provisionUser(
-            eq("janedoe"), eq("Jane Doe"), eq("jane.doe@example.com"), isNull(), isNull(), isNull()
+            eq("janedoe"), eq("Jane Doe"), eq("jane.doe@example.com"), isNull(), eq(Locale.en), isNull()
         )).thenReturn(newUser);
 
         assertThat(resolver.resolve(identity)).isEqualTo(newUser);
 
         verify(userProvisioningService)
-            .provisionUser("janedoe", "Jane Doe", "jane.doe@example.com", null, null, null);
+            .provisionUser("janedoe", "Jane Doe", "jane.doe@example.com", null, Locale.en, null);
 
         ArgumentCaptor<AccountEntity> accountCaptor = ArgumentCaptor.forClass(AccountEntity.class);
         verify(accountRepository).save(accountCaptor.capture());
@@ -165,14 +166,14 @@ class DefaultGoogleAccountResolverTest {
         UserEntity newUser = UserEntity.builder().username("janedoe-fallback").build();
         when(userProvisioningService.provisionUser(
             argThatStartsWith("janedoe-"), eq("Jane Doe"), eq("jane.doe@example.com"),
-            isNull(), isNull(), isNull()
+            isNull(), eq(Locale.en), isNull()
         )).thenReturn(newUser);
 
         resolver.resolve(identity);
 
         verify(userProvisioningService).provisionUser(
             argThatStartsWith("janedoe-"), eq("Jane Doe"), eq("jane.doe@example.com"),
-            isNull(), isNull(), isNull()
+            isNull(), eq(Locale.en), isNull()
         );
     }
 
@@ -186,13 +187,13 @@ class DefaultGoogleAccountResolverTest {
         when(userRepository.findByEmail("jane.doe@example.com")).thenReturn(Optional.empty());
         when(userRepository.existsByUsername("janedoe")).thenReturn(false);
         when(userProvisioningService.provisionUser(
-            anyString(), anyString(), anyString(), isNull(), isNull(), isNull()
+            anyString(), anyString(), anyString(), isNull(), eq(Locale.en), isNull()
         )).thenReturn(UserEntity.builder().username("janedoe").build());
 
         resolver.resolve(identity);
 
         verify(userProvisioningService).provisionUser(
-            "janedoe", "jane.doe@example.com", "jane.doe@example.com", null, null, null
+            "janedoe", "jane.doe@example.com", "jane.doe@example.com", null, Locale.en, null
         );
     }
 

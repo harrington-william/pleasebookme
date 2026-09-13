@@ -1,5 +1,6 @@
 package com.pleasebookme.server.resource.resources.dto;
 
+import com.pleasebookme.server.resource.enums.ResourceStatus;
 import com.pleasebookme.server.resource.resources.entity.ResourceEntity;
 
 import java.math.BigInteger;
@@ -10,13 +11,12 @@ public record ResourceResponse(
     BigInteger resourceId,
     UUID resourceUid,
     BigInteger organizationId,
-    BigInteger serviceId,
     BigInteger resourceTypeId,
     String name,
     String slug,
     String description,
     Integer capacity,
-    String status,
+    ResourceStatus status,
     Boolean isBookable,
     Boolean isVirtual,
     Instant createdAt,
@@ -27,7 +27,6 @@ public record ResourceResponse(
             resource.getResourceId(),
             resource.getResourceUid(),
             resource.getOrganization().getOrganizationId(),
-            resource.getService().getServiceId(),
             resource.getResourceType().getResourceTypeId(),
             resource.getName(),
             resource.getSlug(),

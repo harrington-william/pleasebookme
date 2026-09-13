@@ -1,6 +1,6 @@
 # Authentication Identity & Principal Architecture
 
-1. Overview
+## Overview
 
 The Authentication Identity architecture defines how authenticated identities are represented throughout the platform while maintaining a strict separation between the business domain and the underlying security framework.
 
@@ -8,7 +8,7 @@ The primary architectural objective is to ensure that the Authentication domain 
 
 This design prevents framework-specific abstractions from leaking into business logic and allows the platform to evolve independently of Spring Security.
 
-2. Motivation
+## Motivation
 
 Spring Security requires authenticated identities to implement framework-specific contracts such as UserDetails and Authentication.
 
@@ -19,8 +19,8 @@ Instead, the platform introduces a canonical business identity called Authentica
 Every authentication mechanism—including Username/Password, JWT, OAuth, API Keys, Widgets, and future Service Accounts—ultimately produces the same authenticated identity model.
 
 Business authorization decisions are always performed using AuthenticatedPrincipal rather than Spring Security interfaces.
-****
-3. Architectural Principles
+
+## Architectural Principles
 
 The identity architecture follows several core principles.
 
@@ -63,25 +63,9 @@ In practice, AuthenticatedPrincipal is a sealed interface, and each actor type i
 
 Not every actor carries the same amount of identity data. UserPrincipal is rich — username, roles, permissions, organization, membership, profile — because users participate in RBAC and organizational structure. WidgetPrincipal is deliberately minimal — actor type, widget identifier, tenant, status — because a widget has no roles layer, just a fixed, narrow capability set bound to a single tenant. The sealed interface only guarantees the fields every actor needs (identity, tenant scoping); anything beyond that is specific to the concrete type.
 
-Separation of Responsibilities
-
-Authentication is divided into multiple independent responsibilities.
-
-Component	Responsibility
-IdentityLoader	Load authentication data from persistence
-AuthenticationAggregate	Authentication read model
-PrincipalMapper	Convert aggregate into business identity
-AuthenticatedPrincipal	Canonical authenticated identity
-GrantedAuthorityAdapter	Convert business roles into Spring authorities
-UserDetailsAdapter	Adapt business identity into Spring UserDetails
-PrincipalUserDetails	Spring Security adapter
-CurrentPrincipalProvider	Read the principal back out of the SecurityContext
-
-Each component performs exactly one responsibility.
-
 The first seven components run during authentication, building the principal and handing it to the framework. CurrentPrincipalProvider runs afterwards, on every subsequent request, and is the only sanctioned way for code outside the security package to ask "who is calling?" — see SecurityContext Integration.
 
-4. Authentication Pipeline
+## Authentication Pipeline
 
 The complete authentication pipeline is illustrated below.
 
@@ -142,217 +126,7 @@ SecurityContextHolder
 
 WidgetIdentityLoader queries a single entity (WidgetEntity) and constructs WidgetPrincipal directly — there is no AuthenticationAggregate or PrincipalMapper stage, because there is no multi-repository join to justify a separate read-model/transformation split. This is a deliberate simplification, not an incomplete implementation: the AuthenticationAggregate/PrincipalMapper stages exist to keep a complex, multi-entity assembly out of the loader, and a single-entity actor has nothing for them to do. Future low-complexity actors (e.g. API Keys, if their identity resolves from one row) should follow the same shortened shape rather than introducing an aggregate/mapper pair with nothing to aggregate or map.
 
-5. Component Responsibilities
-
-IdentityLoader
-
-IdentityLoader is responsible for assembling all information required to authenticate a user.
-
-Typical responsibilities include:
-
-Loading User
-Loading Membership
-Loading Organization
-Loading Tenant (best-effort — see Tenant Optionality under AuthenticatedPrincipal below)
-Loading Profile
-Loading Roles
-Loading Permissions
-
-IdentityLoader is the only component responsible for querying repositories during authentication.
-
-It does not perform authentication decisions or authorization.
-
-Each actor type has its own IdentityLoader (UserIdentityLoader, WidgetIdentityLoader). For a single-entity actor, the loader is also where non-identity, pre-authentication gating happens — for example, WidgetIdentityLoader validates that the request's origin matches the widget's registered origin before it will construct a principal at all, since a failed origin check should never produce a WidgetPrincipal in the first place. This gate is not authorization (it doesn't ask what the actor may do) and it doesn't belong on the principal itself (it's a one-time admission check, not an ongoing identity property); it lives in the loader because IdentityLoader already owns "decide whether this actor can be resolved from persistence at all."
-
-AuthenticationAggregate
-
-AuthenticationAggregate is a read model used exclusively during authentication.
-
-It groups together all information required to construct an authenticated identity.
-
-It is not a Domain-Driven Design Aggregate.
-
-Instead, it is an authentication-specific projection that minimizes repository interactions throughout the authentication pipeline.
-
-Currently only User goes through an AuthenticationAggregate. Widget's identity is a single entity, so WidgetIdentityLoader builds WidgetPrincipal directly with no intermediate aggregate — see the shortened pipeline in the Authentication Pipeline section above.
-
-PrincipalMapper
-
-PrincipalMapper transforms AuthenticationAggregate into AuthenticatedPrincipal.
-
-It contains no repository access.
-
-It performs only object transformation.
-
-Because it is isolated from persistence, it remains reusable across different authentication mechanisms.
-
-PrincipalMapper is a generic interface (PrincipalMapper<T>); UserPrincipalMapper is its only current implementation. Widget has no PrincipalMapper, for the same reason it has no AuthenticationAggregate — there is nothing to transform beyond what the loader already assembled.
-
-AuthenticatedPrincipal
-
-AuthenticatedPrincipal is the canonical representation of an authenticated actor.
-
-It belongs entirely to the Authentication domain.
-
-It is a sealed interface (permits UserPrincipal, WidgetPrincipal, ...), guaranteeing every implementation exposes:
-
-Actor Type
-Subject (a unique identifier for the actor)
-Tenant field (present on every implementation; not guaranteed non-null on every implementation — see Tenant Optionality below)
-
-Beyond that common contract, each concrete type carries whatever identity information is relevant to it. UserPrincipal carries the rich set:
-
-Subject
-Tenant (nullable — see Tenant Optionality below)
-Organization
-Membership
-Profile
-Username
-Display Name
-Locale
-Timezone
-Account Status
-Roles
-Permissions
-
-WidgetPrincipal carries only what a widget actually has: Widget Identifier, Tenant, Status. It has no roles or permissions — widgets are single-purpose actors with a fixed, narrow capability set bound to one tenant, not participants in RBAC.
-
-It intentionally contains no framework-specific interfaces.
-
-This object is consumed by the authorization engine throughout the application.
-
-Tenant Optionality
-
-tenantUid is guaranteed to exist as a field on every AuthenticatedPrincipal implementation, but it is not guaranteed to be non-null for every actor.
-
-WidgetPrincipal's tenantUid is always populated. A widget is never self-provisioned — it is manually created for a business that is already a paying tenant, so a WidgetPrincipal without a tenant cannot exist under the current onboarding model.
-
-UserPrincipal's tenantUid is nullable. A newly registered user receives an Organization, a self-accepted Membership, and a Profile at registration time (see Self-Serve Registration below), but no Tenant. Tenant represents an active subscription — plan, ecosystem, region, quotas — and is only created once the user's organization actually subscribes to a plan. This lets the platform support a free, no-plan-required entry point (register → get an organization → use the system) without forcing every user through paid-tenant provisioning, while Widget — always issued to an already-paying business — keeps its stronger guarantee.
-
-DefaultUserIdentityLoader.build() reflects this asymmetry directly: Membership and Profile are resolved with orElseThrow (a user missing either is a data-integrity error, since register() always creates both), while Tenant is resolved with orElse(null) (a user without one simply hasn't subscribed to a plan yet, which is an expected, common state, not an error).
-
-Any code reading principal.tenantUid() off a UserPrincipal to make a tenant-scoped decision (gating a paid feature, enforcing a plan quota, etc.) must null-check it and treat null as "no active plan" — it must not assume every authenticated user has a tenant. Code operating on a WidgetPrincipal can continue to assume tenantUid is always present.
-
-This is a deliberate loosening of an earlier assumption: tenantUid was originally treated as guaranteed non-null for every actor, which held while Widget was the only actor type actually exercising the tenant relationship (widgets were manually provisioned per paying tenant, one at a time). It stops holding once User can self-register without becoming a paying tenant first, which is the direction the platform is evolving toward — plan subscription (Free, Pro, etc.) becoming optional rather than a prerequisite of having an account at all.
-
-Self-Serve Registration
-
-Registration (AuthServiceImpl.register()) creates a User, a UserPassword, a USER role assignment, an Organization named after the user, a Membership linking the user to that organization with accepted = true (self-membership needs no invite/acceptance step), and a Profile. No Tenant is created. Once these exist, register() runs the same UserIdentityLoader → UserPrincipalMapper → JwtEngine pipeline as login and token refresh to issue an access/refresh token pair immediately — registration is a complete authentication event, not just an account-creation step that requires a separate login call afterward.
-
-GrantedAuthorityAdapter
-
-Spring Security authorizes requests using GrantedAuthority.
-
-GrantedAuthorityAdapter converts business concepts such as:
-
-Role
-Permission
-
-into
-
-GrantedAuthority
-
-No business logic exists inside this adapter.
-
-GrantedAuthorityAdapter, UserDetailsAdapter, and PrincipalUserDetails (below) are all UserPrincipal-specific. Widget authentication does not use any of the three — see SecurityContext Integration.
-
-UserDetailsAdapter
-
-UserDetailsAdapter converts AuthenticatedPrincipal into PrincipalUserDetails.
-
-It represents the boundary between the business identity model and Spring Security.
-
-PrincipalUserDetails
-
-PrincipalUserDetails implements Spring Security's UserDetails interface.
-
-Its only responsibility is allowing Spring Security to interact with the application's business identity.
-
-It should never contain business rules.
-
-It simply delegates to AuthenticatedPrincipal.
-
-6. SecurityContext Integration
-
-Spring Security requires an Authentication object to be stored inside SecurityContextHolder.
-
-For User, PrincipalUserDetails is wrapped inside Spring Authentication implementations such as:
-
-UsernamePasswordAuthenticationToken
-
-Widget does not go through PrincipalUserDetails at all. UsernamePasswordAuthenticationToken and the UserDetails contract it wraps encode username/password authentication semantics — a password hash, an account-locked flag — that do not apply to a widget authenticated via public/secret key plus origin validation. Instead, WidgetPrincipal is stored directly as the principal on a PreAuthenticatedAuthenticationToken, which Spring Security provides specifically for actors already authenticated by a mechanism outside the standard username/password filter chain.
-
-AuthenticationTokenFactory is the single component responsible for this decision. It accepts any AuthenticatedPrincipal and switches on the concrete sealed type — UserPrincipal produces a UsernamePasswordAuthenticationToken via UserDetailsAdapter/PrincipalUserDetails as described above, WidgetPrincipal produces a PreAuthenticatedAuthenticationToken directly. Because AuthenticatedPrincipal is sealed, this switch is exhaustive: adding a new actor type without adding its branch here is a compile error, not a silent gap.
-
-The SecurityContext therefore stores framework-specific objects, and the concrete shape of that object differs by actor type — a UserDetails-wrapping token for User, a bare-principal token for Widget. However, the business layer never interacts with those objects directly. Instead, infrastructure components extract the underlying AuthenticatedPrincipal before entering business services.
-
-CurrentPrincipalProvider (`security/identity/context/`) is that single unwrap path. It reads SecurityContextHolder and normalises both shapes back to AuthenticatedPrincipal:
-
-- `find()` returns `Optional<AuthenticatedPrincipal>`; empty when there is no authentication, when it is not authenticated, or when it is an AnonymousAuthenticationToken.
-- `require()` returns the principal or throws UnauthenticatedException (401).
-- `requireUser()` narrows to UserPrincipal, throwing ForbiddenActorException (403) when the caller is a Widget or any future non-user actor.
-
-This closes a gap that was open while Widget was the only other actor and no code outside the security package had needed the extraction. It matters more than it looks: because AuthenticationTokenFactory stores PrincipalUserDetails (a wrapper) rather than UserPrincipal itself for users, the obvious `@AuthenticationPrincipal UserPrincipal` parameter binding silently injects null. Controllers must use CurrentPrincipalProvider rather than `@AuthenticationPrincipal`. GoogleIntegrationController is the first consumer.
-
-Note the deliberate asymmetry between the two failure modes. Absence of any principal is a 401 — the caller may retry with credentials. A present-but-wrong actor type is a 403 — a widget token is a valid credential that will never be sufficient for a user-scoped operation, so retrying is pointless.
-
-Consequently, business code remains completely unaware of Spring Security.
-
-JwtAuthenticationFilter is the entry point that ties this together for JWT-bearing requests. JwtClaims carries an actorType field (populated by JwtClaimsFactory, itself generalized to accept any AuthenticatedPrincipal — see Dependency Direction) alongside a generic subject/tenant pair, so a single JWT shape serves every actor type. On each request, the filter verifies the token, branches on claims.actorType() to call the matching IdentityLoader, and hands the resulting AuthenticatedPrincipal to AuthenticationTokenFactory before storing the result in SecurityContextHolder.
-
-7. Authorization Boundary
-
-Authentication and authorization are intentionally separated.
-
-Authentication answers:
-
-Who is the current actor?
-
-Authorization answers:
-
-Is this actor allowed to perform the requested operation?
-
-Authentication produces:
-
-AuthenticatedPrincipal
-
-Authorization consumes:
-
-AuthenticatedPrincipal
-
-Spring Security participates only during authentication and request integration.
-
-Business authorization policies never depend on Spring Security APIs.
-
-8. Dependency Direction
-
-Dependencies flow only in one direction.
-
-AuthenticatedPrincipal
-        │
-        ▼
-PrincipalUserDetails
-        │
-        ▼
-Authentication
-        │
-        ▼
-SecurityContextHolder
-
-The reverse dependency is intentionally prohibited.
-
-AuthenticatedPrincipal has no knowledge of:
-
-UserDetails
-Authentication
-GrantedAuthority
-SecurityContextHolder
-
-This ensures that the Authentication domain remains portable, testable, and independent of any particular security framework.
-
-The diagram above is User's path. Widget skips the PrincipalUserDetails step entirely (AuthenticatedPrincipal → Authentication → SecurityContextHolder) — see SecurityContext Integration. Either way, AuthenticatedPrincipal itself has no knowledge of the framework types downstream of it, regardless of which path a given actor takes.
-
-9. Architectural Benefits
+## Architectural Benefits
 
 This architecture provides several long-term advantages.
 
@@ -382,7 +156,7 @@ Framework code remains localized within infrastructure.
 
 Business code operates exclusively on domain concepts, reducing coupling and simplifying long-term evolution.
 
-10. Widget Authentication
+##  Widget Authentication
 
 Widget authentication is the second concrete authentication mechanism built on this architecture, after User, and the first to deliberately diverge from the full pipeline described above.
 
@@ -408,9 +182,9 @@ JwtClaims and JwtClaimsFactory are actor-agnostic (actorType, subject, tenant, t
 
 Not Yet Implemented
 
-WidgetPrincipal currently has no scopes or authority set — a widget authenticates successfully but AuthenticationTokenFactory grants it an empty GrantedAuthority collection. A capability model (e.g. reusing the auth.permissions slug vocabulary as a fixed, non-RBAC scope set per widget) is expected but not yet built. The widget bootstrap flow (the endpoint that exchanges public_key/secret_key plus an Origin header for a JWT, i.e. the actual caller of WidgetIdentityLoader.loadByPublicKey) also does not exist yet — only the JWT-verification path (loadByUid, used by JwtAuthenticationFilter) is wired up end to end.
+WidgetPrincipal currently has no scopes or authority set — a widget authenticates successfully but AuthenticationTokenFactory grants it an empty GrantedAuthority collection. A capability model (e.g. reusing the auth.permissions slug vocabulary as a fixed, non-RBAC scope set per widget) is expected but not yet built. The widget bootstrap flow does exist at `POST /api/v1/auth/widget/bootstrap`: it exchanges the public/secret key pair and request origin for a JWT through `WidgetIdentityLoader.loadByPublicKey`.
 
-11. Google Sign-In (Authentication)
+## Google Sign-In (Authentication)
 
 Google Sign-In is the third authentication mechanism, after Username/Password and Widget. It answers "who is this actor?" and produces the same canonical UserPrincipal every other mechanism produces. It grants the platform no access to any Google API — that is a separate concern, described in section 12.
 
@@ -468,7 +242,7 @@ Google never returns a phone number, so `auth.users.phone` was made nullable (V1
 
 After resolution, the flow rejoins the standard pipeline unchanged: UserIdentityLoader, UserPrincipalMapper, JwtEngine, and a persisted refresh token. Google-ness ends at account resolution.
 
-12. Google Delegated Authorization (OAuth2 Authorization Code Flow)
+## Google Delegated Authorization (OAuth2 Authorization Code Flow)
 
 This is a fundamentally different concern from section 11 and the distinction should not be blurred. Sign-In answers "who is this user?" Delegated authorization answers "may this platform act on the user's behalf against Google Calendar, Sheets, and Drive, and for how long?" It produces no principal, issues no platform JWT, and touches no part of the identity pipeline. Its output is a long-lived, encrypted credential stored in `integration.oauth_connections`.
 
@@ -482,7 +256,7 @@ Note this requires an Authorized **redirect URI** in Google Cloud Console. That 
 
 Components
 
-```
+```text
 security/oauth/google/
   pkce/            PkceGenerator, PkceChallenge
   authorization/   GoogleScope, GoogleAuthorizationUrlBuilder
@@ -526,7 +300,7 @@ Phase 3 — Callback
 
 `GET /api/v1/integrations/google/callback`, permitAll, reached by top-level browser navigation and therefore carrying no Authorization header. Identity comes from `state` alone.
 
-```
+```text
 1. Redis GETDEL oauth:state:<state>
 2. error=access_denied            → 302 …?google=denied            [stop]
      empty state                  → 302 …?google=invalid_state     [stop]
@@ -561,7 +335,7 @@ Phase 4 — Using and Refreshing
 
 GoogleAccessTokenProvider is the only component permitted to return a decrypted Google token. Every future consumer — calendar sync, sheets export — goes through it, so expiry, refresh, and revocation are handled in exactly one place.
 
-```
+```text
 load connection → reject unless status = ACTIVE
 token_expires_at > now + 60s ?
    yes → decrypt(access_token, token_key_version) → return
@@ -585,7 +359,7 @@ Who May Write a Connection
 
 `integration.oauth_connections` rows hold live Google credentials, so the consent flow is the only sanctioned writer. The generic CRUD surface at `/api/v1/oauth-connections` had its POST, PUT, and list-all endpoints removed, along with the request DTO that carried client-suppliable `accessToken`/`refreshToken` values. Left in place, POST would have allowed any authenticated user to inject forged credential rows, and the unscoped list-all would have exposed every user's connections. Only an owner-scoped read and a delete remain.
 
-13. Token Encryption at Rest
+## Token Encryption at Rest
 
 `integration.oauth_connections.access_token` and `refresh_token` are ciphertext. A Google refresh token is effectively a long-lived password to the user's calendar and files; unlike a platform JWT it cannot be rotated by expiry, and it is valuable in a database dump, a backup, or a WAL archive long after any breach.
 
@@ -597,7 +371,7 @@ Keys are configured as a version-to-key map with a designated current version, a
 
 TokenEncryptionException is deliberately not mapped in GlobalExceptionHandler. A decryption failure is a server fault, and surfacing cipher details to a client is an information leak, so it falls through to a generic 500.
 
-14. Google One-Shot Registration
+## Google One-Shot Registration
 
 Registration and delegated consent in a single Google round trip. This is not a third mechanism — it is section 12's authorization-code flow with section 11's identity half of the *same* token response put to use instead of discarded. One exchange already returns `id_token` alongside `access_token`/`refresh_token`; previously the identity was used only to key the connection row.
 
@@ -605,7 +379,7 @@ It applies to **registration only**. Login stays on section 11's GIS ID-token fl
 
 Flow Shape
 
-```
+```text
 POST /api/v1/auth/google/authorize      permitAll, no principal
      OAuthState{ mode = SIGN_UP_AND_CONNECT, userUid = null, … } → Redis, 10m
      → { authorizationUrl }
@@ -671,7 +445,7 @@ State Compatibility
 
 OAuthState gained a `mode` field, so the callback branches on `mode == SIGN_UP_AND_CONNECT` rather than on `mode == CONNECT`. States written before the field existed deserialise with a null mode but still carry their `userUid`; branching this way lets every in-flight consent finish normally across a deploy, where the inverse would fail all of them.
 
-15. Future Evolution
+## Future Evolution
 
 This identity architecture serves as the foundation for all future authentication mechanisms within the platform.
 
@@ -687,7 +461,7 @@ Remaining future work follows the same shape: API Keys and Service Accounts are 
 
 Known gaps in the Google delegated-authorization flow, in priority order:
 
-- **Workspace provisioning is incomplete, and registration now depends on it.** `UserProvisioningService` still writes no `tenant.tenants` row, no schedule, no availability and no notification preferences — see `SERVER_AGENTS.md`. Section 14 routes through the same component rather than duplicating it, so this is one defect and not two, but its blast radius grew: a NOT NULL violation there now fails a *registration* from inside a callback, surfacing as `302 …?google=error` plus a stack trace several frames from the cause. Verify provisioning through `POST /api/v1/auth/register` first, where the failure is legible.
+- **Workspace provisioning is still incomplete, and registration depends on it.** `UserProvisioningService` now creates the `tenant.tenants` row on `FREE`/`GENERAL` (V139–V141), but it still creates no schedule, availability, or notification preferences — see `SERVER_AGENTS.md`. Section 14 routes through the same component rather than duplicating it, so provisioning failures roll back either registration path.
 - **Unverified end to end.** Every component is unit tested against mocks, and the application boots with the full wiring, but no real consent round-trip has been performed. The likeliest failure point is GoogleTokenResponse deserialisation — Jackson 3 databind is paired with 2.x annotations (`com.fasterxml.jackson.annotation`) on this classpath, which is confirmed, but an actual Google payload has never been parsed. This now gates signup, not just calendar sync.
 - **No scope enforcement at call time.** Granted scopes are persisted, but nothing yet checks them before a Calendar or Sheets call. That check belongs in the consumer, once one exists. Until then, "did this user actually grant Calendar?" is the frontend's question to ask, against the `scopes` array rather than `status` — see section 14.
 - **No concurrency guard on connect.** Two simultaneous consents for the same Google account would both attempt the upsert; the unique constraint on (user_id, provider, provider_account_id) prevents a duplicate row, but the loser currently surfaces as a raw 500 rather than being retried. On the onboarding path the same race would also mean two provisioning attempts, arbitrated by the unique constraints on `auth.users`.

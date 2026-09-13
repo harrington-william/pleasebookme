@@ -1,7 +1,7 @@
 package com.pleasebookme.server.resource.resources.entity;
 
-import com.pleasebookme.server.core.service.entity.ServiceEntity;
 import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
+import com.pleasebookme.server.resource.enums.ResourceStatus;
 import com.pleasebookme.server.resource.type.entity.ResourceTypeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,10 +42,6 @@ public class ResourceEntity {
     private OrganizationEntity organization;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id", nullable = false)
-    private ServiceEntity service;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_type_id", nullable = false)
     private ResourceTypeEntity resourceType;
 
@@ -55,14 +51,17 @@ public class ResourceEntity {
     @Column(name = "slug", length = 255, nullable = false)
     private String slug;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "capacity", nullable = false)
+    @Column(name = "capacity")
     private Integer capacity;
 
-    @Column(name = "status", length = 50, nullable = false)
-    private String status;
+    // No default value for status, build later
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "status", nullable = false)
+    private ResourceStatus status;
 
     @Builder.Default
     @Column(name = "is_bookable", nullable = false)

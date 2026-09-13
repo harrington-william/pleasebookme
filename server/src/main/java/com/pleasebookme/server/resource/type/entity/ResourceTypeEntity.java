@@ -39,7 +39,7 @@ public class ResourceTypeEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "icon", length = 100, nullable = false)
+    @Column(name = "icon", length = 100)
     private String icon;
 
     @JdbcTypeCode(SqlTypes.JSON)

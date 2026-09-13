@@ -1,12 +1,29 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { DashboardMetricTiles } from "@/features/dashboard/components/dashboard-metrics";
+import { RecentBookingsTable } from "@/features/dashboard/components/recent-bookings-table";
+import { getDashboardSummaryOnPlatform } from "@/features/dashboard/services/dashboard-gateway";
+import type { DashboardSummary } from "@/features/dashboard/types/dashboard";
+import {
+  SessionExpiredError,
+  withAccessToken,
+} from "@/lib/authenticated-platform-request";
+import { resolveCurrentPlatformUser } from "@/lib/platform-user";
 import { getSessionActor, SESSION_EXPIRED_REDIRECT } from "@/lib/session";
 
 export const metadata: Metadata = {
   title: "Dashboard",
 };
+
+function formatDashboardDate(value: string): string {
+  const [year, month, day] = value.split("-").map(Number);
+
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "full",
+    timeZone: "UTC",
+  }).format(Date.UTC(year, month - 1, day));
+}
 
 export default async function DashboardPage() {
   const actor = await getSessionActor();
@@ -15,42 +32,53 @@ export default async function DashboardPage() {
     redirect(SESSION_EXPIRED_REDIRECT);
   }
 
+  let summary: DashboardSummary | null = null;
+  let loadError: string | null = null;
+
+  try {
+    summary = await withAccessToken(
+      async (accessToken) => {
+        const { organizationId } = await resolveCurrentPlatformUser(
+          accessToken,
+          actor.subject
+        );
+
+        return getDashboardSummaryOnPlatform(accessToken, organizationId);
+      },
+      { allowSessionWrite: false }
+    );
+  } catch (error) {
+    if (error instanceof SessionExpiredError) {
+      redirect(SESSION_EXPIRED_REDIRECT);
+    }
+
+    loadError = "Could not load your dashboard. Please refresh to try again.";
+  }
+
   return (
-    <main className="mx-auto flex w-full max-w-[720px] flex-grow flex-col justify-center p-md md:p-2xl">
-      <div className="relative z-10 rounded-xl border border-border bg-surface p-lg md:p-xl">
-        <p className="text-label-md tracking-wider text-muted-foreground uppercase">
-          Session established
-        </p>
-
-        <h1 className="mt-xs text-headline-md text-foreground">
-          You are signed in
+    <main className="mx-auto flex w-full max-w-7xl flex-col gap-lg p-md md:p-2xl">
+      <div className="space-y-xs">
+        <h1 className="text-headline-lg-mobile text-foreground md:text-headline-lg">
+          Dashboard
         </h1>
-
-        <dl className="mt-lg space-y-sm border-t border-border pt-lg">
-          <div className="flex items-baseline justify-between gap-md">
-            <dt className="text-body-md text-muted-foreground">Actor type</dt>
-            <dd className="font-mono text-mono-label text-foreground">
-              {actor.actorType}
-            </dd>
-          </div>
-          <div className="flex items-baseline justify-between gap-md">
-            <dt className="text-body-md text-muted-foreground">Subject</dt>
-            <dd className="font-mono text-mono-label break-all text-foreground">
-              {actor.subject}
-            </dd>
-          </div>
-          <div className="flex items-baseline justify-between gap-md">
-            <dt className="text-body-md text-muted-foreground">Tenant</dt>
-            <dd className="font-mono text-mono-label text-foreground">
-              {actor.tenantUid ?? "— no active plan"}
-            </dd>
-          </div>
-        </dl>
-
-        <div className="mt-xl">
-          <SignOutButton />
-        </div>
+        {summary ? (
+          <p className="text-body-md text-muted-foreground">
+            {formatDashboardDate(summary.date)}
+          </p>
+        ) : null}
       </div>
+
+      {loadError || !summary ? (
+        <p className="text-body-md text-destructive">{loadError}</p>
+      ) : (
+        <>
+          <DashboardMetricTiles metrics={summary.metrics} />
+          <RecentBookingsTable
+            bookings={summary.recentBookings}
+            timezone={summary.timezone}
+          />
+        </>
+      )}
     </main>
   );
 }

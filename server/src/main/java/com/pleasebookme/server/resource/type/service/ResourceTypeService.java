@@ -11,7 +11,7 @@ public interface ResourceTypeService {
 
     ResourceTypeEntity getResourceTypeById(BigInteger resourceTypeId);
 
-    List<ResourceTypeEntity> getAllResourceTypes();
+    List<ResourceTypeEntity> getResourceTypesByOrganizationId(BigInteger organizationId);
 
     ResourceTypeEntity updateResourceType(
         BigInteger resourceTypeId,

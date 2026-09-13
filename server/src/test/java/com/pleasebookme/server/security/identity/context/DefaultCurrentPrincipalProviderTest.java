@@ -33,7 +33,7 @@ class DefaultCurrentPrincipalProviderTest {
     private static UserPrincipal userPrincipal() {
         return new UserPrincipal(
             AuthenticatedActorType.USER,
-            UUID.randomUUID(), null,
+            UUID.randomUUID(), BigInteger.ONE, null,
             "jane", "jane@example.com", "Jane Doe", null,
             "Australia/Sydney", AccountStatus.ACTIVE, Set.of(), Set.of(), Map.of()
         );

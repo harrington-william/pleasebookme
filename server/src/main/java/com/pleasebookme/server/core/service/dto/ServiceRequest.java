@@ -1,7 +1,9 @@
 package com.pleasebookme.server.core.service.dto;
 
+import com.pleasebookme.server.core.bookingpolicy.dto.ServiceBookingPolicyRequest;
 import com.pleasebookme.server.global.enums.Currency;
 import com.pleasebookme.server.global.enums.Locale;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -23,15 +25,6 @@ public record ServiceRequest(
     Locale interfaceLanguage,
 
     String location,
-
-    @NotNull
-    BigInteger userId,
-
-    @NotNull
-    BigInteger profileId,
-
-    @NotNull
-    BigInteger organizationId,
 
     @NotNull
     BigInteger scheduleId,
@@ -62,6 +55,9 @@ public record ServiceRequest(
 
     BigInteger destinationCalendarId,
 
-    BigInteger destinationSheetsId
+    BigInteger destinationSheetsId,
+
+    @Valid
+    ServiceBookingPolicyRequest bookingPolicy
 ) {
 }

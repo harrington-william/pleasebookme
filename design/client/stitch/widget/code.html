@@ -1,0 +1,743 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Widgets - PleaseBookMe</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&amp;family=Geist+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#690005",
+                        "surface-variant": "#31353b",
+                        "on-primary-fixed-variant": "#004395",
+                        "secondary-container": "#00a572",
+                        "secondary": "#4edea3",
+                        "primary-container": "#4d8eff",
+                        "on-secondary": "#003824",
+                        "surface-container-low": "#181c22",
+                        "primary-fixed-dim": "#adc6ff",
+                        "inverse-surface": "#dfe2eb",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-dim": "#101419",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-on-surface": "#2d3137",
+                        "tertiary-container": "#df7412",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#00285d",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "outline": "#8c909f",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-surface": "#dfe2eb",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary-fixed": "#002113",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-container": "#1c2026",
+                        "on-tertiary-fixed": "#311400",
+                        "error-container": "#93000a",
+                        "on-tertiary-container": "#461f00",
+                        "background": "#101419",
+                        "on-primary-fixed": "#001a42",
+                        "surface-tint": "#adc6ff",
+                        "surface": "#101419",
+                        "on-tertiary": "#502400",
+                        "error": "#ffb4ab",
+                        "tertiary": "#ffb786",
+                        "on-background": "#dfe2eb",
+                        "inverse-primary": "#005ac2",
+                        "surface-container-high": "#262a30",
+                        "primary": "#adc6ff",
+                        "on-primary": "#002e6a",
+                        "surface-container-lowest": "#0a0e14",
+                        "surface-container-highest": "#31353b",
+                        "surface-bright": "#353940",
+                        "outline-variant": "#424754",
+                        "tertiary-fixed": "#ffdcc6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "2xl": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Geist"],
+                        "label-md": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "display": ["Geist"],
+                        "mono-label": ["Geist Mono"],
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0B0D10;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-x-hidden min-h-screen">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-surface fixed top-0 right-0 z-40 border-b border-outline-variant dark:border-outline-variant flat no shadows flex justify-between items-center h-16 px-lg left-[280px] w-[calc(100%-280px)] hidden md:flex">
+<div class="flex items-center gap-md">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="bg-surface-container-low border border-outline-variant text-on-surface rounded-lg pl-10 pr-sm py-2 text-body-md focus:ring-2 focus:ring-primary focus:border-primary w-64 placeholder-on-surface-variant" placeholder="Search..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-md font-label-md text-label-md text-primary dark:text-primary">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<button class="bg-[#3B82F6] text-white px-md py-2 rounded-lg font-label-md hover:bg-opacity-90 transition-opacity flex items-center gap-xs">
+                Quick Create
+            </button>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A professional user avatar portrait of an individual in a high-tech corporate environment, cool blue and black lighting, sharp focus, high-end infrastructure setting, realistic photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQfxtdNAnOC8v5Y4QWgBWTRfgxVD-ZI481kKHSJE-AWNVuzEjoI7IXzVeJ4z5Kk04aR9LKmSYHUhAvRGTOX96EQKnFXCiEx1SEaDOVIbVG1ua6t7cJCohP-j8QiS25YdU8ZZqeoFv7vd_oE_5wCvdGPaXDHoIM90lLhf54UzbyKbrlbzFvQxWffCufG8MUYfo9RlzB61U9iziLUOk1oX2avsBii2wlBFjP32gtLHUSnB3EOEP4wvZelA">
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="bg-surface-container dark:bg-surface-container fixed left-0 top-0 h-full w-[280px] border-r border-outline-variant dark:border-outline-variant flat no shadows flex flex-col h-full py-lg px-md z-50 hidden md:flex">
+<div class="flex items-center gap-sm mb-xl px-sm">
+<div class="w-8 h-8 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container font-bold" style="font-variation-settings: 'FILL' 1;">widgets</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface">PleaseBookMe</h1>
+<p class="text-label-md text-on-surface-variant">Enterprise Infrastructure</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-xs overflow-y-auto font-body-md text-body-md text-primary dark:text-primary">
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">event_available</span>
+<span>Bookings</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">schedule</span>
+<span>Availability</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">category</span>
+<span>Services</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">inventory_2</span><span>Resources</span></a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">group</span>
+<span>Customers</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_month</span>
+<span>Calendar</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-primary dark:text-primary bg-primary-container/10 font-bold border-r-2 border-primary hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">widgets</span><span>Widgets</span></a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+<span>Notifications</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">extension</span>
+<span>Integrations</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">api</span>
+<span>API</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg border-t border-outline-variant flex flex-col gap-xs font-body-md text-body-md">
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dark_mode</span>
+<span>Theme</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="md:ml-[280px] pt-16 md:pt-24 px-md md:px-2xl pb-2xl max-w-container-max mx-auto"><!-- Page Header -->
+<header class="flex flex-col md:flex-row md:justify-between md:items-start gap-md mb-lg">
+<div>
+<div class="flex items-center gap-sm">
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Widgets</h2>
+<span class="px-2 py-0.5 rounded text-mono-label font-mono-label bg-primary-container/10 text-primary border border-primary/20">4 Active</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage booking widgets deployed across your websites and digital channels.</p>
+</div>
+<div class="flex items-center gap-sm flex-wrap">
+<button class="border border-[#1F2329] bg-[#12151A] hover:bg-[#1A1D24] text-on-surface px-md py-2 rounded-lg font-label-md hover:border-[#2D333B] transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-size: 16px;">menu_book</span>
+      Documentation
+    </button>
+<button class="border border-[#1F2329] bg-[#12151A] hover:bg-[#1A1D24] text-on-surface p-2 rounded-lg font-label-md hover:border-[#2D333B] transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-size: 18px;">more_horiz</span>
+</button>
+<button class="bg-[#3B82F6] hover:bg-opacity-90 text-white px-md py-2 rounded-lg font-label-md transition-opacity flex items-center gap-xs shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+      Create Widget
+    </button>
+</div>
+</header>
+<!-- Compact Operational Summary Bar -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-md mb-xl p-md bg-[#12151A] border border-[#1F2329] rounded-lg">
+<div class="flex items-center gap-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<div>
+<p class="text-label-md text-on-surface-variant font-label-md uppercase tracking-wider">Active Widgets</p>
+<p class="text-headline-md font-bold text-on-surface">4</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+<div>
+<p class="text-label-md text-on-surface-variant font-label-md uppercase tracking-wider">Draft</p>
+<p class="text-headline-md font-bold text-on-surface">1</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant"></span>
+<div>
+<p class="text-label-md text-on-surface-variant font-label-md uppercase tracking-wider">Disabled</p>
+<p class="text-headline-md font-bold text-on-surface">0</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">event_available</span>
+<div>
+<p class="text-label-md text-on-surface-variant font-label-md uppercase tracking-wider">Total Bookings</p>
+<p class="text-headline-md font-bold text-on-surface">1,284</p>
+</div>
+</div>
+</section>
+<!-- High-Density Enterprise Table Section -->
+<section class="bg-[#12151A] border border-[#1F2329] rounded-lg overflow-hidden flex flex-col mb-xl shadow-sm">
+<div class="p-md border-b border-[#1F2329] flex flex-col md:flex-row md:items-center justify-between gap-md">
+<div>
+<h3 class="font-headline-md text-body-lg font-bold text-on-surface">Active Widgets</h3>
+<p class="text-label-md text-on-surface-variant">Booking interfaces currently connected to your reservation infrastructure.</p>
+</div>
+<div class="flex flex-wrap items-center gap-sm">
+<div class="relative flex-1 md:w-56">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 16px;">search</span>
+<input class="w-full bg-[#0B0D10] border border-[#1F2329] text-on-surface rounded-lg pl-9 pr-sm py-1.5 text-body-md focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6] placeholder-on-surface-variant" placeholder="Search widgets..." type="text">
+</div>
+<select class="bg-[#0B0D10] border border-[#1F2329] text-on-surface rounded-lg py-1.5 pl-sm pr-8 font-label-md text-label-md focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6] appearance-none">
+<option>All Statuses</option>
+<option>Active</option>
+<option>Draft</option>
+<option>Disabled</option>
+</select>
+<select class="bg-[#0B0D10] border border-[#1F2329] text-on-surface rounded-lg py-1.5 pl-sm pr-8 font-label-md text-label-md focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6] appearance-none">
+<option>All Environments</option>
+<option>Production</option>
+<option>Development</option>
+</select>
+<div class="inline-flex rounded-lg border border-[#1F2329] bg-[#0B0D10] p-0.5">
+<button class="px-2 py-1 rounded bg-[#1F2329] text-[#3B82F6] flex items-center justify-center" title="List View">
+<span class="material-symbols-outlined" style="font-size: 16px;">view_list</span>
+</button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface flex items-center justify-center" title="Grid View">
+<span class="material-symbols-outlined" style="font-size: 16px;">grid_view</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-[#1F2329] bg-[#0B0D10]/40">
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider whitespace-nowrap">Widget</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider whitespace-nowrap">Status</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider whitespace-nowrap">Environment</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider whitespace-nowrap">Domain</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider whitespace-nowrap">Bookings</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider whitespace-nowrap">Last Active</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider whitespace-nowrap">Created</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider whitespace-nowrap text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<!-- Row 1: Selected -->
+<tr class="border-b border-[#1F2329] bg-[#1A1D24]/60 border-l-2 border-l-[#3B82F6] hover:bg-[#1A1D24] transition-colors group">
+<td class="py-sm px-md font-medium">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-[#3B82F6]/10 border border-[#3B82F6]/30 flex items-center justify-center text-[#3B82F6]">
+<span class="material-symbols-outlined" style="font-size: 18px;">widgets</span>
+</div>
+<div>
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+                  Main Website Booking
+                  <span class="px-1.5 py-0.2 rounded text-[10px] bg-[#3B82F6]/20 text-[#3B82F6] font-mono-label">Selected</span>
+</span>
+<p class="font-mono-label text-mono-label text-on-surface-variant text-[11px]">wgt_01J8K7e9x2v8...</p>
+</div>
+</div>
+</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold bg-secondary/10 text-secondary border border-secondary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+              Active
+            </span>
+</td>
+<td class="py-sm px-md">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-label bg-[#1F2329] text-on-surface border border-outline-variant/30">Production</span>
+</td>
+<td class="py-sm px-md font-mono-label text-mono-label text-on-surface-variant text-[12px]">booking.example.com</td>
+<td class="py-sm px-md font-bold text-on-surface">842</td>
+<td class="py-sm px-md text-on-surface-variant text-[13px]">2 min ago</td>
+<td class="py-sm px-md text-on-surface-variant text-[13px]">Aug 14, 2026</td>
+<td class="py-sm px-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="px-2 py-1 rounded bg-[#3B82F6]/20 text-[#3B82F6] hover:bg-[#3B82F6]/30 text-label-md font-label-md transition-colors">Open</button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] text-label-md font-label-md transition-colors">Configure</button>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] transition-colors">
+<span class="material-symbols-outlined" style="font-size: 16px;">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-[#1F2329] hover:bg-[#1A1D24] transition-colors group">
+<td class="py-sm px-md font-medium">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-[#1F2329] border border-outline-variant/30 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-size: 18px;">web</span>
+</div>
+<div>
+<span class="text-on-surface font-semibold">Landing Page Widget</span>
+<p class="font-mono-label text-mono-label text-on-surface-variant text-[11px]">wgt_01J9M2p4q1y7...</p>
+</div>
+</div>
+</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold bg-secondary/10 text-secondary border border-secondary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+              Active
+            </span>
+</td>
+<td class="py-sm px-md">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-label bg-[#1F2329] text-on-surface border border-outline-variant/30">Production</span>
+</td>
+<td class="py-sm px-md font-mono-label text-mono-label text-on-surface-variant text-[12px]">example.com</td>
+<td class="py-sm px-md font-bold text-on-surface">317</td>
+<td class="py-sm px-md text-on-surface-variant text-[13px]">18 min ago</td>
+<td class="py-sm px-md text-on-surface-variant text-[13px]">Jul 29, 2026</td>
+<td class="py-sm px-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] text-label-md font-label-md transition-colors">Open</button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] text-label-md font-label-md transition-colors">Configure</button>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] transition-colors">
+<span class="material-symbols-outlined" style="font-size: 16px;">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="border-b border-[#1F2329] hover:bg-[#1A1D24] transition-colors group">
+<td class="py-sm px-md font-medium">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-[#1F2329] border border-outline-variant/30 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-size: 18px;">campaign</span>
+</div>
+<div>
+<span class="text-on-surface font-semibold">Campaign Widget</span>
+<p class="font-mono-label text-mono-label text-on-surface-variant text-[11px]">wgt_01KB4n8t5r3x...</p>
+</div>
+</div>
+</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold bg-secondary/10 text-secondary border border-secondary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+              Active
+            </span>
+</td>
+<td class="py-sm px-md">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-label bg-[#1F2329] text-on-surface border border-outline-variant/30">Production</span>
+</td>
+<td class="py-sm px-md font-mono-label text-mono-label text-on-surface-variant text-[12px]">campaign.example.com</td>
+<td class="py-sm px-md font-bold text-on-surface">125</td>
+<td class="py-sm px-md text-on-surface-variant text-[13px]">1 hr ago</td>
+<td class="py-sm px-md text-on-surface-variant text-[13px]">Aug 28, 2026</td>
+<td class="py-sm px-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] text-label-md font-label-md transition-colors">Open</button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] text-label-md font-label-md transition-colors">Configure</button>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] transition-colors">
+<span class="material-symbols-outlined" style="font-size: 16px;">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-[#1A1D24] transition-colors group">
+<td class="py-sm px-md font-medium">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-[#1F2329] border border-outline-variant/30 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-size: 18px;">code</span>
+</div>
+<div>
+<span class="text-on-surface font-semibold">Development Widget</span>
+<p class="font-mono-label text-mono-label text-on-surface-variant text-[11px]">wgt_01KD9z1k7a0w...</p>
+</div>
+</div>
+</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold bg-surface-variant text-on-surface-variant border border-outline-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+              Draft
+            </span>
+</td>
+<td class="py-sm px-md">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-label bg-tertiary-container/10 text-tertiary border border-tertiary/20">Development</span>
+</td>
+<td class="py-sm px-md font-mono-label text-mono-label text-on-surface-variant text-[12px]">localhost</td>
+<td class="py-sm px-md font-bold text-on-surface">0</td>
+<td class="py-sm px-md text-on-surface-variant text-[13px]">Never</td>
+<td class="py-sm px-md text-on-surface-variant text-[13px]">Sep 2, 2026</td>
+<td class="py-sm px-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] text-label-md font-label-md transition-colors">Open</button>
+<button class="px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] text-label-md font-label-md transition-colors">Configure</button>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-[#1F2329] transition-colors">
+<span class="material-symbols-outlined" style="font-size: 16px;">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination -->
+<div class="p-md border-t border-[#1F2329] flex justify-between items-center bg-[#0B0D10]/50">
+<span class="font-label-md text-label-md text-on-surface-variant">Showing 1 to 4 of 5 widgets</span>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded border border-[#1F2329] text-on-surface-variant hover:bg-[#1F2329] transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span>
+</button>
+<button class="px-3 py-1 rounded border border-[#3B82F6] bg-[#3B82F6]/10 text-[#3B82F6] font-label-md text-label-md">1</button>
+<button class="px-3 py-1 rounded border border-[#1F2329] text-on-surface-variant hover:bg-[#1F2329] font-label-md text-label-md transition-colors">2</button>
+<button class="p-1 rounded border border-[#1F2329] text-on-surface-variant hover:bg-[#1F2329] transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- INSPECTION / DETAIL PANEL for Selected Widget -->
+<section class="bg-[#12151A] border border-[#1F2329] rounded-lg p-lg mb-xl shadow-md">
+<!-- Detail Header -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-md pb-lg border-b border-[#1F2329]">
+<div class="flex items-start gap-md">
+<div class="w-12 h-12 rounded-lg bg-[#3B82F6]/10 border border-[#3B82F6]/30 flex items-center justify-center text-[#3B82F6]">
+<span class="material-symbols-outlined" style="font-size: 26px;">widgets</span>
+</div>
+<div>
+<div class="flex items-center gap-sm flex-wrap">
+<h3 class="font-headline-md text-headline-md font-bold text-on-surface">Main Website Booking</h3>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-secondary/10 text-secondary border border-secondary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            Active
+          </span>
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-label bg-[#1F2329] text-on-surface border border-outline-variant/30">Production</span>
+<span class="px-2 py-0.5 rounded text-[11px] font-mono-label bg-surface text-on-surface-variant">v1.4.2</span>
+</div>
+<div class="flex items-center gap-md mt-1 font-mono-label text-[12px] text-on-surface-variant flex-wrap">
+<span>ID: <code class="text-primary">wgt_01J8K7e9x2...</code></span>
+<span>•</span>
+<span>Domain: booking.example.com</span>
+<span>•</span>
+<span>Last active: 2 minutes ago</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-sm flex-wrap">
+<button class="border border-[#1F2329] bg-[#0B0D10] hover:bg-[#1A1D24] text-on-surface px-md py-2 rounded-lg font-label-md transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-size: 16px;">code</span>
+        Embed Code
+      </button>
+<button class="border border-[#1F2329] bg-[#0B0D10] hover:bg-[#1A1D24] text-on-surface px-md py-2 rounded-lg font-label-md transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-size: 16px;">tune</span>
+        Configure
+      </button>
+<button class="border border-error/30 bg-error/5 hover:bg-error/10 text-error px-md py-2 rounded-lg font-label-md transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-size: 16px;">block</span>
+        Disable
+      </button>
+</div>
+</div>
+<!-- Compact Operational Analytics Strip -->
+<div class="py-md border-b border-[#1F2329] flex flex-col md:flex-row md:items-center justify-between gap-md">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-md flex-1">
+<div>
+<p class="text-label-md text-on-surface-variant font-label-md uppercase tracking-wider">Widget Views</p>
+<p class="font-display text-headline-md font-bold text-on-surface">12,842</p>
+</div>
+<div>
+<p class="text-label-md text-on-surface-variant font-label-md uppercase tracking-wider">Booking Starts</p>
+<p class="font-display text-headline-md font-bold text-on-surface">2,143</p>
+</div>
+<div>
+<p class="text-label-md text-on-surface-variant font-label-md uppercase tracking-wider">Bookings Completed</p>
+<p class="font-display text-headline-md font-bold text-[#3B82F6]">842</p>
+</div>
+<div>
+<p class="text-label-md text-on-surface-variant font-label-md uppercase tracking-wider">Conversion Rate</p>
+<p class="font-display text-headline-md font-bold text-secondary">39.3%</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="text-label-md text-on-surface-variant font-mono-label">Period: Last 30 days</span>
+<a class="text-primary hover:text-[#3B82F6] font-label-md text-label-md flex items-center gap-0.5 ml-2" href="#">
+        View Analytics
+        <span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- 3 Operational Cards Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md pt-lg">
+<!-- CARD A: Widget Preview -->
+<div class="bg-[#0B0D10] border border-[#1F2329] rounded-lg p-md flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[#3B82F6]" style="font-size: 16px;">visibility</span>
+            Widget Preview
+          </span>
+<span class="text-mono-label text-[11px] text-on-surface-variant">Interactive Preview</span>
+</div>
+<!-- Miniature Booking Interface Container -->
+<div class="rounded-lg border border-[#1F2329] bg-[#12151A] p-3 my-2 shadow-inner">
+<div class="flex items-center justify-between pb-2 border-b border-[#1F2329] mb-3">
+<div>
+<p class="font-bold text-on-surface text-[13px]">Northstar Studio</p>
+<p class="text-[11px] text-on-surface-variant">Photography Session (60m)</p>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-secondary/10 text-secondary text-[10px] font-mono-label">$150</span>
+</div>
+<p class="text-[11px] font-medium text-on-surface-variant mb-1.5">Thursday, September 10</p>
+<div class="grid grid-cols-2 gap-1.5 mb-3">
+<span class="px-2 py-1 text-center rounded border border-[#1F2329] text-[11px] text-on-surface-variant">09:00</span>
+<span class="px-2 py-1 text-center rounded bg-[#3B82F6] text-white text-[11px] font-semibold">10:00 - Selected</span>
+<span class="px-2 py-1 text-center rounded border border-[#1F2329] text-[11px] text-on-surface-variant">11:30</span>
+<span class="px-2 py-1 text-center rounded border border-[#1F2329] text-[11px] text-on-surface-variant">14:00</span>
+</div>
+<button class="w-full bg-[#3B82F6] text-white py-1.5 rounded text-[12px] font-semibold hover:bg-opacity-90 transition-opacity">
+            Continue
+          </button>
+</div>
+</div>
+<div class="flex items-center justify-between pt-sm border-t border-[#1F2329] mt-sm">
+<button class="text-on-surface-variant hover:text-on-surface font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 16px;">tune</span>
+          Customize Theme
+        </button>
+<button class="text-[#3B82F6] hover:underline font-label-md text-label-md flex items-center gap-1">
+          Open Preview
+          <span class="material-symbols-outlined" style="font-size: 14px;">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- CARD B: Deployment & Security -->
+<div class="bg-[#0B0D10] border border-[#1F2329] rounded-lg p-md flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary" style="font-size: 16px;">security</span>
+            Deployment &amp; Security
+          </span>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-secondary/10 text-secondary border border-secondary/20">Verified</span>
+</div>
+<div class="space-y-2 mt-2">
+<div class="flex justify-between items-center text-label-md text-[13px]">
+<span class="text-on-surface-variant">Environment</span>
+<span class="font-mono-label text-on-surface font-medium">Production</span>
+</div>
+<div class="flex justify-between items-center text-label-md text-[13px]">
+<span class="text-on-surface-variant">Installation Type</span>
+<span class="text-on-surface">Embedded Iframe</span>
+</div>
+<div class="pt-2 border-t border-[#1F2329]">
+<div class="flex items-center justify-between mb-1">
+<span class="text-label-md text-on-surface-variant font-label-md">Allowed Domains (2)</span>
+<button class="text-[#3B82F6] hover:underline text-[12px] font-label-md">+ Add Domain</button>
+</div>
+<div class="space-y-1">
+<div class="flex items-center justify-between px-2 py-1 rounded bg-[#12151A] border border-[#1F2329] text-[12px] font-mono-label">
+<span class="text-on-surface">example.com</span>
+<span class="text-secondary text-[11px]">Active</span>
+</div>
+<div class="flex items-center justify-between px-2 py-1 rounded bg-[#12151A] border border-[#1F2329] text-[12px] font-mono-label">
+<span class="text-on-surface">www.example.com</span>
+<span class="text-secondary text-[11px]">Active</span>
+</div>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-1.5">Widget can only initiate reservations from approved domains.</p>
+</div>
+<div class="pt-2 border-t border-[#1F2329]">
+<div class="flex items-center justify-between text-[12px]">
+<span class="text-on-surface-variant">Origin Credential</span>
+<span class="text-secondary font-mono-label">Valid (Rotated Aug 20)</span>
+</div>
+<div class="flex items-center justify-between mt-1 text-[11px] font-mono-label text-on-surface-variant bg-[#12151A] p-1.5 rounded border border-[#1F2329]">
+<span>sec_live_9a*****************</span>
+<button class="text-[#3B82F6] hover:underline font-label-md text-[11px]">Rotate</button>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-sm border-t border-[#1F2329] mt-sm flex justify-between items-center">
+<span class="text-[11px] text-on-surface-variant">CORS &amp; Frame Ancestors enforced</span>
+<button class="text-on-surface-variant hover:text-on-surface font-label-md text-label-md">Manage Domains</button>
+</div>
+</div>
+<!-- CARD C: Embed Code -->
+<div class="bg-[#0B0D10] border border-[#1F2329] rounded-lg p-md flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary" style="font-size: 16px;">integration_instructions</span>
+            Embed Code
+          </span>
+<button class="text-[#3B82F6] hover:underline font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+            Copy Code
+          </button>
+</div>
+<!-- Code Snippet Block -->
+<div class="rounded bg-[#12151A] border border-[#1F2329] p-3 text-[11px] font-mono-label overflow-x-auto text-on-surface mb-3">
+<span class="text-on-surface-variant">&lt;!-- PleaseBookMe Widget --&gt;</span><br>
+<span class="text-[#3B82F6]">&lt;script</span> <span class="text-tertiary">src</span>=<span class="text-secondary">"https://cdn.pleasebookme.com/widget.js"</span><br>
+          &nbsp;&nbsp;<span class="text-tertiary">data-widget-id</span>=<span class="text-secondary">"wgt_01J8K7e9x2..."</span><br>
+          &nbsp;&nbsp;<span class="text-tertiary">data-business-id</span>=<span class="text-secondary">"biz_01HQ89..."</span><span class="text-[#3B82F6]">&gt;&lt;/script&gt;</span>
+</div>
+<!-- Configuration Highlights -->
+<div class="space-y-1.5 text-[12px]">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Theme</span>
+<span class="text-on-surface font-medium">System Default (Dark auto)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Language</span>
+<span class="text-on-surface font-medium">English (US)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Display Mode</span>
+<span class="text-on-surface font-medium">Embedded Inline</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Customer Info</span>
+<span class="text-on-surface font-medium">Name, Email, Phone</span>
+</div>
+</div>
+</div>
+<div class="pt-sm border-t border-[#1F2329] mt-sm flex justify-between items-center">
+<a class="text-on-surface-variant hover:text-on-surface font-label-md text-label-md flex items-center gap-1" href="#">
+<span class="material-symbols-outlined" style="font-size: 16px;">help_outline</span>
+          Installation Guide
+        </a>
+<button class="px-2.5 py-1 rounded bg-[#1F2329] hover:bg-[#262a30] text-on-surface font-label-md text-label-md transition-colors">
+          Advanced Options
+        </button>
+</div>
+</div>
+</div>
+<!-- Recent Activity / Audit Log Section -->
+<div class="pt-lg mt-lg border-t border-[#1F2329]">
+<div class="flex items-center justify-between mb-sm">
+<h4 class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">history</span>
+        Recent Widget Activity
+      </h4>
+<a class="text-[#3B82F6] hover:underline font-label-md text-label-md" href="#">View All Activity</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-md">
+<div class="bg-[#0B0D10] border border-[#1F2329] rounded p-2.5 flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary mt-0.5" style="font-size: 16px;">check_circle</span>
+<div>
+<p class="text-[12px] font-medium text-on-surface">Widget loaded</p>
+<p class="text-[11px] text-on-surface-variant font-mono-label">booking.example.com</p>
+<p class="text-[10px] text-on-surface-variant mt-0.5">2 min ago</p>
+</div>
+</div>
+<div class="bg-[#0B0D10] border border-[#1F2329] rounded p-2.5 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary mt-0.5" style="font-size: 16px;">edit</span>
+<div>
+<p class="text-[12px] font-medium text-on-surface">Config updated</p>
+<p class="text-[11px] text-on-surface-variant font-mono-label">by Business Manager</p>
+<p class="text-[10px] text-on-surface-variant mt-0.5">3 hours ago</p>
+</div>
+</div>
+<div class="bg-[#0B0D10] border border-[#1F2329] rounded p-2.5 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary mt-0.5" style="font-size: 16px;">add_link</span>
+<div>
+<p class="text-[12px] font-medium text-on-surface">Domain added</p>
+<p class="text-[11px] text-on-surface-variant font-mono-label">www.example.com</p>
+<p class="text-[10px] text-on-surface-variant mt-0.5">Yesterday</p>
+</div>
+</div>
+<div class="bg-[#0B0D10] border border-[#1F2329] rounded p-2.5 flex items-start gap-2">
+<span class="material-symbols-outlined text-tertiary mt-0.5" style="font-size: 16px;">key</span>
+<div>
+<p class="text-[12px] font-medium text-on-surface">Credential rotated</p>
+<p class="text-[11px] text-on-surface-variant font-mono-label">by Business Owner</p>
+<p class="text-[10px] text-on-surface-variant mt-0.5">Aug 20, 2026</p>
+</div>
+</div>
+</div>
+</div>
+</section></main>
+</body></html>

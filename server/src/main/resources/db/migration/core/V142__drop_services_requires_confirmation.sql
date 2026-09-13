@@ -1,0 +1,1 @@
+ALTER TABLE core.services DROP COLUMN requires_confirmation;

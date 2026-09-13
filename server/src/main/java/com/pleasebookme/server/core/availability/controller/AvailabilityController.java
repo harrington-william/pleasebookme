@@ -40,7 +40,11 @@ public class AvailabilityController {
         @PathVariable BigInteger availabilityId,
         @Valid @RequestBody AvailabilityRequest request
     ) {
-        return AvailabilityResponse.from(availabilityService.updateAvailability(availabilityId, request));
+        return AvailabilityResponse.from(
+            availabilityService.updateAvailability(
+                availabilityId,
+                request
+            ));
     }
 
     @DeleteMapping("/{availabilityId}")

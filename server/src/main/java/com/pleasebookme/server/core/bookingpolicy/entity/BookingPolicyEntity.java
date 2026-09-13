@@ -40,9 +40,6 @@ public class BookingPolicyEntity {
     @Column(name = "booking_mode", nullable = false)
     private BookingMode bookingMode = BookingMode.FIXED;
 
-    @Column(name = "duration_type", nullable = false, length = 50)
-    private String durationType;
-
     @Builder.Default
     @Column(name = "default_duration", nullable = false)
     private Integer defaultDuration = 1;

@@ -1,0 +1,261 @@
+{
+  "main": {
+    "id": "6dbc2dc7cbad772a",
+    "type": "split",
+    "children": [
+      {
+        "id": "8ace1e8230dfe2ee",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f0e3ab1f11893adc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Tasks.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Tasks"
+            }
+          },
+          {
+            "id": "d338441890275c90",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "DB.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "DB"
+            }
+          },
+          {
+            "id": "654f3ce75e899093",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Reading List/Complex Project Structure.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Complex Project Structure"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5d23b7ef55d640e0",
+    "type": "split",
+    "children": [
+      {
+        "id": "995fa8cd5a44436c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a75d76270c57159a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "0060159c635c1635",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "6b186a8961a5ba36",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "e407183aee1f5544",
+    "type": "split",
+    "children": [
+      {
+        "id": "b13aeca88e2281eb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b817d06ce979382a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Tasks.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "9ec7aebe0b09ec75",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Tasks.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "b65602fa65df53b4",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "4d4dfd182b014818",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "15a5c159134a1a78",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Tasks.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "obsidian-excalidraw-plugin:New drawing": false
+    }
+  },
+  "active": "f0e3ab1f11893adc",
+  "lastOpenFiles": [
+    "API/Widget/Widgets/Widget API Summary.md",
+    "API/Widget/Widgets/Get widget stats.md",
+    "API/Widget/Widgets/Generate widget credentials.md",
+    "API/Widget/Widgets/Delete a widget.md",
+    "API/Widget/Widgets/Update a widget.md",
+    "API/Widget/Widgets/Get a widget.md",
+    "API/Widget/Widgets/Create a widget.md",
+    "API/Widget/Widgets/List widgets.md",
+    "AI Task Contract.md",
+    "Reading List/Complex Postgres Service.md",
+    "Tasks.md",
+    "DB.md",
+    "Reading List/Complex Project Structure.md",
+    "Database/Schemas/Tenant/Table Plans.md",
+    "Security/Architecture/Security Architecture.md",
+    "Services/Service",
+    "Database/Schemas/Core/Table Services.md",
+    "Database/Schemas/Core/Table Booking Policies.md",
+    "Database/Architecture/Database Architecture Design.md",
+    "Skills Organizing Strategy.md",
+    "Database Design.md",
+    "Database/Backup/Database Backup Strategy.md",
+    "Database/Database Table-level Documentation Conventions.md",
+    "Database/Database Architecture-level Documentation Conventions.md",
+    "Database/Schema Design Template.md",
+    "Security/Authorization/Role/Role Design.md",
+    "Security/Authorization/Registry/AuthorizationPolicyRegistry.md",
+    "Services/Resource/Workflows",
+    "Services/Resource/Rules",
+    "Services/Resource/Overview",
+    "Services/Resource/Failure Handling",
+    "Services/Resource/Lifecycle",
+    "Services/Resource/Domain",
+    "Services/Resource/Dependencies",
+    "Services/Resource/Decisions",
+    "Services/Resource",
+    "Shared/images/System_Architecture_v2.jpg",
+    "Shared/images/System_Architecture_v1.jpg"
+  ]
+}

@@ -1,0 +1,1 @@
+ALTER TABLE core.booking_policies DROP COLUMN duration_type;

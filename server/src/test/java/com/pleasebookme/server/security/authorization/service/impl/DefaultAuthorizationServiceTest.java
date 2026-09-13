@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +47,7 @@ class DefaultAuthorizationServiceTest {
     private static UserPrincipal principal() {
         return new UserPrincipal(
             AuthenticatedActorType.USER,
-            UUID.randomUUID(), null,
+            UUID.randomUUID(), BigInteger.ONE, null,
             "jane", "jane@example.com", "Jane Doe", null,
             "Australia/Sydney", AccountStatus.ACTIVE, Set.of(), Set.of(), Map.of()
         );
