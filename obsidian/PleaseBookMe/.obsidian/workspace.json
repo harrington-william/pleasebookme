@@ -8,31 +8,13 @@
         "type": "tabs",
         "children": [
           {
-            "id": "f0e3ab1f11893adc",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Tasks.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Tasks"
-            }
-          },
-          {
             "id": "d338441890275c90",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "DB.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "DB"
+              "title": "New tab"
             }
           },
           {
@@ -217,45 +199,45 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "f0e3ab1f11893adc",
+  "active": "a75d76270c57159a",
   "lastOpenFiles": [
-    "API/Widget/Widgets/Widget API Summary.md",
-    "API/Widget/Widgets/Get widget stats.md",
-    "API/Widget/Widgets/Generate widget credentials.md",
-    "API/Widget/Widgets/Delete a widget.md",
-    "API/Widget/Widgets/Update a widget.md",
-    "API/Widget/Widgets/Get a widget.md",
-    "API/Widget/Widgets/Create a widget.md",
-    "API/Widget/Widgets/List widgets.md",
-    "AI Task Contract.md",
-    "Reading List/Complex Postgres Service.md",
+    "Welcome Message.md",
     "Tasks.md",
-    "DB.md",
-    "Reading List/Complex Project Structure.md",
-    "Database/Schemas/Tenant/Table Plans.md",
-    "Security/Architecture/Security Architecture.md",
-    "Services/Service",
-    "Database/Schemas/Core/Table Services.md",
-    "Database/Schemas/Core/Table Booking Policies.md",
-    "Database/Architecture/Database Architecture Design.md",
     "Skills Organizing Strategy.md",
-    "Database Design.md",
-    "Database/Backup/Database Backup Strategy.md",
-    "Database/Database Table-level Documentation Conventions.md",
-    "Database/Database Architecture-level Documentation Conventions.md",
-    "Database/Schema Design Template.md",
-    "Security/Authorization/Role/Role Design.md",
-    "Security/Authorization/Registry/AuthorizationPolicyRegistry.md",
-    "Services/Resource/Workflows",
+    "Shared/images/System_Architecture_v2.jpg",
+    "Shared/images/System_Architecture_v1.jpg",
+    "Services/Resource/Workflows/Withdraw a Resource.md",
+    "Services/Resource/Workflows/Define a Resource Type.md",
+    "Services/Resource/Workflows/Create a Resource.md",
+    "Services/Resource/Workflows/Browse the Resource Inventory.md",
+    "Services/Resource/Workflows/Assign a Resource to Services.md",
+    "Services/Resource/Rules/Resource Validation Rules.md",
+    "Services/Resource/Rules/Resource Business Rules.md",
+    "Services/Resource/Rules/Resource Authorization Rules.md",
+    "Services/Resource/Overview/Resource Service Overview.md",
+    "Services/Resource/Lifecycle/Resource Lifecycle.md",
+    "Services/Resource/Failure Handling/Resource Failure Handling.md",
+    "Services/Resource/Domain/Resource.md",
+    "Services/Resource/Domain/Resource Type.md",
+    "Services/Resource/Domain/Resource Status.md",
+    "Services/Resource/Domain/Resource Service Assignment.md",
+    "Services/Resource/Decisions/Utilization Is Not Reported.md",
+    "Services/Resource/Decisions/Resource Status Has No Default.md",
+    "Services/Resource/Decisions/Resources Serve Many Services.md",
+    "Services/Resource/Decisions/Ownership Is Derived Not Supplied.md",
+    "Services/Resource/Decisions/Inventory Reads Are Filtered Server Side.md",
+    "Services/Resource/Decisions/Assignments Are Created and Revoked Never Updated.md",
+    "Services/Resource/Dependencies/Resource Service Dependencies.md",
     "Services/Resource/Rules",
+    "Services/Resource/Workflows",
+    "Services/Resource/Resource Service.md",
     "Services/Resource/Overview",
-    "Services/Resource/Failure Handling",
     "Services/Resource/Lifecycle",
+    "Services/Resource/Failure Handling",
     "Services/Resource/Domain",
     "Services/Resource/Dependencies",
     "Services/Resource/Decisions",
     "Services/Resource",
-    "Shared/images/System_Architecture_v2.jpg",
-    "Shared/images/System_Architecture_v1.jpg"
+    "Security/Token/JWT"
   ]
 }
