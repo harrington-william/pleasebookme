@@ -1259,7 +1259,6 @@ Stores the bookable services offered by organizations.
 | `timezone` | `VARCHAR(100)` | Timezone used to interpret this service's availability. |
 | `min_price` / `max_price` | `NUMERIC(10,2)` | Optional price range shown to customers. |
 | `currency` | `public.currency` | Currency the price range is denominated in. |
-| `requires_confirmation` | `BOOLEAN` | Whether a booking needs host approval before being accepted. |
 | `disable_cancelling` / `disable_rescheduling` | `BOOLEAN` | Whether customers may cancel/reschedule their own bookings. |
 | `success_redirect_url` | `TEXT` | Optional post-booking redirect target. |
 | `is_instant_service` | `BOOLEAN` | Whether this service skips the standard scheduling flow. |

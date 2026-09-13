@@ -2,7 +2,9 @@
 
 Creates a bookable service under the authenticated user's organization. `userId`, `profileId`, and `organizationId` are server-derived from `CurrentPrincipalProvider.requireUser().userId()` and the caller's `Profile`; they are no longer request fields. Current binding ignores legacy ownership fields if a client still sends them, but they do not affect the created row.
 
-`slug` must be unique within the derived organization. `interfaceLanguage`, `periodType`, `timezone`, `currency`, `requiresConfirmation`, `disableCancelling`, `disableRescheduling`, and `isInstantService` fall back to their platform defaults (`en`, `UNLIMITED`, `Australia/Sydney`, `USD`, `false`, `false`, `false`, `false`) when omitted. `destinationCalendarId`/`destinationSheetsId` are optional and only resolved when supplied.
+`slug` must be unique within the derived organization. `interfaceLanguage`, `periodType`, `timezone`, `currency`, `disableCancelling`, `disableRescheduling`, and `isInstantService` fall back to their platform defaults (`en`, `UNLIMITED`, `Australia/Sydney`, `USD`, `false`, `false`, `false`) when omitted. `destinationCalendarId`/`destinationSheetsId` are optional and only resolved when supplied.
+
+Whether a booking needs host approval is controlled by the nested `bookingPolicy.autoConfirm`, not a field on the service itself — `core.services.requires_confirmation` was dropped (`V142`).
 
 When `bookingPolicy` is supplied, the service and booking policy are persisted in one transaction. If policy creation fails, neither row commits. The nested booking policy shape intentionally omits `serviceId`; the server links it to the newly created service.
 
@@ -48,7 +50,6 @@ Required **Bearer Token**
 	"minPrice": 0,
 	"maxPrice": 0,
 	"currency": "",
-	"requiresConfirmation": false,
 	"disableCancelling": false,
 	"disableRescheduling": false,
 	"successRedirectUrl": "",
@@ -101,7 +102,6 @@ Required **Bearer Token**
 	"minPrice": 0,
 	"maxPrice": 0,
 	"currency": "",
-	"requiresConfirmation": false,
 	"disableCancelling": false,
 	"disableRescheduling": false,
 	"successRedirectUrl": "",
@@ -192,7 +192,6 @@ curl \
 	"minPrice": 20.00,
 	"maxPrice": 45.00,
 	"currency": "USD",
-	"requiresConfirmation": false,
 	"disableCancelling": false,
 	"disableRescheduling": false,
 	"successRedirectUrl": "https://barbershop.com/thank-you",

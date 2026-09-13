@@ -92,10 +92,6 @@ public class ServiceEntity {
     private Currency currency = Currency.USD;
 
     @Builder.Default
-    @Column(name = "requires_confirmation", nullable = false)
-    private Boolean requiresConfirmation = false;
-
-    @Builder.Default
     @Column(name = "disable_cancelling", nullable = false)
     private Boolean disableCancelling = false;
 

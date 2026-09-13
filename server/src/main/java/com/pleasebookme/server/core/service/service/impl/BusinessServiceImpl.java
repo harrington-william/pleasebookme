@@ -70,7 +70,6 @@ public class BusinessServiceImpl implements BusinessServiceService {
         if (request.periodType() != null) service.periodType(request.periodType());
         if (request.timezone() != null) service.timezone(request.timezone());
         if (request.currency() != null) service.currency(request.currency());
-        if (request.requiresConfirmation() != null) service.requiresConfirmation(request.requiresConfirmation());
         if (request.disableCancelling() != null) service.disableCancelling(request.disableCancelling());
         if (request.disableRescheduling() != null) service.disableRescheduling(request.disableRescheduling());
         if (request.isInstantService() != null) service.isInstantService(request.isInstantService());
@@ -80,7 +79,6 @@ public class BusinessServiceImpl implements BusinessServiceService {
 
         if (request.bookingPolicy() != null) {
             bookingPolicy = bookingPolicyRepository.save(buildBookingPolicy(createdService, request.bookingPolicy()));
-            mirrorConfirmationFlag(createdService, bookingPolicy);
         }
 
         return new ServiceCreateResult(createdService, bookingPolicy);
@@ -137,17 +135,12 @@ public class BusinessServiceImpl implements BusinessServiceService {
         if (request.periodType() != null) service.setPeriodType(request.periodType());
         if (request.timezone() != null) service.setTimezone(request.timezone());
         if (request.currency() != null) service.setCurrency(request.currency());
-        if (request.requiresConfirmation() != null) service.setRequiresConfirmation(request.requiresConfirmation());
         if (request.disableCancelling() != null) service.setDisableCancelling(request.disableCancelling());
         if (request.disableRescheduling() != null) service.setDisableRescheduling(request.disableRescheduling());
         if (request.isInstantService() != null) service.setIsInstantService(request.isInstantService());
 
         ServiceEntity updatedService = serviceRepository.save(service);
         BookingPolicyEntity bookingPolicy = upsertBookingPolicy(updatedService, request.bookingPolicy());
-
-        if (bookingPolicy != null) {
-            mirrorConfirmationFlag(updatedService, bookingPolicy);
-        }
 
         return new ServiceCreateResult(updatedService, bookingPolicy);
     }
@@ -179,20 +172,6 @@ public class BusinessServiceImpl implements BusinessServiceService {
         return bookingPolicyRepository.findByServiceServiceId(service.getServiceId())
             .map(existing -> bookingPolicyRepository.save(applyBookingPolicy(existing, request)))
             .orElseGet(() -> bookingPolicyRepository.save(buildBookingPolicy(service, request)));
-    }
-
-    /**
-     * TEMPORARY: core.services.requires_confirmation duplicates
-     * core.booking_policies.auto_confirm. The policy column is the one the client
-     * writes, so the service column is mirrored from it to stop the two drifting.
-     * Delete this method together with the requires_confirmation column.
-     */
-    private void mirrorConfirmationFlag(
-        ServiceEntity service,
-        BookingPolicyEntity bookingPolicy
-    ) {
-        service.setRequiresConfirmation(bookingPolicy.getAutoConfirm());
-        serviceRepository.save(service);
     }
 
     /**

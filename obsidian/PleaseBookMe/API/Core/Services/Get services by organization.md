@@ -58,7 +58,6 @@ Required **Bearer Token**
 		"minPrice": 0,
 		"maxPrice": 0,
 		"currency": "USD",
-		"requiresConfirmation": false,
 		"disableCancelling": false,
 		"disableRescheduling": false,
 		"successRedirectUrl": "",

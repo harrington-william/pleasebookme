@@ -560,10 +560,11 @@ each tab is a panel reading `useFormContext`.
   round-tripped untouched afterwards; re-deriving it from a retitle would break
   every booking URL already handed out and can collide with
   `uq_services_organization_slug`.
-- **`requiresConfirmation` maps to the policy's `autoConfirm`, not to
-  `services.requires_confirmation`.** The two columns duplicate each other, the
-  platform mirrors one onto the other, and `requires_confirmation` is being
-  dropped — so the client writes and reads `autoConfirm` only.
+- **"Requires confirmation" maps to the policy's `autoConfirm`, not to a
+  service-level field.** `services.requires_confirmation` used to duplicate it
+  and has since been dropped from the schema and the API (`ServiceRequest`/
+  `ServiceResponse` no longer carry `requiresConfirmation`) — so the client
+  writes and reads `autoConfirm` only.
 - **`bookingWindowType` is a plain `VARCHAR(50)`** with no CHECK constraint, no
   native enum and no server-side consumer yet. `ROLLING`/`FIXED` in
   `BOOKING_WINDOW_TYPES` is this client's vocabulary, not a platform contract.
