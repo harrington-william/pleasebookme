@@ -13,7 +13,7 @@ Defines a recurring weekly time window during which a schedule is open, which th
 | `id` | `BIGSERIAL` | Internal surrogate primary key. |
 | `user_id` | `BIGINT` | The user this availability window belongs to. |
 | `schedule_id` | `BIGINT` | The schedule this window is part of. |
-| `days` | `INTEGER[]` | The day(s) of the week this window recurs on. |
+| `days` | `INTEGER[]` | The day(s) of the week this window recurs on, as ISO weekday numbers `Monday = 1 … Sunday = 7` (the `java.time.DayOfWeek` values). |
 | `start_time` / `end_time` | `TIME` | The recurring daily window. |
 | `created_at` / `updated_at` | `TIMESTAMPTZ` | Row creation/last-modified timestamps. |
 

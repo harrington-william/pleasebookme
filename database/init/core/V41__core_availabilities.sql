@@ -4,8 +4,9 @@
 -- Phase 5 - Core - Availabilities
 -- =====================================================
 
--- `days` assumed as an array of weekday numbers (0-6). Not specified in
--- CORE_SCHEMA.md; revisit if a different representation was intended.
+-- `days` is an array of ISO weekday numbers (Monday=1 .. Sunday=7), matching
+-- java.time.DayOfWeek. Decided in TASK-0009; the original "0-6" wording here
+-- was an assumption, not a decision.
 CREATE TABLE core.availabilities (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,

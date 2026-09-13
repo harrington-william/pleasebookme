@@ -147,6 +147,49 @@ Established with `UserController`/`UserService`/`UserServiceImpl` — the first 
 - **`MembershipRoleEntity` CRUD** follows the `UserRoleEntity`/`RolePermissionEntity` composite-PK precedent exactly (repository is `JpaRepository<MembershipRoleEntity, MembershipRoleId>`, no custom finder methods — `findById`/`existsById`/`delete` all take a constructed `new MembershipRoleId(membershipId, roleId)`). Two FKs resolved via real repositories: `membership_id` → the just-built `MembershipRepository`, `role_id` → the already-real `RoleRepository`. `create` checks `existsById` before resolving either FK, throwing `DuplicateMembershipRoleException` on a hit — mandatory per the shared/derived-PK rule, same as `UserRoleServiceImpl`. **No `update` verb** — same reasoning as `UserRoleEntity`/`RolePermissionEntity`: the table has nothing but its composite key and an immutable `@CreationTimestamp` (`assigned_at`), so there's no mutable field to update; only `create`/`getById`/`getAll`/`delete`. Controller exposes the composite key as two path segments (`/api/v1/membership-roles/{membershipId}/{roleId}`).
 - **`organization` bounded context CRUD layer now fully implemented** — all four `organization` tables (`organizations`, `profiles`, `memberships`, `membership_roles`) have complete controller/service/repository/DTO/exception stacks, not just entities. Per `AGENTS.md`'s standing note, `MEMBERSHIP.*`/`MEMBERSHIPROLE.*` permission rows can now be added to a future seed migration since real endpoints exist to gate — this CRUD pass doesn't touch the permission seed migrations itself, that's a separate follow-up.
 
+# Slot generation
+
+`service/slot/` (TASK-0009) answers one question: *for service S on calendar date D, which `[start, end)` slots may a customer choose right now?* It **offers** slots only — it holds nothing, books nothing, and is not consulted by `BookingServiceImpl.createBooking`, so a conflicting booking can still be created through the CRUD endpoint. Ported from MVP v2's `services/slot/` with the same three-component shape.
+
+```text
+service/slot/
+  controller/SlotController        GET /api/v1/slots?serviceId=&date=YYYY-MM-DD
+  dto/TimeSlot                      record(Instant slotStart, Instant slotEnd)
+  dto/AvailableSlotsResponse        record(serviceId, date, timezone, slots)
+  engine/BufferCalculator           booking [start, end] -> [start - before, end + after]
+  engine/SlotGenerator              availability window -> candidate slots, no checks
+  engine/BookingWindowFilter        drops candidates outside [now + minimumNotice, now + maximumAdvanceBooking]
+  engine/SlotConflictValidator      candidate vs (buffered) bookings, (buffered) holds, (raw) out-of-office
+  service/SlotServiceImpl           orchestration, @Transactional(readOnly = true), six repository calls, none in a loop
+```
+
+Engine classes are pure `@Component`s: no repository, no principal, no `Instant.now()` — `now` is computed once in the service and passed down, same as `BookingSpecifications.matchesTab(tab, now)`. Every policy field the engine reads (`defaultDuration`, `slotInterval`, `beforeBuffer`, `afterBuffer`, `minimumNotice`, `maximumAdvanceBooking`) is in **minutes**.
+
+Decisions taken in TASK-0009 — these are settled, not open:
+
+| | Decision |
+|---|---|
+| Input | `serviceId` + `date`, not `userEmail` + slug as in the MVP. Slug lookup can wrap this later without touching the engine. |
+| Timezone | `schedule.timezone` interprets availability `LocalTime`s and is echoed back as `timezone`. **Not** `service.timezone` — that is presentation. |
+| Conflict scope | **Host-wide**: every booking and hold against *any service owned by the same host user* blocks, so a Haircut booking removes the Perm slot at the same time. Scoped through `booking.service.user` / `selectedSlot.service.user`, never `bookings.user_id` or `selected_slots.user_id` — the former is client-supplied on `BookingRequest`, the latter is documented inconsistently. The buffers applied are the *requested* service's. |
+| Holds | Buffered exactly like bookings. A hold is a booking-in-waiting; unbuffered, a candidate that passes now conflicts the moment it converts. |
+| Window | `minimumNotice`/`maximumAdvanceBooking` are applied; past slots are never returned. `bookingWindowType` is read but not branched on — `FIXED` behaves as `ROLLING` because no `window_start`/`window_end` columns exist. |
+
+Traps, each of which has a "why" comment at the site:
+
+- **Weekday encoding is ISO 1–7.** `core.availabilities.days` holds `Monday = 1 … Sunday = 7`, exactly `DayOfWeek.getValue()` — the service compares with no remapping. The V41 authoring comment and `CORE_SCHEMA.md` used to say "assumed 0–6"; that was an assumption, corrected by the author in TASK-0009. **The dashboard client still writes Sunday as `0`** (`client/features/availability/types/availability.ts`, `DAY_DEFINITIONS`) — a `{0}` row never matches any date here, so a Sunday-only ruleset created from the dashboard yields no slots until that literal becomes `7`.
+- **Widened load window.** A booking blocks `[start − before, end + after]`, so conflicts are loaded with `overlaps(dayStart − afterBuffer, dayEnd + beforeBuffer)`. The MVP loaded `[dayStart, dayEnd)` and missed a booking ending 23:55 the previous day blocking the 00:00 slot. The asymmetry is easy to flip — `loadFrom` subtracts the *after* buffer.
+- **Blocking statuses are an include-list**: `PENDING, ACCEPTED, AWAITING_HOST`, a constant on `SlotServiceImpl`. Soft-deleted rows (`deleted_at IS NOT NULL`) never block. `matchesTab(UPCOMING)` uses the same trio today; that is a dashboard concept, this is an engine concept — do not share the constant.
+- **Generator guard.** `core.booking_policies` has no `CHECK` on `slot_interval`/`default_duration`; a zero interval would never advance the generator's loop and hang the request thread. `SlotGenerator` throws `IllegalArgumentException` first (surfaces as a fast 500 — verified at 22 ms).
+- **Empty is 200 with `[]`, never 404.** A closed weekday, a fully booked day, and a schedule with no availability rows are all "no slots". Only an unknown service or a service without a booking policy is a 404, via the existing `ServiceNotFoundException`/`BookingPolicyNotFoundException`.
+- **Response instants are UTC and may fall on another calendar date** — a 09:00 Sydney slot is `T23:00:00Z` the day before. Consumers must not filter by UTC date.
+- **No authorization, by decision.** Any authenticated JWT — user or widget — may query any `serviceId`; the service reads no principal. Recorded in `SECURITY.md`; the cross-domain policy plan owns it.
+- **Not `startsBetween`.** `BookingSpecifications.startsBetween` is a dashboard filter on `start_time` only and misses a booking that started before `from` and is still running. Conflicts use the new `overlaps(from, to)` (`start < to AND end > from`), composed with `hasServiceOwnedBy`, `hasStatusIn`, `isNotDeleted`.
+
+Derived finders added for this: `AvailabilityRepository.findByScheduleScheduleId`, `SelectedSlotRepository.findByServiceUserUserIdAndReleaseAtAfterAndSlotStartBeforeAndSlotEndAfter` (nested path through `service.user`, resolves at context load), `OutOfOfficeRepository.findByUserUserIdAndStartTimeBeforeAndEndTimeAfter`. Bookings go through `JpaSpecificationExecutor`, no finder.
+
+Not built, recorded so it is not rediscovered: hold creation for the widget, write-time re-validation in `createBooking`, capacity/`allow_overlap`/`is_seat`, resource-aware conflicts, month/range queries, `FIXED` window semantics, a `CHECK` constraint on the policy columns, overnight availability windows (`end <= start` yields nothing, as in the MVP).
+
 # Google OAuth2 — two mechanisms, three entry points
 
 The server implements **two** unrelated Google integrations. Conflating them is the single easiest mistake to make in this area, so they are kept in separate packages with separate entry points.

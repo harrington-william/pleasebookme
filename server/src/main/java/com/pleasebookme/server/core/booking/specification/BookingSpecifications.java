@@ -26,7 +26,11 @@ public final class BookingSpecifications {
             return Specification.unrestricted();
         }
 
-        return (root, query, builder) -> builder.equal(
+        return (
+            root,
+            query,
+            builder
+        ) -> builder.equal(
             root.get("service").get("serviceId"),
             serviceId
         );
@@ -37,7 +41,11 @@ public final class BookingSpecifications {
             return Specification.unrestricted();
         }
 
-        return (root, query, builder) -> {
+        return (
+            root,
+            query,
+            builder
+        ) -> {
             Subquery<BigInteger> subquery = query.subquery(BigInteger.class);
             Root<BookingResourceEntity> bookingResource = subquery.from(BookingResourceEntity.class);
 
@@ -62,10 +70,48 @@ public final class BookingSpecifications {
             return Specification.unrestricted();
         }
 
-        return (root, query, builder) -> builder.and(
+        return (
+            root,
+            query,
+            builder
+        ) -> builder.and(
             builder.greaterThanOrEqualTo(root.get("startTime"), from),
             builder.lessThan(root.get("startTime"), to)
         );
+    }
+
+    public static Specification<BookingEntity> hasServiceOwnedBy(BigInteger hostUserId) {
+        return (
+            root,
+            query,
+            builder
+        ) -> builder.equal(
+            root.get("service").get("user").get("userId"),
+            hostUserId
+        );
+    }
+
+    public static Specification<BookingEntity> overlaps(Instant from, Instant to) {
+        if (from == null || to == null) {
+            return Specification.unrestricted();
+        }
+
+        return (
+            root,
+            query,
+            builder
+        ) -> builder.and(
+            builder.lessThan(root.get("startTime"), to),
+            builder.greaterThan(root.get("endTime"), from)
+        );
+    }
+
+    public static Specification<BookingEntity> isNotDeleted() {
+        return (
+            root,
+            query,
+            builder
+        ) -> builder.isNull(root.get("deletedAt"));
     }
 
     public static Specification<BookingEntity> hasStatusIn(Collection<BookingStatus> statuses) {
@@ -73,7 +119,11 @@ public final class BookingSpecifications {
             return Specification.unrestricted();
         }
 
-        return (root, query, builder) -> root.get("status").in(statuses);
+        return (
+            root,
+            query,
+            builder
+        ) -> root.get("status").in(statuses);
     }
 
     public static Specification<BookingEntity> matchesText(String text) {
@@ -83,13 +133,21 @@ public final class BookingSpecifications {
 
         String pattern = "%" + escapeLikeWildcards(text.trim().toLowerCase()) + "%";
 
-        return (root, query, builder) ->
+        return (
+            root,
+            query,
+            builder
+        ) ->
             builder.like(builder.lower(root.get("title")), pattern, '\\');
     }
 
     public static Specification<BookingEntity> matchesTab(BookingTab tab, Instant now) {
         return switch (tab) {
-            case UPCOMING -> (root, query, builder) -> builder.and(
+            case UPCOMING -> (
+                root,
+                query,
+                builder
+            ) -> builder.and(
                 builder.greaterThanOrEqualTo(root.get("endTime"), now),
                 root.get("status").in(
                     BookingStatus.PENDING,
@@ -97,9 +155,18 @@ public final class BookingSpecifications {
                     BookingStatus.AWAITING_HOST
                 )
             );
-            case PENDING -> (root, query, builder) ->
-                root.get("status").in(BookingStatus.PENDING, BookingStatus.AWAITING_HOST);
-            case PAST -> (root, query, builder) -> builder.and(
+
+            case PENDING -> (
+                root,
+                query,
+                builder
+            ) -> root.get("status").in(BookingStatus.PENDING, BookingStatus.AWAITING_HOST);
+
+            case PAST -> (
+                root,
+                query,
+                builder
+            ) -> builder.and(
                 builder.lessThan(root.get("endTime"), now),
                 root.get("status").in(
                     BookingStatus.PENDING,
@@ -107,8 +174,13 @@ public final class BookingSpecifications {
                     BookingStatus.AWAITING_HOST
                 )
             );
-            case CANCELLED -> (root, query, builder) ->
-                root.get("status").in(BookingStatus.CANCELLED, BookingStatus.REJECTED);
+
+            case CANCELLED -> (
+                root,
+                query,
+                builder
+            ) -> root.get("status").in(BookingStatus.CANCELLED, BookingStatus.REJECTED);
+
             case ALL -> Specification.unrestricted();
         };
     }
