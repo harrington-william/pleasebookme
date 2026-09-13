@@ -7,15 +7,6 @@ import {
   withAccessToken,
 } from "@/lib/authenticated-platform-request";
 
-/**
- * DELETE /api/integrations/google/connections/{uid}
- *
- * Revokes the grant at Google and marks the local row REVOKED.
- *
- * The platform answers 404 both for a connection that does not exist and for
- * one belonging to another user, deliberately, so this endpoint cannot be used
- * to enumerate valid connection UIDs. That 404 is passed through unchanged.
- */
 export async function DELETE(
   _request: NextRequest,
   context: { params: Promise<{ uid: string }> }

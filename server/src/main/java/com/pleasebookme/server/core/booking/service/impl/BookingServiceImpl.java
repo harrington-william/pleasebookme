@@ -3,11 +3,16 @@ package com.pleasebookme.server.core.booking.service.impl;
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
 import com.pleasebookme.server.auth.user.repository.UserRepository;
+import com.pleasebookme.server.core.booking.dto.BookingFilter;
 import com.pleasebookme.server.core.booking.dto.BookingRequest;
 import com.pleasebookme.server.core.booking.entity.BookingEntity;
 import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
 import com.pleasebookme.server.core.booking.repository.BookingRepository;
 import com.pleasebookme.server.core.booking.service.BookingService;
+import com.pleasebookme.server.core.booking.specification.BookingSort;
+import com.pleasebookme.server.core.booking.specification.BookingSpecifications;
+import com.pleasebookme.server.core.booking.specification.BookingTab;
+import com.pleasebookme.server.core.enums.BookingStatus;
 import com.pleasebookme.server.core.service.entity.ServiceEntity;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.core.service.repository.ServiceRepository;
@@ -18,10 +23,13 @@ import com.pleasebookme.server.integration.sheets.entity.DestinationSheetsEntity
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
 import com.pleasebookme.server.integration.sheets.repository.DestinationSheetsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.List;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -86,8 +94,37 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingEntity> getAllBookings() {
-        return bookingRepository.findAll();
+    public Page<BookingEntity> getBookingsByOrganizationId(
+        BigInteger organizationId,
+        BookingTab tab,
+        BookingFilter filter,
+        Pageable pageable
+    ) {
+        Pageable safePageable = BookingSort.sanitize(pageable);
+        BookingFilter appliedFilter = filter != null ? filter : BookingFilter.none();
+        Instant now = Instant.now();
+
+        Specification<BookingEntity> specification = Specification.allOf(
+            BookingSpecifications.hasOrganization(organizationId),
+            BookingSpecifications.matchesTab(tab, now),
+            BookingSpecifications.hasService(appliedFilter.serviceId()),
+            BookingSpecifications.hasResource(appliedFilter.resourceId()),
+            BookingSpecifications.matchesText(appliedFilter.q())
+        );
+
+        return bookingRepository.findAll(specification, safePageable);
+    }
+
+    @Override
+    public BookingEntity cancelBooking(BigInteger bookingId) {
+        BookingEntity booking = getBookingById(bookingId);
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            return booking;
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        return bookingRepository.save(booking);
     }
 
     @Override

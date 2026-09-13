@@ -26,6 +26,9 @@ type WithAccessTokenOptions = {
   allowSessionWrite?: boolean;
 };
 
+// Extract access & refresh tokens from cookies and make a call
+// If the access token expired -> Attempt refresh and retry call
+// If no refresh -> Destroy session and throw SessionExpiredError
 export async function withAccessToken<T>(
   call: (accessToken: string) => Promise<T>,
   { allowSessionWrite = true }: WithAccessTokenOptions = {}
@@ -47,9 +50,12 @@ export async function withAccessToken<T>(
   }
 
   let rotated;
+
   try {
     rotated = await refreshOnPlatform(refreshToken);
-  } catch {
+  } catch (error) {
+    if (!isAuthFailure(error)) throw error;
+
     if (allowSessionWrite) {
       await destroySession();
     }

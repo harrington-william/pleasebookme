@@ -18,6 +18,16 @@ import com.pleasebookme.server.organization.organizations.repository.Organizatio
 import com.pleasebookme.server.organization.profile.entity.ProfileEntity;
 import com.pleasebookme.server.organization.profile.repository.ProfileRepository;
 import com.pleasebookme.server.service.auth.service.UserProvisioningService;
+import com.pleasebookme.server.tenant.ecosystem.entity.EcosystemEntity;
+import com.pleasebookme.server.tenant.ecosystem.exception.EcosystemNotFoundException;
+import com.pleasebookme.server.tenant.ecosystem.repository.EcosystemRepository;
+import com.pleasebookme.server.tenant.enums.TenantRegion;
+import com.pleasebookme.server.tenant.enums.TenantStatus;
+import com.pleasebookme.server.tenant.plan.entity.TenantPlanEntity;
+import com.pleasebookme.server.tenant.plan.exception.TenantPlanNotFoundException;
+import com.pleasebookme.server.tenant.plan.repository.TenantPlanRepository;
+import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
+import com.pleasebookme.server.tenant.tenants.repository.TenantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +37,18 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserProvisioningServiceImpl implements UserProvisioningService {
+    private static final String DEFAULT_PLAN_CODE = "FREE";
+    private static final String DEFAULT_ECOSYSTEM_CODE = "GENERAL";
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final OrganizationRepository organizationRepository;
     private final MembershipRepository membershipRepository;
     private final ProfileRepository profileRepository;
+    private final TenantRepository tenantRepository;
+    private final EcosystemRepository ecosystemRepository;
+    private final TenantPlanRepository tenantPlanRepository;
 
     @Override
     public UserEntity provisionUser(
@@ -103,6 +119,51 @@ public class UserProvisioningServiceImpl implements UserProvisioningService {
             .build();
         profileRepository.save(profile);
 
+        EcosystemEntity ecosystem = ecosystemRepository.findByCode(DEFAULT_ECOSYSTEM_CODE)
+            .orElseThrow(() -> new EcosystemNotFoundException(
+                "Ecosystem not found: " + DEFAULT_ECOSYSTEM_CODE
+            ));
+        TenantPlanEntity plan = tenantPlanRepository.findByCode(DEFAULT_PLAN_CODE)
+            .orElseThrow(() -> new TenantPlanNotFoundException(
+                "Tenant plan not found: " + DEFAULT_PLAN_CODE
+            ));
+
+        if (plan.getMaxUsers() == null || plan.getMaxServices() == null || plan.getMaxWidgets() == null) {
+            throw new IllegalStateException("Plan FREE is missing quota limits; apply V139");
+        }
+
+        String tenantSlug = organization.getSlug();
+        if (tenantRepository.existsBySlug(tenantSlug)) {
+            tenantSlug = user.getUserUid().toString();
+        }
+
+        TenantEntity tenant = TenantEntity.builder()
+            .organization(organization)
+            .ownerUser(user)
+            .ecosystem(ecosystem)
+            .name(organization.getName())
+            .slug(tenantSlug)
+            .status(TenantStatus.ACTIVE)
+            .plan(plan)
+            .region(resolveRegion(user.getTimezone()))
+            .defaultTimezone(user.getTimezone())
+            .defaultLocale(user.getLocale())
+            .maxUsers(plan.getMaxUsers())
+            .maxServices(plan.getMaxServices())
+            .maxWidgets(plan.getMaxWidgets())
+            .build();
+        tenantRepository.save(tenant);
+
         return user;
+    }
+
+    private TenantRegion resolveRegion(String timezone) {
+        if (timezone.startsWith("Australia/")) return TenantRegion.AU;
+        if (timezone.equals("Europe/London")) return TenantRegion.UK;
+        if (timezone.startsWith("America/")) return TenantRegion.US;
+        if (timezone.equals("Asia/Singapore")) return TenantRegion.SG;
+
+        // Vietnam is the launch market when a timezone does not map to another supported region.
+        return TenantRegion.VN;
     }
 }

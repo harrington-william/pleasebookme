@@ -18,10 +18,13 @@ public record UserPrincipal(
     AuthenticatedActorType actorType,
 
     UUID subject,
+
+    @NotNull
+    BigInteger userId,
+
+    // Always null because a user can hold membership in more than 1 organization
+    // Kept only to satisfy AuthenticatedPrincipal's sealed contract
     UUID tenantUid,
-    BigInteger organizationId,
-    BigInteger membershipId,
-    BigInteger profileId,
 
     @NotBlank(message = "Username is required")
     String username,
@@ -33,6 +36,7 @@ public record UserPrincipal(
     String timezone,
 
     AccountStatus accountStatus,
+
     Set<String> roles,
     Set<String> permissions,
     Map<String, Object> attributes

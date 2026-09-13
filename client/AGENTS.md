@@ -114,6 +114,46 @@ Rules:
 Never treat layer 1 as security. Per the Next.js data-security guide, checks
 belong close to the data.
 
+### ⚠ The redirect-loop invariant
+
+**Every redirect to `/login` must also clear the session cookies, or it bounces
+straight back.** `proxy.ts` sends a signed-in visitor away from `/login`, so a
+guard that says "no session" and redirects there while the refresh cookie
+survives hands the proxy a cookie that says "signed in" — and the two redirect
+at each other until the browser gives up with `ERR_TOO_MANY_REDIRECTS`.
+
+A Server Component **cannot** clear a cookie — `cookies().delete()` is illegal
+during render — so it redirects to `SESSION_EXPIRED_REDIRECT`
+(`/login?session=expired`, `lib/auth-cookies.ts`) and `proxy.ts` does the
+clearing on its behalf. Never write a bare `redirect("/login")` in a page or
+layout. The marker is a UX signal, not a credential: anyone can type it, and all
+it achieves is signing the typist out of their own browser.
+
+This shipped broken once and reproduced on **every** visit made more than 15
+minutes after signing in — long enough after a working first login to look
+intermittent, which is why "it works, then it doesn't" was the reported symptom.
+
+### The access token is not the session signal
+
+The refresh cookie is, at *both* layers. The access cookie lives 15 minutes and
+the refresh cookie 30 days, so for almost the whole life of a session there is
+no access cookie at all — reading its absence as "signed out" is simply wrong.
+
+- `getSessionActor()` reads the access token, then falls back to the refresh
+  token. Both are JWTs carrying the same identity claims (`sub`/`actor_type`/
+  `tenant` — see `DefaultJwtGenerator` on the platform), differing only in
+  `token_type` and lifetime, so identity survives either way.
+- `withAccessToken` already had this right: missing refresh token is fatal,
+  missing access token is routine.
+
+### `SessionExpiredError` means the platform said no
+
+It must **not** be thrown for a network error, a timeout or a 5xx. Callers treat
+it as grounds to sign the user out, so widening it to every failure means a
+backend restart silently ends everyone's session. `withAccessToken` rethrows
+non-auth failures unchanged; pages surface those as a load error and keep the
+session.
+
 ## Design system
 
 `design/client/DESIGN.md` is the branding authority. The `design/client/stitch/`
@@ -156,8 +196,13 @@ the grid to a radial fade — a flat edge-to-edge grid reads as wallpaper.
 
 ```
 app/
-  (auth)/{login,register}/page.tsx   Route files: metadata only, no logic
-  (auth)/google/complete/page.tsx    PUBLIC landing for one-shot registration.
+  (public)/layout.tsx                Public shell — owns MarketingHeader. See
+                                     "The public route group" below
+  (public)/page.tsx                  Landing page: section composition only
+  (public)/(auth)/{login,register}/page.tsx
+                                     Route files: metadata only, no logic
+  (public)/(auth)/google/complete/page.tsx
+                                     PUBLIC landing for one-shot registration.
                                      Must stay outside /dashboard — see Flow 3
   api/auth/*/route.ts                BFF boundary — the only caller of gateways
   dashboard/page.tsx                 PLACEHOLDER, replace with the real one
@@ -165,6 +210,7 @@ components/
   ui/                                shadcn-managed. Do not hand-edit; the CLI
                                      overwrites this directory.
   background/                        Our own shared visual primitives
+  marketing/                         Public header/footer + landing sections
 features/<domain>/
   components/                        UI, "use client" where interactive
   hooks/                             client-only hooks
@@ -186,6 +232,25 @@ session only.
 - Pages stay thin so behaviour is reusable and testable independently of routing.
 - Put your own components in a new `components/<purpose>/` folder rather than
   `components/ui/`, which the shadcn CLI owns.
+
+### The public route group
+
+`app/(public)/` exists so one header can cover every public route while
+`/dashboard` keeps its own chrome. A child layout cannot *remove* a parent's
+header, so putting `MarketingHeader` in the root layout would leak it into the
+dashboard — grouping the public routes is the only way to scope it.
+
+- **Route groups do not change URLs.** `/`, `/login`, `/register` and
+  `/google/complete` are all unaffected, so `proxy.ts`'s `PROTECTED_PREFIXES`
+  and `GUEST_ONLY_ROUTES` need no update. Verify that if the group ever moves.
+- `(auth)` is nested inside `(public)` and still owns the centered-card `<main>`.
+- `PublicLayout` returns a fragment, not a wrapper `<div>`, so its children stay
+  direct flex items of the `body` column — a wrapper would break `flex-grow` on
+  the pages' own `<main>`.
+- Only the header is shared. The footer stays on the landing page; auth screens
+  are deliberately chrome-light.
+- ⚠ `MarketingHeader` now renders on auth routes too, so its name is narrower
+  than its job. Rename to a neutral `site-header` if that starts to mislead.
 
 ## Platform contract & known gaps
 
@@ -449,6 +514,112 @@ Non-obvious rules:
   `/google/complete`. With no session that lands on `/login?next=…` — recoverable
   and safe, but not the wording this flow would choose. Fixing it means giving
   the server a mode-aware fallback, which it cannot know once the state is gone.
+
+## The services editor
+
+One route per mode — `/dashboard/services/new` and `/dashboard/services/[id]` —
+with the section carried as `?tabName=`, mirroring cal.com's event-type editor.
+Five tabs in two groups: Setup (Basics, Availability) and Policies (Price &
+Duration, Limits & Buffers, Confirmation). `ServiceEditor` owns the whole form;
+each tab is a panel reading `useFormContext`.
+
+- **⚠ The tab is a query param, never a route segment.** Every tab edits one
+  aggregate saved by one `POST`/`PUT`, so a path segment would imply the sections
+  are separately addressable resources. The practical half matters more: a route
+  segment swaps the page *module* on navigation, React unmounts the old one, and
+  whatever the user typed is gone — which is exactly what happened when this was
+  built as `[id]/policies`. A query param changes a value, not a module, so
+  nothing unmounts.
+- **⚠ Server pages must not read `searchParams`.** The active tab is read
+  client-side via `useSearchParams()` in `ServiceEditor`. If the page or its
+  `generateMetadata` depended on the tab, every switch would round-trip to the
+  server and re-render the page mid-edit. That is also why there is no per-tab
+  `<title>` — it is available, but not worth a round trip per click.
+- **All five panels stay mounted; only the active one is displayed** (`TabPanel`
+  toggles `flex`/`hidden`). Rendering just the active panel would put the
+  unmount problem back, one level down, and hiding preserves per-panel scroll
+  position for free.
+- **Both modes submit the whole form from any tab.** `PUT /api/v1/services/{id}`
+  is full-replace, and a create posts the service and its booking policy in one
+  request — so every field stays registered regardless of which tab is visible.
+  `onInvalid` switches to the tab holding the first error, otherwise a failed
+  submit shows nothing.
+- Tab definitions live in `service-editor-navigation.ts` (id, label, group, icon,
+  and the fields each tab owns — that last one drives `onInvalid`). An unknown
+  or missing `tabName` falls back to Basics.
+- Tab links need `scroll={false}`, or every switch jumps to the top of the page.
+- `useSearchParams` would need a `<Suspense>` boundary on a prerendered route.
+  These routes are dynamic (they read cookies via `getSessionActor()`), so it
+  does not apply — re-check if that ever changes.
+- **Minutes are canonical for `minimumNotice`/`maximumAdvanceBooking`.** Both
+  columns are bare `INTEGER`s with no unit stored anywhere, so the amount/unit
+  pair exists only in the form. `duration-unit.ts` owns the conversion:
+  `toMinutes` on write, `fromMinutes` on read picking the largest unit that
+  divides evenly (120 → "2 Hours").
+- **The slug is frozen on edit.** It is derived from the title on create and
+  round-tripped untouched afterwards; re-deriving it from a retitle would break
+  every booking URL already handed out and can collide with
+  `uq_services_organization_slug`.
+- **"Requires confirmation" maps to the policy's `autoConfirm`, not to a
+  service-level field.** `services.requires_confirmation` used to duplicate it
+  and has since been dropped from the schema and the API (`ServiceRequest`/
+  `ServiceResponse` no longer carry `requiresConfirmation`) — so the client
+  writes and reads `autoConfirm` only.
+- **`bookingWindowType` is a plain `VARCHAR(50)`** with no CHECK constraint, no
+  native enum and no server-side consumer yet. `ROLLING`/`FIXED` in
+  `BOOKING_WINDOW_TYPES` is this client's vocabulary, not a platform contract.
+
+Still reserved here: the cover-image upload (`core.services` has no image column
+and the platform exposes no upload endpoint) and the resource-assignment panel.
+
+## The widgets editor
+
+`/dashboard/widgets` is a card list with two stat tiles and type/status filters
+bound to the URL; `/dashboard/widgets/new` and `/dashboard/widgets/[id]` share
+one `WidgetEditor` — a three-step wizard (Basics, Security, Review) carried as
+`?step=`, built on the same rules as the services editor plus a few of its own.
+
+- **The step is a query param, never a route segment**, for the services
+  editor's reason and one more: the generated key pair exists only in form
+  state. A route segment would unmount the form on every step change and
+  discard the secret before it was ever saved. Server pages read no
+  `searchParams`; `WidgetEditor` reads the step client-side. All three panels
+  stay mounted.
+- **The stepper is on top, not a left rail.** A wizard is sequential and reads
+  top to bottom; the services editor's rail exists because its tabs are
+  peers. Every stepper cell is a plain `Link` — gating lives in Continue
+  (`trigger(fieldsForStep)`) and in Save, so someone going back to fix a value
+  is never trapped on a later step. "Complete" ticks are derived from the
+  current values, never stored.
+- **The secret lives in form state and nowhere else.** `POST
+  /api/widgets/credentials` is the only route whose body carries a plaintext
+  secret; it is generated on demand, held in `credentials` until Save, and
+  never written to storage, a cookie, the URL, or a Server Component prop. A
+  reload mid-wizard loses it — that is correct, and the Review step says so.
+  Nothing logs request or response bodies on the widget BFF routes.
+- **Only `INLINE` is selectable.** The platform accepts four `WidgetType`s; this
+  client writes one. The other three render disabled with a "Soon" chip so the
+  roadmap is legible without pretending to work. `SUPPORTED_WIDGET_TYPES` is
+  the single list the picker and the filter both read.
+- **Origin is an embed allow-list, not a redirect URL.** The platform normalises
+  it to `scheme://host[:port]` and is the authority; the client regex is a UX
+  guardrail. A blank origin persists as `null`, and the card shows the product
+  host (`pleasebookmee.com`, the same spelling as
+  `SUCCESS_REDIRECT_URL_PLACEHOLDER`) as the visible fallback with a tooltip
+  saying what `null` actually means.
+- **Delete is a soft delete.** `DELETE` sets `status = REVOKED`; revoked widgets
+  never appear in the list and are excluded from `total`, so the Disabled
+  tile's "n revoked" detail is the only trace of them. A revoked widget's edit
+  URL → `notFound()`, since the platform answers `409` to any `PUT` on it.
+- **The enabled toggle is edit-only.** Create always yields `ACTIVE`, so
+  `status` is only meaningful on `PUT`; the form's `enabled` boolean maps to
+  `ACTIVE`/`DISABLED`.
+- **`statusOverrides` cannot re-label a BFF error.** `normalizeApiError`
+  returns the BFF's already-normalised body before consulting overrides, so
+  `createWidget` rewrites its 409 message after normalising instead.
+- Third copies of `StatTile`, pagination and the status badge live under
+  `features/widgets/components/` on purpose — extracting shared components was
+  out of scope for TASK-0008 and is noted as a follow-up.
 
 ## Environment
 

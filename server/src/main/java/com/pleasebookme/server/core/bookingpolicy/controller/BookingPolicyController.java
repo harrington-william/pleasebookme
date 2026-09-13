@@ -29,7 +29,16 @@ public class BookingPolicyController {
     }
 
     @GetMapping
-    public List<BookingPolicyResponse> getBookingPolicies() {
+    public List<BookingPolicyResponse> getBookingPolicies(
+        @RequestParam(required = false) BigInteger serviceId
+    ) {
+        if (serviceId != null) {
+            return bookingPolicyService.getBookingPolicyByServiceId(serviceId)
+                .map(BookingPolicyResponse::from)
+                .map(List::of)
+                .orElse(List.of());
+        }
+
         return bookingPolicyService.getAllBookingPolicies().stream()
             .map(BookingPolicyResponse::from)
             .toList();

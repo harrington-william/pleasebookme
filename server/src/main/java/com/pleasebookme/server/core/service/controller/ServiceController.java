@@ -2,7 +2,7 @@ package com.pleasebookme.server.core.service.controller;
 
 import com.pleasebookme.server.core.service.dto.ServiceRequest;
 import com.pleasebookme.server.core.service.dto.ServiceResponse;
-import com.pleasebookme.server.core.service.services.BusinessServiceService;
+import com.pleasebookme.server.core.service.service.BusinessServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,17 +20,19 @@ public class ServiceController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ServiceResponse createService(@Valid @RequestBody ServiceRequest request) {
-        return ServiceResponse.from(businessService.createService(request));
+        var result = businessService.createService(request);
+        return ServiceResponse.from(result.service(), result.bookingPolicy());
     }
 
     @GetMapping("/{serviceId}")
     public ServiceResponse getService(@PathVariable BigInteger serviceId) {
-        return ServiceResponse.from(businessService.getServiceById(serviceId));
+        var result = businessService.getServiceById(serviceId);
+        return ServiceResponse.from(result.service(), result.bookingPolicy());
     }
 
     @GetMapping
-    public List<ServiceResponse> getServices() {
-        return businessService.getAllServices().stream()
+    public List<ServiceResponse> getServices(@RequestParam BigInteger organizationId) {
+        return businessService.getServicesByOrganizationId(organizationId).stream()
             .map(ServiceResponse::from)
             .toList();
     }
@@ -40,7 +42,8 @@ public class ServiceController {
         @PathVariable BigInteger serviceId,
         @Valid @RequestBody ServiceRequest request
     ) {
-        return ServiceResponse.from(businessService.updateService(serviceId, request));
+        var result = businessService.updateService(serviceId, request);
+        return ServiceResponse.from(result.service(), result.bookingPolicy());
     }
 
     @DeleteMapping("/{serviceId}")

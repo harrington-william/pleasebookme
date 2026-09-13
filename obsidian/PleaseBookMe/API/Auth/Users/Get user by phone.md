@@ -1,0 +1,81 @@
+## Description
+
+---
+
+## Endpoint
+
+```json
+GET /api/v1/users/phone/{phone}
+```
+
+---
+
+## Authentication
+
+Required **Bearer Token**
+
+---
+
+## Headers
+
+```json
+{
+	"Authorization": "JWT Access Token"
+}
+```
+
+## Successful Response
+
+```json
+200 OK
+```
+
+```json
+{
+	"userId": 0,
+	"userUid": "",
+	"username": "",
+	"name": "",
+	"email": "",
+	"phone": "",
+	"bio": "",
+	"avatarUrl": "",
+	"locale": "",
+	"timezone": "",
+	"theme": "",
+	"weekStart": "",
+	"accountStatus": "",
+	"createdAt": "",
+	"updatedAt": ""
+}
+```
+
+---
+
+## Possible Errors
+
+- 401 UNAUTHORIZED
+- 403 FORBIDDEN
+- 404 USER_NOT_FOUND
+- 429 RATE_LIMIT_EXCEEDED
+
+---
+
+## Error Message
+
+```json
+{
+	"code": "USER_NOT_FOUND"
+}
+```
+
+---
+
+## Example Request
+
+```bash
+curl \
+-X GET \
+<https://api.pleasebookme.com/api/v1/users/phone/1742092018> \
+-H "Authorization: Bearer xxx"
+```

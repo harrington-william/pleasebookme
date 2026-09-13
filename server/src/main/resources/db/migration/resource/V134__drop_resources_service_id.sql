@@ -1,0 +1,1 @@
+ALTER TABLE resource.resources DROP COLUMN service_id;

@@ -11,17 +11,10 @@ import {
   withAccessToken,
 } from "@/lib/authenticated-platform-request";
 
-/**
- * POST /api/auth-adjacent BFF boundary: /api/integrations/google/connect
- *
- * Returns `{ authorizationUrl }` for the browser to navigate to. It does NOT
- * redirect: the caller is an XHR carrying no ability to follow a cross-origin
- * redirect to Google's consent screen, so the navigation has to be a deliberate
- * `window.location.assign` client-side.
- */
 export async function POST(request: NextRequest) {
   let scopes: GoogleScope[] | undefined;
 
+  // Extract body
   try {
     const body = await request.json();
 
@@ -29,13 +22,11 @@ export async function POST(request: NextRequest) {
       const requested = body.scopes.filter((scope: unknown): scope is GoogleScope =>
         (GOOGLE_SCOPES as readonly string[]).includes(scope as string)
       );
-      // An empty array means "all scopes" to the server, which is not what a
-      // caller sending an empty selection intends. Send undefined instead only
-      // when nothing valid was supplied at all.
+      // Empty array means "all scopes"
       scopes = requested.length > 0 ? requested : undefined;
     }
   } catch {
-    // No body is fine — the server treats it as "all scopes".
+    // Server treats an empty array as "all scopes"
     scopes = undefined;
   }
 
@@ -43,12 +34,6 @@ export async function POST(request: NextRequest) {
     const result = await withAccessToken((accessToken) =>
       initiateGoogleConnectOnPlatform(accessToken, {
         scopes,
-        // ALWAYS explicit. The server's DEFAULT_REDIRECT_AFTER now matches this
-        // (it was corrected from "/settings/integrations", which lacked the
-        // /dashboard prefix and would have landed outside proxy.ts's protected
-        // prefix on a route that does not exist here). Keep sending it anyway:
-        // this app's routing is not the server's to know, and the two happening
-        // to agree today is not a reason to depend on it.
         redirectAfter: "/dashboard/settings/integrations",
       })
     );

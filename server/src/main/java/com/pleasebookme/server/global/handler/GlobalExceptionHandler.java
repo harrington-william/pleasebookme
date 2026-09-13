@@ -7,6 +7,7 @@ import com.pleasebookme.server.security.token.jwt.exception.WidgetOriginMismatch
 import com.pleasebookme.server.widget.widgets.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -40,10 +41,15 @@ import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException
 import com.pleasebookme.server.core.availability.exception.AvailabilityNotFoundException;
 import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
 import com.pleasebookme.server.core.bookingpolicy.exception.BookingPolicyNotFoundException;
+import com.pleasebookme.server.core.bookingresource.exception.BookingResourceNotFoundException;
+import com.pleasebookme.server.core.bookingresource.exception.DuplicateBookingResourceException;
+import com.pleasebookme.server.core.bookingpolicy.exception.DuplicateBookingPolicyException;
 import com.pleasebookme.server.core.outofoffice.exception.OutOfOfficeNotFoundException;
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
 import com.pleasebookme.server.core.selectedslot.exception.DuplicateSelectedSlotException;
 import com.pleasebookme.server.core.selectedslot.exception.SelectedSlotNotFoundException;
+import com.pleasebookme.server.service.organization.exception.AmbiguousOrganizationContextException;
+import com.pleasebookme.server.service.organization.exception.NoOrganizationMembershipException;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.customer.activity.exception.CustomerActivityNotFoundException;
@@ -64,8 +70,9 @@ import com.pleasebookme.server.integration.syncjob.exception.SyncJobNotFoundExce
 import com.pleasebookme.server.security.oauth.google.exception.InvalidGoogleIdTokenException;
 import com.pleasebookme.server.security.oauth.google.exception.GoogleTokenExchangeException;
 import com.pleasebookme.server.security.oauth.google.exception.GoogleTokenRefreshException;
-import com.pleasebookme.server.security.identity.context.exception.ForbiddenActorException;
-import com.pleasebookme.server.security.identity.context.exception.UnauthenticatedException;
+import com.pleasebookme.server.security.authorization.exception.AuthorizationDeniedException;
+import com.pleasebookme.server.security.identity.exception.ForbiddenActorException;
+import com.pleasebookme.server.security.identity.exception.UnauthenticatedException;
 import com.pleasebookme.server.service.integration.exception.OAuthConnectionAccessDeniedException;
 import com.pleasebookme.server.service.auth.exception.GoogleAccountEmailNotVerifiedException;
 import com.pleasebookme.server.service.auth.exception.InvalidSessionHandoffException;
@@ -94,6 +101,8 @@ import com.pleasebookme.server.resource.maintenance.exception.ResourceMaintenanc
 import com.pleasebookme.server.resource.overrides.exception.ResourceOverrideNotFoundException;
 import com.pleasebookme.server.resource.pricing.exception.ResourcePricingNotFoundException;
 import com.pleasebookme.server.resource.resources.exception.DuplicateResourceException;
+import com.pleasebookme.server.resource.resourceservice.exception.DuplicateResourceServiceException;
+import com.pleasebookme.server.resource.resourceservice.exception.ResourceServiceNotFoundException;
 import com.pleasebookme.server.resource.type.exception.ResourceTypeNotFoundException;
 import com.pleasebookme.server.tenant.domain.exception.DuplicateTenantDomainException;
 import com.pleasebookme.server.tenant.domain.exception.TenantDomainNotFoundException;
@@ -104,12 +113,29 @@ import com.pleasebookme.server.tenant.plan.exception.TenantPlanNotFoundException
 import com.pleasebookme.server.tenant.tenants.exception.DuplicateTenantException;
 import com.pleasebookme.server.tenant.tenants.exception.TenantNotFoundException;
 import com.pleasebookme.server.widget.widgetorigin.exception.DuplicateWidgetOriginException;
+import com.pleasebookme.server.widget.widgetorigin.exception.InvalidWidgetOriginException;
 import com.pleasebookme.server.widget.widgetorigin.exception.WidgetOriginNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadableException(
+        HttpMessageNotReadableException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            "Invalid request body.",
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleResourceNotFoundException(
         ResourceNotFoundException exception,
@@ -494,6 +520,38 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(AmbiguousOrganizationContextException.class)
+    public ResponseEntity<ApiErrorResponse> handleAmbiguousOrganizationContextException(
+        AmbiguousOrganizationContextException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NoOrganizationMembershipException.class)
+    public ResponseEntity<ApiErrorResponse> handleNoOrganizationMembershipException(
+        NoOrganizationMembershipException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(OrganizationNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleOrganizationNotFoundException(
         OrganizationNotFoundException exception,
@@ -620,6 +678,22 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateBookingPolicyException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateBookingPolicyException(
+        DuplicateBookingPolicyException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(BookingNotFoundException.class)
@@ -782,6 +856,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(WidgetRevokedException.class)
+    public ResponseEntity<ApiErrorResponse> handleWidgetRevokedException(
+        WidgetRevokedException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(EcosystemNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleEcosystemNotFoundException(
         EcosystemNotFoundException exception,
@@ -910,6 +1000,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(InvalidWidgetOriginException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidWidgetOriginException(
+        InvalidWidgetOriginException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ResourceTypeNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleResourceTypeNotFoundException(
         ResourceTypeNotFoundException exception,
@@ -945,6 +1051,70 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateResourceException(
         DuplicateResourceException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BookingResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookingResourceNotFoundException(
+        BookingResourceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateBookingResourceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateBookingResourceException(
+        DuplicateBookingResourceException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ResourceServiceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceServiceNotFoundException(
+        ResourceServiceNotFoundException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateResourceServiceException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateResourceServiceException(
+        DuplicateResourceServiceException exception,
         HttpServletRequest request
     ) {
         ApiErrorResponse error = new ApiErrorResponse(
@@ -1725,6 +1895,26 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthorizationDeniedException(
+        AuthorizationDeniedException exception,
+        HttpServletRequest request
+    ) {
+        HttpStatus status = "OUT_OF_SCOPE".equals(exception.decision().code())
+            ? HttpStatus.NOT_FOUND
+            : HttpStatus.FORBIDDEN;
+
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.decision().code(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, status);
     }
 
     @ExceptionHandler(OAuthConnectionAccessDeniedException.class)

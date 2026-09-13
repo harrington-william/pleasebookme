@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,5 +16,20 @@ public interface MembershipRepository extends JpaRepository<MembershipEntity, Bi
         BigInteger organizationId
     );
 
-    Optional<MembershipEntity> findByUserUserId(BigInteger userId);
+    Optional<MembershipEntity> findByUserUserUidAndOrganizationOrganizationIdAndAccepted(
+        UUID userUid,
+        BigInteger organizationId,
+        Boolean accepted
+    );
+
+    Optional<MembershipEntity> findByUserUserIdAndOrganizationOrganizationIdAndAccepted(
+        BigInteger userId,
+        BigInteger organizationId,
+        Boolean accepted
+    );
+
+    List<MembershipEntity> findAllByUserUserIdAndAccepted(
+        BigInteger userId,
+        Boolean accepted
+    );
 }

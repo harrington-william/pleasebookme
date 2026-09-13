@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Repository
 public interface EcosystemRepository extends JpaRepository<EcosystemEntity, BigInteger> {
     boolean existsByCode(String code);
+
+    Optional<EcosystemEntity> findByCode(String code);
 }

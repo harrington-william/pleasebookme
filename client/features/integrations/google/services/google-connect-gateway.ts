@@ -16,6 +16,7 @@ export async function initiateGoogleConnectOnPlatform(
     request,
     { headers: bearer(accessToken) }
   );
+
   return response.data;
 }
 
@@ -26,6 +27,7 @@ export async function listGoogleConnectionsOnPlatform(
     `${GOOGLE_BASE}/connections`,
     { headers: bearer(accessToken) }
   );
+
   return response.data;
 }
 

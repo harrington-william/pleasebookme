@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create New Service - PleaseBookMe</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#c2c6d6",
+                        "background": "#101419",
+                        "surface-dim": "#101419",
+                        "on-primary": "#002e6a",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed": "#311400",
+                        "secondary": "#4edea3",
+                        "on-secondary": "#003824",
+                        "surface-container-highest": "#31353b",
+                        "tertiary-container": "#df7412",
+                        "surface-variant": "#31353b",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "inverse-surface": "#dfe2eb",
+                        "on-tertiary-container": "#461f00",
+                        "inverse-primary": "#005ac2",
+                        "inverse-on-surface": "#2d3137",
+                        "surface-container-low": "#181c22",
+                        "primary-fixed": "#d8e2ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container-high": "#262a30",
+                        "secondary-fixed": "#6ffbbe",
+                        "secondary-fixed-dim": "#4edea3",
+                        "error": "#ffb4ab",
+                        "on-tertiary": "#502400",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "primary-container": "#4d8eff",
+                        "on-secondary-fixed": "#002113",
+                        "outline": "#8c909f",
+                        "surface-container-lowest": "#0a0e14",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#ffb786",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-bright": "#353940",
+                        "surface-container": "#1c2026",
+                        "secondary-container": "#00a572",
+                        "on-secondary-container": "#00311f",
+                        "surface": "#101419",
+                        "on-primary-container": "#00285d",
+                        "on-surface": "#dfe2eb",
+                        "primary": "#adc6ff",
+                        "surface-tint": "#adc6ff",
+                        "tertiary-fixed": "#ffdcc6",
+                        "outline-variant": "#424754",
+                        "on-background": "#dfe2eb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "container-max": "1440px",
+                        "2xl": "48px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Geist"],
+                        "mono-label": ["Geist Mono"],
+                        "body-lg": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "display": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "label-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0B0D10; color: #dfe2eb; }
+        .panel { background-color: #12151A; border: 1px solid #1F2329; }
+        .input-field { background-color: #0B0D10; border: 1px solid #1F2329; border-radius: 10px; }
+        .input-field:focus { outline: none; border-color: #3B82F6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        .btn-primary { background-color: #3B82F6; color: white; border: none; }
+        .btn-primary:hover { background-color: #2563EB; }
+        .btn-secondary { background-color: transparent; border: 1px solid #1F2329; color: #dfe2eb; }
+        .btn-secondary:hover { background-color: #1C1F26; }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased overflow-x-hidden min-h-screen">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-surface fixed top-0 right-0 z-40 border-b border-outline-variant dark:border-outline-variant flex justify-between items-center h-16 px-lg left-[280px] w-[calc(100%-280px)] hidden md:flex">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">search</span>
+<input class="bg-transparent border-none text-body-md font-body-md text-on-surface focus:ring-0 placeholder:text-on-surface-variant w-64" placeholder="Search..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80"><span class="material-symbols-outlined">settings</span></button>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<button class="font-label-md text-label-md text-primary dark:text-primary hover:text-on-surface transition-colors cursor-pointer active:opacity-80 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span> Quick Create
+            </button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a software engineer in a modern dark office setting, cool blue lighting, high quality, sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwLsyd9mMekCbWPF9apQfdqvZGP2_oFHW4CBfjH-hW-NQHBzHgk1294X2LCDzbqBMHWyLbvp0jGSamydRMnmf48e-rl8awrO_Tg5xiSWRO8Y2LRPatHy-JtLmIfZn97MBj34Nm-_teXIuggQndMmvaf0I0pbbQ7eTl2tk4e0rafQVCv8Ocg4zfMqcNk1_k5sE5JJzPFeMPSe-rqZIEb_Ph4Z6ke5YkIx8UUIQIgyTwVc8Zy4MCdetO2w"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="bg-surface-container dark:bg-surface-container fixed left-0 top-0 h-full w-[280px] border-r border-outline-variant dark:border-outline-variant flex flex-col h-full py-lg px-md hidden md:flex z-50">
+<div class="mb-xl px-xs flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-primary">domain</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface">PleaseBookMe</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Enterprise Infrastructure</p>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">event_available</span>
+<span class="font-body-md text-body-md">Bookings</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">schedule</span>
+<span class="font-body-md text-body-md">Availability</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-primary dark:text-primary bg-primary-container/10 font-bold border-r-2 border-primary hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">category</span>
+<span class="font-body-md text-body-md">Services</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">inventory_2</span>
+<span class="font-body-md text-body-md">Resources</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">group</span>
+<span class="font-body-md text-body-md">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">calendar_month</span>
+<span class="font-body-md text-body-md">Calendar</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">widgets</span>
+<span class="font-body-md text-body-md">Widgets</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">analytics</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">notifications</span>
+<span class="font-body-md text-body-md">Notifications</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">extension</span>
+<span class="font-body-md text-body-md">Integrations</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">api</span>
+<span class="font-body-md text-body-md">API</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">account_circle</span>
+<span class="font-body-md text-body-md">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">dark_mode</span>
+<span class="font-body-md text-body-md">Theme</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">help</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-xs py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors scale-98 active:transition-all" href="#">
+<span class="material-symbols-outlined text-lg">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-[280px] md:mt-16 min-h-screen p-lg md:p-2xl max-w-container-max mx-auto">
+<div class="flex justify-between items-start mb-xl">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Create New Service</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Configure details, pricing, and availability rules.</p>
+</div>
+<div class="flex gap-4">
+<button class="btn-secondary px-6 py-2 rounded-lg font-label-md text-label-md transition-colors">Cancel</button>
+<button class="btn-primary px-6 py-2 rounded-lg font-label-md text-label-md transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">save</span> Save Service
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Left Column: Primary Config -->
+<div class="lg:col-span-2 space-y-lg">
+<!-- Basic Information Panel -->
+<section class="panel rounded-xl p-lg">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant">
+<span class="material-symbols-outlined text-primary">info</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Basic Information</h3>
+</div>
+<div class="space-y-6">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Service Name</label>
+<input class="input-field w-full px-4 py-3 text-on-surface font-body-md placeholder:text-outline" placeholder="e.g., Executive Consultation" type="text"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Description</label>
+<textarea class="input-field w-full px-4 py-3 text-on-surface font-body-md placeholder:text-outline resize-none" placeholder="Briefly describe the service offering..." rows="4"></textarea>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Category</label>
+<div class="relative">
+<select class="input-field w-full px-4 py-3 text-on-surface font-body-md appearance-none bg-background cursor-pointer">
+<option disabled="" selected="" value="">Select category...</option>
+<option value="consulting">Consulting</option>
+<option value="technical">Technical Support</option>
+<option value="onboarding">Client Onboarding</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Service Cover Image</label>
+<div class="input-field border-dashed border-2 flex flex-col items-center justify-center p-6 h-[52px] cursor-pointer hover:border-primary transition-colors">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">upload</span>
+<span class="font-label-md text-label-md">Upload Image (Max 2MB)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Resources & Assignment Panel -->
+<section class="panel rounded-xl p-lg">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant">
+<span class="material-symbols-outlined text-primary">group_work</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Resources &amp; Assignment</h3>
+</div>
+<div class="space-y-6">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Assigned Staff</label>
+<div class="input-field p-4 flex flex-wrap gap-2">
+<div class="bg-surface-container-high rounded-full px-3 py-1 flex items-center gap-2 border border-outline-variant">
+<div class="w-5 h-5 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Small avatar of a professional woman with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGBYtKsXlfuEdcD0zaKMM8-ng1LeXRLiFhXZV3oMWbqJp4pFq3u0ArtAifx3WmAc8IIWqkJTkSqDlWhVYyiN8ZqbSymIzdq27RxT_JWbTWO2Y9AT8dBlH5mPbm3aINE29AE8gWr3lnJcMt_6hxcuQMziy1sAEwuhywmQf6W2gh2-ybGSzQv_L-H45kKDPtrGXgc6ouIT9kr1sbnMjKKmgB5Hy5c1wRpHyE7NPoqYYb8u391DEIrbkmxQ"/>
+</div>
+<span class="font-mono-label text-mono-label text-on-surface">Sarah Jenkins</span>
+<button class="material-symbols-outlined text-sm text-on-surface-variant hover:text-error">close</button>
+</div>
+<div class="bg-surface-container-high rounded-full px-3 py-1 flex items-center gap-2 border border-outline-variant">
+<div class="w-5 h-5 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Small avatar of a professional man with short dark hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDYXdcb1moXFB7yxsPxIOjUl3GbMCG1CJ-ErDDqQqXxq0TERWpHWK4zRWlzSTg_a07xn5lrWcp84d3waawaSdif67kjFQSJTzCuVROW6mIb7GLdRVuEy3-ySsN0HCit-bQ_fvh5dRlWwErpbRvQOTKQV1qDZCfMCu1bz6-3vBf3Q8Z1T0-tUW4jYBoYFDuOLDJExlN8n7gg3s1WHnz41kPghNmnxfT05ZQjj1ejnV9BaAhNOe_a8RynQ"/>
+</div>
+<span class="font-mono-label text-mono-label text-on-surface">David Chen</span>
+<button class="material-symbols-outlined text-sm text-on-surface-variant hover:text-error">close</button>
+</div>
+<button class="rounded-full px-3 py-1 flex items-center gap-1 border border-dashed border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors font-mono-label text-mono-label">
+<span class="material-symbols-outlined text-sm">add</span> Add Staff
+                                </button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Rules & Settings -->
+<div class="space-y-lg">
+<!-- Duration & Pricing -->
+<section class="panel rounded-xl p-lg">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant">
+<span class="material-symbols-outlined text-primary">payments</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Pricing &amp; Duration</h3>
+</div>
+<div class="space-y-6">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Duration</label>
+<div class="flex gap-4">
+<input class="input-field w-full px-4 py-3 text-on-surface font-body-md text-right" type="number" value="60"/>
+<div class="relative w-32">
+<select class="input-field w-full px-4 py-3 text-on-surface font-body-md appearance-none bg-background cursor-pointer">
+<option value="min">Minutes</option>
+<option value="hr">Hours</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Price</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-body-md">$</span>
+<input class="input-field w-full pl-8 pr-16 py-3 text-on-surface font-body-md" placeholder="0.00" type="number"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono-label">USD</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Availability Rules -->
+<section class="panel rounded-xl p-lg">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant">
+<span class="material-symbols-outlined text-primary">rule</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Scheduling Rules</h3>
+</div>
+<div class="space-y-6">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Buffer Time (Before/After)</label>
+<div class="flex items-center gap-4">
+<div class="relative w-full">
+<input class="input-field w-full px-4 py-3 text-on-surface font-body-md pr-12" placeholder="15" type="number"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono-label">min</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">sync_alt</span>
+<div class="relative w-full">
+<input class="input-field w-full px-4 py-3 text-on-surface font-body-md pr-12" placeholder="15" type="number"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono-label">min</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Visibility Policy</label>
+<div class="relative">
+<select class="input-field w-full px-4 py-3 text-on-surface font-body-md appearance-none bg-background cursor-pointer">
+<option value="public">Public (Visible on booking page)</option>
+<option value="private">Private (Direct link only)</option>
+<option value="internal">Internal (Staff booking only)</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</body></html>

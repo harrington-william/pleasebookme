@@ -5,7 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.util.Optional;
+import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface WidgetOriginRepository extends JpaRepository<WidgetOriginEntity, BigInteger> {
@@ -14,5 +15,5 @@ public interface WidgetOriginRepository extends JpaRepository<WidgetOriginEntity
         String origin
     );
 
-    Optional<WidgetOriginEntity> findByWidgetWidgetId(BigInteger widgetId);
+    List<WidgetOriginEntity> findAllByWidgetWidgetIdIn(Collection<BigInteger> widgetIds);
 }
