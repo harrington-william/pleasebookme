@@ -29,7 +29,7 @@ Each row represents one recurring weekly time window — a set of days plus a st
 
 ## Lifecycle
 
-Created when a schedule's recurring hours are configured. Per the platform's MVP v1 findings (`CLAUDE.md`), available slots are computed dynamically from these rows at read time — the platform deliberately does not store pre-generated slot rows.
+Created automatically at provisioning time as a single Mon–Fri (`days = {1,2,3,4,5}`, ISO numbering) 09:00–17:00 row on the starter schedule (`WorkspaceProvisioningService.provision()`). Otherwise created when a schedule's recurring hours are configured. Per the platform's MVP v1 findings (`CLAUDE.md`), available slots are computed dynamically from these rows at read time — the platform deliberately does not store pre-generated slot rows.
 
 ## Invariants
 

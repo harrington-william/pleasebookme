@@ -26,7 +26,7 @@ Each row represents one active role assignment for one user.
 
 ## Lifecycle
 
-Created directly at user-provisioning time: every user produced by `UserProvisioningService.provisionUser()` receives a `USER` role assignment as part of the same atomic workspace-creation flow. Also directly creatable/removable via `POST`/`DELETE /api/v1/user-roles/{userId}/{roleId}`. There is no update — the table has nothing mutable beyond the immutable `assigned_at` timestamp, so revoking a role is a delete, not a state transition.
+Created directly at user-provisioning time: every user produced by `WorkspaceProvisioningService.provision()` receives a `USER` role assignment as part of the same atomic workspace-creation flow. Also directly creatable/removable via `POST`/`DELETE /api/v1/user-roles/{userId}/{roleId}`. There is no update — the table has nothing mutable beyond the immutable `assigned_at` timestamp, so revoking a role is a delete, not a state transition.
 
 ## Invariants
 

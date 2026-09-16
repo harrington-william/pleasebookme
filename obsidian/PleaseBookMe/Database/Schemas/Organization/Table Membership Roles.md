@@ -26,7 +26,7 @@ Each row represents one role assignment scoped to one organization membership.
 
 ## Lifecycle
 
-Created directly via `POST`/removed via `DELETE /api/v1/membership-roles/{membershipId}/{roleId}`. No update — the table has nothing mutable beyond the immutable `assigned_at` timestamp, same shape as `auth.user_roles`.
+Created automatically at provisioning time: the owner's starter membership receives `ORGANIZATION_OWNER` inside `WorkspaceProvisioningService.provision()`, so a fresh principal carries owner permissions from its first login. Otherwise created directly via `POST`/removed via `DELETE /api/v1/membership-roles/{membershipId}/{roleId}`. No update — the table has nothing mutable beyond the immutable `assigned_at` timestamp, same shape as `auth.user_roles`.
 
 ## Invariants
 
