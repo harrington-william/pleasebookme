@@ -45,7 +45,7 @@ Each row represents one bookable service offered by an organization — the enti
 
 ## Lifecycle
 
-Created by an authorized organization member through the standard CRUD service (`BusinessServiceImpl`). Every FK — `user`, `profile`, `organization`, `schedule`, and the two optional destination-sync FKs — is resolved through a real repository lookup; no bare-reference-entity workaround remains on this table. Full-replace `PUT` updates the whole resource, including clearing a destination-sync link when the request omits it.
+Created automatically at provisioning time as a starter `"Consultant Meeting"` (`slug = consultant-meeting`) bound to the new user/profile/organization/schedule (`WorkspaceProvisioningService.provision()`, repositories written directly since no principal exists yet). Otherwise created by an authorized organization member through the standard CRUD service (`BusinessServiceImpl`). Every FK — `user`, `profile`, `organization`, `schedule`, and the two optional destination-sync FKs — is resolved through a real repository lookup; no bare-reference-entity workaround remains on this table. Full-replace `PUT` updates the whole resource, including clearing a destination-sync link when the request omits it.
 
 ## Invariants
 

@@ -1,13 +1,13 @@
-# Workspace provisioning — INCOMPLETE, known gap
+# Workspace provisioning — one gap remaining
 
-`UserProvisioningService` is **not** a finished component. It is one slice of a
-planned **Workspace Provisioning Service** that has not been built yet. Any
-reading of the codebase that suggests "user provisioning is done" is wrong — it
-provisions an *identity*, not a *workspace*.
+`WorkspaceProvisioningService` (`service/workspace/`, TASK-0010) replaced the
+former `service/auth/UserProvisioningService`. It now provisions a *workspace*,
+not just an identity. One item on the original list is still open.
 
 ## What it creates today
 
-`UserProvisioningServiceImpl.provisionUser()` writes six rows:
+`WorkspaceProvisioningServiceImpl.provision()` writes eleven rows in one
+`@Transactional` unit:
 
 | Row | Table |
 |---|---|
@@ -15,44 +15,37 @@ provisions an *identity*, not a *workspace*.
 | USER role assignment | `auth.user_roles` |
 | Organization (`"<name>'s Organization"`) | `organization.organizations` |
 | Membership (`accepted = true`) | `organization.memberships` |
+| ORGANIZATION_OWNER role on that membership | `organization.membership_roles` |
 | Profile | `organization.profiles` |
 | FREE-plan tenant | `tenant.tenants` |
+| Schedule (`"Working Hours"`, user timezone) | `core.schedules` |
+| Availability (Mon–Fri ISO `{1..5}`, 09:00–17:00) | `core.availabilities` |
+| Service (`"Consultant Meeting"` / `consultant-meeting`) | `core.services` |
+| Booking policy (30 min, 120 min notice, 30-day rolling window, capacity 1) | `core.booking_policies` |
 
-## Provisioning status and remaining gaps
+## Remaining gaps
 
-- **Tenant — resolved by TASK-0007.** V139 completes the FREE quotas, V140 seeds
-  GENERAL, V141 backfills existing organizations, and provisioning now writes an
-  active FREE/GENERAL tenant in the registration transaction.
-- **Schedule + Availability** (`core.schedules`, `core.availabilities`) — a
-  booking product with no default working hours cannot compute a single slot, so
-  a freshly provisioned workspace is functionally dead until these exist.
-- **Notification preferences** (`notification.notification_preferences`).
-- Probably also a default `ResourceType` and a starter `Service`, so a new admin
-  lands on a usable catalog instead of an empty one. Decide deliberately before
-  building — this is a product call, not a schema call.
+- **Notification preferences** (`notification.notification_preferences`) —
+  deliberately deferred; the notification feature is not built yet.
+- **Default `ResourceType`** — undecided product call, not scheduled.
+- **Google-signup timezone.** `DefaultGoogleAccountResolver` passes
+  `timezone = null`, which falls back to `Australia/Sydney`. That was cosmetic
+  when only the user row was written; it now sets the 9–5 schedule too. The
+  client should send the browser timezone on `/auth/google` and
+  `/auth/google/authorize` so the starter schedule lands in the right zone.
 
-## Resolved tenant blockers
+## Resolved
 
-TASK-0007 resolved all five blockers without closing the remaining workspace
-provisioning gaps:
+- **Tenant — TASK-0007.** V139 completes the FREE quotas, V140 seeds GENERAL,
+  V141 backfills existing organizations.
+- **Schedule + Availability + starter Service + Booking policy — TASK-0010.**
+- **ORGANIZATION_OWNER membership role — TASK-0010.** Previously a fresh
+  membership had no role at all, so `DefaultMembershipResolver` produced an
+  empty org-role set for every new principal.
 
-1. **Resolved in V139:** the FREE plan now supplies `max_users = 1`,
-   `max_widgets = 3`, and `max_api_keys = 1` alongside its existing limits.
+## Not backfilled
 
-2. **Resolved in V140:** `GENERAL` is the neutral active ecosystem for new
-   self-serve tenants.
-
-3. **Resolved in provisioning:** region derives from supported timezone groups,
-   with `VN` as the launch-market fallback.
-
-4. **Resolved in provisioning:** self-serve FREE tenants start `ACTIVE`.
-
-5. **Resolved in provisioning:** a tenant slug collision falls back to the
-   provisioned user's UID. V138 also enforces one tenant per organization.
-
-## Historical evidence
-
-Before V139–V141, the FREE plan left required tenant quotas null, `BARBERSHOP`
-was the only ecosystem, self-serve region/status were undecided, tenant slugs
-had no collision policy, and existing organizations had no tenant. The resolved
-items above preserve that context without presenting it as current behavior.
+Users provisioned before TASK-0010 have no `membership_roles` row, no schedule,
+and no starter service. No migration backfills these — they are dev-only
+accounts at this stage. If that changes, a one-off V-migration or admin script
+is needed, keyed on memberships with zero `membership_roles` rows.

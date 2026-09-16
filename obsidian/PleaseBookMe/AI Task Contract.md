@@ -1,3 +1,11 @@
+# Metadata
+
+Title:
+Domain:
+Priority:
+Risk:
+Status: ACTIVE | COMPLETED
+
 # Structure
 
 - Identity

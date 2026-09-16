@@ -23,7 +23,8 @@ import com.pleasebookme.server.security.token.jwt.engine.JwtEngine;
 import com.pleasebookme.server.security.token.refresh.TokenRefresher;
 import com.pleasebookme.server.service.auth.dto.*;
 import com.pleasebookme.server.service.auth.service.AuthService;
-import com.pleasebookme.server.service.auth.service.UserProvisioningService;
+import com.pleasebookme.server.service.workspace.dto.WorkspaceProvisionRequest;
+import com.pleasebookme.server.service.workspace.service.WorkspaceProvisioningService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserIdentityLoader userIdentityLoader;
     private final UserPrincipalMapper userPrincipalMapper;
-    private final UserProvisioningService userProvisioningService;
+    private final WorkspaceProvisioningService workspaceProvisioningService;
 
     private final WidgetIdentityLoader widgetIdentityLoader;
 
@@ -117,13 +118,15 @@ public class AuthServiceImpl implements AuthService {
 
         Instant now = Instant.now();
 
-        UserEntity user = userProvisioningService.provisionUser(
-            request.username(),
-            request.name(),
-            request.email(),
-            request.phone(),
-            request.locale(),
-            request.timezone()
+        UserEntity user = workspaceProvisioningService.provision(
+            new WorkspaceProvisionRequest(
+                request.username(),
+                request.name(),
+                request.email(),
+                request.phone(),
+                request.locale(),
+                request.timezone()
+            )
         );
 
         UserPasswordEntity userPasswordEntity = UserPasswordEntity.builder()

@@ -29,7 +29,7 @@ Each row represents one user's presence within one organization — a staff iden
 
 ## Lifecycle
 
-Created automatically alongside a user's starter organization and membership during provisioning (`UserProvisioningService.provisionUser()`). Also directly creatable via generic CRUD for additional organizations a user joins.
+Created automatically alongside a user's starter organization and membership during provisioning (`WorkspaceProvisioningService.provision()`). Also directly creatable via generic CRUD for additional organizations a user joins.
 
 ## Invariants
 
