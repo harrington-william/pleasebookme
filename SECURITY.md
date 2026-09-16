@@ -230,7 +230,7 @@ GoogleAccountResolver (`service/auth/`) resolves the Google identity to a platfo
 
 1. Look up `auth.accounts` by (provider = GOOGLE, provider_account_id = sub). A hit is a returning user; nothing is written.
 2. Otherwise look up `auth.users` by email. A hit links the Google account to the existing user by inserting an `auth.accounts` row — but only if `email_verified` is true.
-3. Otherwise provision a new user through UserProvisioningService (the same component `register()` uses), then link.
+3. Otherwise provision a new workspace through WorkspaceProvisioningService (`service/workspace/`, the same component `register()` uses), then link.
 
 Step 2's `email_verified` gate is a critical control, not a formality. Without it, anyone able to create a Google account bearing a victim's email address — including via a domain they control that Google has not verified — could take over that platform account by signing in with Google. A false value produces GoogleAccountEmailNotVerifiedException (409) and writes nothing.
 
@@ -461,7 +461,7 @@ Remaining future work follows the same shape: API Keys and Service Accounts are 
 
 Known gaps in the Google delegated-authorization flow, in priority order:
 
-- **Workspace provisioning is still incomplete, and registration depends on it.** `UserProvisioningService` now creates the `tenant.tenants` row on `FREE`/`GENERAL` (V139–V141), but it still creates no schedule, availability, or notification preferences — see `SERVER_AGENTS.md`. Section 14 routes through the same component rather than duplicating it, so provisioning failures roll back either registration path.
+- **Workspace provisioning is nearly complete, and registration depends on it.** `WorkspaceProvisioningService` (`service/workspace/`) creates the user, `USER` role, organization, `ORGANIZATION_OWNER` membership, profile, `FREE`/`GENERAL` tenant, a Mon–Fri 9–5 schedule/availability, and a 30-minute "Consultant Meeting" service with its booking policy in one `@Transactional` unit — see `SERVER_AGENTS.md`. Notification preferences are still not created (ISSUE-0002). Section 14 routes through the same component rather than duplicating it, so provisioning failures roll back either registration path.
 - **Unverified end to end.** Every component is unit tested against mocks, and the application boots with the full wiring, but no real consent round-trip has been performed. The likeliest failure point is GoogleTokenResponse deserialisation — Jackson 3 databind is paired with 2.x annotations (`com.fasterxml.jackson.annotation`) on this classpath, which is confirmed, but an actual Google payload has never been parsed. This now gates signup, not just calendar sync.
 - **No scope enforcement at call time.** Granted scopes are persisted, but nothing yet checks them before a Calendar or Sheets call. That check belongs in the consumer, once one exists. Until then, "did this user actually grant Calendar?" is the frontend's question to ask, against the `scopes` array rather than `status` — see section 14.
 - **No concurrency guard on connect.** Two simultaneous consents for the same Google account would both attempt the upsert; the unique constraint on (user_id, provider, provider_account_id) prevents a duplicate row, but the loser currently surfaces as a raw 500 rather than being retried. On the onboarding path the same race would also mean two provisioning attempts, arbitrated by the unique constraints on `auth.users`.

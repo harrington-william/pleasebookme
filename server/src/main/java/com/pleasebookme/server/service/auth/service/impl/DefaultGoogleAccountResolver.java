@@ -8,7 +8,8 @@ import com.pleasebookme.server.global.enums.Locale;
 import com.pleasebookme.server.security.oauth.google.identity.GoogleIdentity;
 import com.pleasebookme.server.service.auth.exception.GoogleAccountEmailNotVerifiedException;
 import com.pleasebookme.server.service.auth.service.GoogleAccountResolver;
-import com.pleasebookme.server.service.auth.service.UserProvisioningService;
+import com.pleasebookme.server.service.workspace.dto.WorkspaceProvisionRequest;
+import com.pleasebookme.server.service.workspace.service.WorkspaceProvisioningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class DefaultGoogleAccountResolver implements GoogleAccountResolver {
 
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
-    private final UserProvisioningService userProvisioningService;
+    private final WorkspaceProvisioningService workspaceProvisioningService;
 
     @Override
     public UserEntity resolve(GoogleIdentity identity) {
@@ -62,13 +63,15 @@ public class DefaultGoogleAccountResolver implements GoogleAccountResolver {
     private UserEntity provisionAndLinkNewUser(GoogleIdentity identity) {
         String username = resolveAvailableUsername(identity.email());
 
-        UserEntity user = userProvisioningService.provisionUser(
-            username,
-            identity.name() != null ? identity.name() : identity.email(),
-            identity.email(),
-            null,
-            Locale.en,
-            null
+        UserEntity user = workspaceProvisioningService.provision(
+            new WorkspaceProvisionRequest(
+                username,
+                identity.name() != null ? identity.name() : identity.email(),
+                identity.email(),
+                null,
+                Locale.en,
+                null
+            )
         );
 
         AccountEntity account = AccountEntity.builder()

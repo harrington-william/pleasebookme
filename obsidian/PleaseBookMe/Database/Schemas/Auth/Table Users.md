@@ -39,7 +39,7 @@ Each row represents one platform-level user identity. It is distinct from busine
 
 ## Lifecycle
 
-- Created through one of two application entry points, both routed through the shared `UserProvisioningService.provisionUser()`: self-serve registration (`AuthServiceImpl.register()`) and the Google one-shot onboarding flow. Both create the user row atomically alongside a `USER` role assignment, a starter `organization.organizations` row, a self-accepted `organization.memberships` row, and an `organization.profiles` row — a `users` row produced by either path never exists in isolation from that starter workspace.
+- Created through one of two application entry points, both routed through the shared `WorkspaceProvisioningService.provision()`: self-serve registration (`AuthServiceImpl.register()`) and the Google one-shot onboarding flow. Both create the user row atomically alongside a `USER` role assignment, a starter `organization.organizations` row, a self-accepted `organization.memberships` row carrying `ORGANIZATION_OWNER` in `organization.membership_roles`, an `organization.profiles` row, a `FREE` `tenant.tenants` row, a Mon–Fri 9–5 `core.schedules`/`core.availabilities` pair, and a starter `core.services` ("Consultant Meeting") with its `core.booking_policies` row — a `users` row produced by either path never exists in isolation from that starter workspace.
 - Also directly creatable via generic CRUD (`POST /api/v1/users`), which persists only the `users` row itself, with none of the accompanying role/organization/membership/profile rows. See Usage Rules — this path does not produce an authenticatable identity under the platform's current identity-loading contract.
 - Updated via full-replace `PUT /api/v1/users/{userId}`.
 - Deleted via `DELETE /api/v1/users/{userId}`, a physical delete. `ON DELETE CASCADE` foreign keys mean removing a user also removes essentially every row scoped to it across `auth`, `organization`, `core`, and other schemas.
@@ -63,8 +63,8 @@ Each row represents one platform-level user identity. It is distinct from busine
 
 ## Usage Rules
 
-- Do not use `POST /api/v1/users` to provision a real, authenticatable account — it bypasses `UserProvisioningService` and produces a user with no role, organization, membership, or profile, which fails the platform's identity-loading contract. Real account creation goes through registration or Google onboarding.
-- Writes must occur through the `auth.user` service layer (`UserServiceImpl`) or the shared orchestration services that wrap it (`UserProvisioningService`, `AuthServiceImpl`) — no other domain writes to this table directly.
+- Do not use `POST /api/v1/users` to provision a real, authenticatable account — it bypasses `WorkspaceProvisioningService` and produces a user with no role, organization, membership, or profile, which fails the platform's identity-loading contract. Real account creation goes through registration or Google onboarding.
+- Writes must occur through the `auth.user` service layer (`UserServiceImpl`) or the shared orchestration services that wrap it (`WorkspaceProvisioningService`, `AuthServiceImpl`) — no other domain writes to this table directly.
 - Deletion is physical and cascades broadly; no dependency check is performed before a delete beyond the database's own foreign-key cascade behavior.
 
 ## Important Fields

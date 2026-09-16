@@ -40,7 +40,7 @@ Each row represents the reservation policy configuration for one service — the
 
 ## Lifecycle
 
-Created alongside or shortly after a service, via the standard CRUD service. As of `V126__add_booking_policy_service_unique.sql`, `service_id` carries `UNIQUE (service_id)`, so exactly one row per service is enforced at the database level, matching the product intent of one active policy per service.
+Created automatically for the starter service at provisioning time — 30-minute `FIXED` duration and interval, 120-minute minimum notice, 30-day (`43200`-minute) rolling advance window, capacity 1, auto-confirm (`WorkspaceProvisioningService.provision()`). Otherwise created alongside or shortly after a service, via the standard CRUD service. As of `V126__add_booking_policy_service_unique.sql`, `service_id` carries `UNIQUE (service_id)`, so exactly one row per service is enforced at the database level, matching the product intent of one active policy per service.
 
 ## Invariants
 

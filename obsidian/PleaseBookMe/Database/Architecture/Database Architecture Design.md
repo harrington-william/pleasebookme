@@ -79,7 +79,7 @@ Ownership is distinguished from access and reference throughout this document:
 - **Data access** — another domain reading owned data through the owner's repository/service to make a decision (e.g. `WidgetIdentityLoader` reads `widget.widgets` and `widget.widget_origins`, both of which it owns for that purpose, to admit a widget actor).
 - **Data reference** — a foreign key from one domain's table into another's, which grants no write permission (e.g. `core.services.organization_id` references `organization.organizations`, but `core` never writes to `organization.organizations`).
 
-`tenant.tenants` is the one deliberate exception worth naming explicitly: it is written by the `service/auth/` orchestration layer (`UserProvisioningService`, planned) rather than by `tenant`'s own CRUD service exclusively, because tenant creation is a side effect of a cross-domain workflow (user registration provisioning a workspace), not a standalone tenant-management operation. This is documented further in `SERVER_AGENTS.md`'s "Workspace provisioning" section and is a known, tracked gap rather than settled architecture — see section 17.
+`tenant.tenants` is the one deliberate exception worth naming explicitly: it is written by the `service/workspace/` orchestration layer (`WorkspaceProvisioningService`) rather than by `tenant`'s own CRUD service exclusively, because tenant creation is a side effect of a cross-domain workflow (user registration provisioning a workspace), not a standalone tenant-management operation. This is documented further in `SERVER_AGENTS.md`'s "Workspace provisioning" section and is a known, tracked gap rather than settled architecture — see section 17.
 
 ## 6. Domain / Schema Boundaries
 
@@ -241,7 +241,7 @@ integration.oauth_connections
 
 - **Redis-mediated handoff** (`integration/oauthstate/`, `auth/handoff/`) — an application-layer indirection, not a database relationship at all. A Postgres write (the eventual `oauth_connections` upsert, or a provisioned user) is deferred until after a Redis-stored token is consumed, decoupling the browser-facing OAuth round trip from the transactional Postgres write.
 - **Encrypted-at-rest coupling** — `integration.oauth_connections.access_token`/`refresh_token` are ciphertext (AES-256-GCM, `security/crypto/`), with `token_key_version` recording which key encrypted them. This is a coupling between the database row and an out-of-database key configuration (`security.token-encryption.*`), not a schema relationship, but it is architecturally significant: the column's meaning cannot be understood from the schema alone.
-- **Application-orchestrated cross-domain writes** — `UserProvisioningService` writes to `auth`, `organization`, and (per the planned scope in `SERVER_AGENTS.md`) `tenant`, `core`, and `notification` inside one transaction, triggered by a single registration event. This is the one place several domains' tables are written together atomically by design, not by accident — see section 8.
+- **Application-orchestrated cross-domain writes** — `WorkspaceProvisioningService` writes to `auth`, `organization`, and `tenant` and `core` (and, per the planned scope in `SERVER_AGENTS.md`, `notification`) inside one transaction, triggered by a single registration event. This is the one place several domains' tables are written together atomically by design, not by accident — see section 8.
 
 ### Coupling Rules
 

@@ -33,7 +33,7 @@ Each row represents one business on the platform — the entity every user's wor
 
 ## Lifecycle
 
-Created automatically as part of user provisioning — every newly registered or Google-onboarded user receives a starter organization named `"<name>'s Organization"` (`UserProvisioningService.provisionUser()`), created atomically alongside the user, a self-accepted membership, and a profile. Also directly creatable via generic CRUD. No subscription is required for an organization to exist or operate the booking engine — see `tenant.tenants` for the separate, optional subscription layer.
+Created automatically as part of user provisioning — every newly registered or Google-onboarded user receives a starter organization named `"<name>'s Organization"` (`WorkspaceProvisioningService.provision()`), created atomically alongside the user, a self-accepted membership, and a profile. Also directly creatable via generic CRUD. No subscription is required for an organization to exist or operate the booking engine — see `tenant.tenants` for the separate, optional subscription layer.
 
 ## Invariants
 
@@ -48,7 +48,7 @@ Created automatically as part of user provisioning — every newly registered or
 
 ## Usage Rules
 
-- Writes go through `OrganizationServiceImpl` (`organization/organizations/`), or implicitly through `UserProvisioningService` at registration time.
+- Writes go through `OrganizationServiceImpl` (`organization/organizations/`), or implicitly through `WorkspaceProvisioningService` at registration time.
 
 ## Important Fields
 

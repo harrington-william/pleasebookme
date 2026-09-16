@@ -8,6 +8,8 @@ import com.pleasebookme.server.global.enums.Locale;
 import com.pleasebookme.server.security.oauth.google.identity.GoogleIdentity;
 import com.pleasebookme.server.service.auth.exception.GoogleAccountEmailNotVerifiedException;
 import com.pleasebookme.server.service.auth.service.impl.DefaultGoogleAccountResolver;
+import com.pleasebookme.server.service.workspace.dto.WorkspaceProvisionRequest;
+import com.pleasebookme.server.service.workspace.service.WorkspaceProvisioningService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,7 +36,7 @@ class DefaultGoogleAccountResolverTest {
 
     @Mock private AccountRepository accountRepository;
     @Mock private UserRepository userRepository;
-    @Mock private UserProvisioningService userProvisioningService;
+    @Mock private WorkspaceProvisioningService workspaceProvisioningService;
 
     private DefaultGoogleAccountResolver resolver;
 
@@ -44,7 +45,7 @@ class DefaultGoogleAccountResolverTest {
         resolver = new DefaultGoogleAccountResolver(
             accountRepository,
             userRepository,
-            userProvisioningService
+            workspaceProvisioningService
         );
     }
 
@@ -61,7 +62,7 @@ class DefaultGoogleAccountResolverTest {
         assertThat(resolver.resolve(identity)).isEqualTo(existingUser);
 
         verify(userRepository, never()).findByEmail(anyString());
-        verify(userProvisioningService, never()).provisionUser(any(), any(), any(), any(), any(), any());
+        verify(workspaceProvisioningService, never()).provision(any());
         verify(accountRepository, never()).save(any());
     }
 
@@ -85,7 +86,7 @@ class DefaultGoogleAccountResolverTest {
         assertThat(accountCaptor.getValue().getProvider()).isEqualTo("GOOGLE");
         assertThat(accountCaptor.getValue().getProviderAccountId()).isEqualTo("sub-2");
 
-        verify(userProvisioningService, never()).provisionUser(any(), any(), any(), any(), any(), any());
+        verify(workspaceProvisioningService, never()).provision(any());
     }
 
     @Test
@@ -104,7 +105,7 @@ class DefaultGoogleAccountResolverTest {
             .isInstanceOf(GoogleAccountEmailNotVerifiedException.class);
 
         verify(accountRepository, never()).save(any());
-        verify(userProvisioningService, never()).provisionUser(any(), any(), any(), any(), any(), any());
+        verify(workspaceProvisioningService, never()).provision(any());
     }
 
     @Test
@@ -120,8 +121,8 @@ class DefaultGoogleAccountResolverTest {
         when(userRepository.existsByUsername("nobody")).thenReturn(false);
 
         UserEntity newUser = UserEntity.builder().username("nobody").build();
-        when(userProvisioningService.provisionUser(
-            eq("nobody"), anyString(), anyString(), isNull(), eq(Locale.en), isNull()
+        when(workspaceProvisioningService.provision(
+            new WorkspaceProvisionRequest("nobody", "Jane Doe", "nobody@example.com", null, Locale.en, null)
         )).thenReturn(newUser);
 
         assertThat(resolver.resolve(identity)).isEqualTo(newUser);
@@ -137,16 +138,16 @@ class DefaultGoogleAccountResolverTest {
         when(userRepository.findByEmail("jane.doe@example.com")).thenReturn(Optional.empty());
         when(userRepository.existsByUsername("janedoe")).thenReturn(false);
 
+        WorkspaceProvisionRequest expectedRequest = new WorkspaceProvisionRequest(
+            "janedoe", "Jane Doe", "jane.doe@example.com", null, Locale.en, null
+        );
         UserEntity newUser = UserEntity.builder()
             .username("janedoe").email("jane.doe@example.com").build();
-        when(userProvisioningService.provisionUser(
-            eq("janedoe"), eq("Jane Doe"), eq("jane.doe@example.com"), isNull(), eq(Locale.en), isNull()
-        )).thenReturn(newUser);
+        when(workspaceProvisioningService.provision(expectedRequest)).thenReturn(newUser);
 
         assertThat(resolver.resolve(identity)).isEqualTo(newUser);
 
-        verify(userProvisioningService)
-            .provisionUser("janedoe", "Jane Doe", "jane.doe@example.com", null, Locale.en, null);
+        verify(workspaceProvisioningService).provision(expectedRequest);
 
         ArgumentCaptor<AccountEntity> accountCaptor = ArgumentCaptor.forClass(AccountEntity.class);
         verify(accountRepository).save(accountCaptor.capture());
@@ -164,17 +165,12 @@ class DefaultGoogleAccountResolverTest {
         when(userRepository.existsByUsername("janedoe")).thenReturn(true);
 
         UserEntity newUser = UserEntity.builder().username("janedoe-fallback").build();
-        when(userProvisioningService.provisionUser(
-            argThatStartsWith("janedoe-"), eq("Jane Doe"), eq("jane.doe@example.com"),
-            isNull(), eq(Locale.en), isNull()
-        )).thenReturn(newUser);
+        when(workspaceProvisioningService.provision(requestWithUsernamePrefix("janedoe-")))
+            .thenReturn(newUser);
 
         resolver.resolve(identity);
 
-        verify(userProvisioningService).provisionUser(
-            argThatStartsWith("janedoe-"), eq("Jane Doe"), eq("jane.doe@example.com"),
-            isNull(), eq(Locale.en), isNull()
-        );
+        verify(workspaceProvisioningService).provision(requestWithUsernamePrefix("janedoe-"));
     }
 
     @Test
@@ -186,18 +182,26 @@ class DefaultGoogleAccountResolverTest {
             .thenReturn(Optional.empty());
         when(userRepository.findByEmail("jane.doe@example.com")).thenReturn(Optional.empty());
         when(userRepository.existsByUsername("janedoe")).thenReturn(false);
-        when(userProvisioningService.provisionUser(
-            anyString(), anyString(), anyString(), isNull(), eq(Locale.en), isNull()
-        )).thenReturn(UserEntity.builder().username("janedoe").build());
+        when(workspaceProvisioningService.provision(any()))
+            .thenReturn(UserEntity.builder().username("janedoe").build());
 
         resolver.resolve(identity);
 
-        verify(userProvisioningService).provisionUser(
-            "janedoe", "jane.doe@example.com", "jane.doe@example.com", null, Locale.en, null
+        verify(workspaceProvisioningService).provision(
+            new WorkspaceProvisionRequest("janedoe", "jane.doe@example.com", "jane.doe@example.com", null, Locale.en, null)
         );
     }
 
-    private static String argThatStartsWith(String prefix) {
-        return org.mockito.ArgumentMatchers.argThat(value -> value != null && value.startsWith(prefix));
+    private static WorkspaceProvisionRequest requestWithUsernamePrefix(String prefix) {
+        return argThat(request ->
+            request != null
+                && request.username() != null
+                && request.username().startsWith(prefix)
+                && "Jane Doe".equals(request.name())
+                && "jane.doe@example.com".equals(request.email())
+                && request.phone() == null
+                && request.locale() == Locale.en
+                && request.timezone() == null
+        );
     }
 }

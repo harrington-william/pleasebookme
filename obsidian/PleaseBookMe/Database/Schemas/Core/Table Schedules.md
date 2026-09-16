@@ -28,7 +28,7 @@ Each row represents one named schedule — a timezone-scoped container that a se
 
 ## Lifecycle
 
-Created via the standard CRUD service. A schedule has no meaningful state beyond its title/timezone — its actual availability is entirely defined by the `core.availabilities` rows attached to it, so creating a schedule with no availabilities is valid but produces no bookable time.
+Created automatically at provisioning time — every new workspace receives a `"Working Hours"` schedule in the user's timezone (`WorkspaceProvisioningService.provision()`). Otherwise created via the standard CRUD service. A schedule has no meaningful state beyond its title/timezone — its actual availability is entirely defined by the `core.availabilities` rows attached to it, so creating a schedule with no availabilities is valid but produces no bookable time.
 
 ## Invariants
 
