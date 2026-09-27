@@ -103,6 +103,15 @@ security:
       1: ${TOKEN_ENCRYPTION_KEY_V1}
 
 app:
+  rate-limit:
+    public:
+      read:
+        limit: 120
+        window: PT1M
+      write:
+        limit: 5
+        window: PT1M
+
   client:
     frontend-url: http://localhost:3000
 
@@ -129,10 +138,24 @@ app:
     allowed-headers:
       - Authorization
       - Content-Type
+      # Sent by the embedded widget's axios client on every call. Browser
+      # requests from a tenant's site are cross-origin, so a header the client
+      # adds must be allow-listed here or the preflight fails and every call is
+      # blocked — including the widget's first organization read.
+      - X-Correlation-Id
 
     exposed-headers:
       - Location
+      # Cross-origin JavaScript can only read a response header that is exposed.
+      # The widget reads Retry-After to show its rate-limit countdown; without
+      # this it silently falls back to a guessed 60 seconds.
+      - Retry-After
 
     allow-credentials: true
 
     max-age: PT30M
+
+# Native forwarding trusts headers only from Tomcat's configured internal
+# proxies, preventing direct callers from choosing their rate-limit address.
+server:
+  forward-headers-strategy: native

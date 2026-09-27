@@ -1,8 +1,8 @@
 package com.pleasebookme.server.integration.syncjob.service.impl;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
-import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
-import com.pleasebookme.server.core.booking.repository.BookingRepository;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.exception.BookingNotFoundException;
+import com.pleasebookme.server.core.booking.domain.repository.BookingRepository;
 import com.pleasebookme.server.integration.oauthconnection.entity.OAuthConnectionEntity;
 import com.pleasebookme.server.integration.oauthconnection.exception.OAuthConnectionNotFoundException;
 import com.pleasebookme.server.integration.oauthconnection.repository.OAuthConnectionRepository;

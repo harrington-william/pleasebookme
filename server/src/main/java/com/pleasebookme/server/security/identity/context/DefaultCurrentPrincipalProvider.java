@@ -5,6 +5,7 @@ import com.pleasebookme.server.security.identity.exception.ForbiddenActorExcepti
 import com.pleasebookme.server.security.identity.exception.UnauthenticatedException;
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
 import com.pleasebookme.server.security.identity.principal.UserPrincipal;
+import com.pleasebookme.server.security.identity.principal.WidgetPrincipal;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +56,19 @@ public class DefaultCurrentPrincipalProvider implements CurrentPrincipalProvider
 
         if (principal instanceof UserPrincipal userPrincipal) {
             return userPrincipal;
+        }
+
+        throw new ForbiddenActorException(
+            "Invalid actor: " + principal.actorType()
+        );
+    }
+
+    @Override
+    public WidgetPrincipal requireWidget() {
+        AuthenticatedPrincipal principal = require();
+
+        if (principal instanceof WidgetPrincipal widgetPrincipal) {
+            return widgetPrincipal;
         }
 
         throw new ForbiddenActorException(

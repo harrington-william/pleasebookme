@@ -1,6 +1,8 @@
 package com.pleasebookme.server.security.config;
 
 import com.pleasebookme.server.security.config.property.CorsProperties;
+import com.pleasebookme.server.security.ratelimit.PublicRateLimitInterceptor;
+import com.pleasebookme.server.security.ratelimit.RateLimitProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -9,15 +11,23 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 @Configuration
-@EnableConfigurationProperties(CorsProperties.class)
+@EnableConfigurationProperties({CorsProperties.class, RateLimitProperties.class})
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
     private final CorsProperties corsProperties;
+    private final PublicRateLimitInterceptor publicRateLimitInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(publicRateLimitInterceptor)
+            .addPathPatterns("/api/v1/public/**", "/api/v1/widget/**");
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

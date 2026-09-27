@@ -4,8 +4,11 @@ import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenExpiredEx
 import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenRevokedException;
 import com.pleasebookme.server.security.token.jwt.exception.TokenExpiredException;
 import com.pleasebookme.server.security.token.jwt.exception.WidgetOriginMismatchException;
+import com.pleasebookme.server.security.ratelimit.exception.RateLimitExceededException;
+import com.pleasebookme.server.service.widget.barbershop.exception.SlotUnavailableException;
 import com.pleasebookme.server.widget.widgets.exception.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -39,7 +42,7 @@ import com.pleasebookme.server.auth.userrole.exception.DuplicateUserRoleExceptio
 import com.pleasebookme.server.auth.userrole.exception.UserRoleNotFoundException;
 import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException;
 import com.pleasebookme.server.core.availability.exception.AvailabilityNotFoundException;
-import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
+import com.pleasebookme.server.core.booking.domain.exception.BookingNotFoundException;
 import com.pleasebookme.server.core.bookingpolicy.exception.BookingPolicyNotFoundException;
 import com.pleasebookme.server.core.bookingresource.exception.BookingResourceNotFoundException;
 import com.pleasebookme.server.core.bookingresource.exception.DuplicateBookingResourceException;
@@ -120,6 +123,40 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ApiErrorResponse> handleRateLimitExceededException(
+        RateLimitExceededException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .header(HttpHeaders.RETRY_AFTER, Long.toString(exception.getRetryAfterSeconds()))
+            .body(error);
+    }
+
+    @ExceptionHandler(SlotUnavailableException.class)
+    public ResponseEntity<ApiErrorResponse> handleSlotUnavailableException(
+        SlotUnavailableException exception,
+        HttpServletRequest request
+    ) {
+        ApiErrorResponse error = new ApiErrorResponse(
+            "error",
+            exception.getMessage(),
+            null,
+            request.getRemoteAddr(),
+            request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadableException(
         HttpMessageNotReadableException exception,

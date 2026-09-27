@@ -48,8 +48,6 @@ function toServiceRequest(input: ServicePayload): ServiceRequest {
       maximumAdvanceBooking: input.maximumAdvanceBooking,
       bookingWindowType: input.bookingWindowType,
       capacity: input.capacity,
-      // core.services.requires_confirmation duplicates this column and is being
-      // dropped; the platform mirrors it from here, so only auto_confirm is sent.
       autoConfirm: input.requiresConfirmation,
     },
   };

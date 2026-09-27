@@ -1,6 +1,6 @@
 package com.pleasebookme.server.core.attendee.entity;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
 import com.pleasebookme.server.global.enums.Locale;
 import jakarta.persistence.*;
 import java.math.BigInteger;

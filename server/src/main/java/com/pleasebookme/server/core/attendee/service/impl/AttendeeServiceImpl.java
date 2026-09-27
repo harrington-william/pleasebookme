@@ -5,9 +5,9 @@ import com.pleasebookme.server.core.attendee.entity.AttendeeEntity;
 import com.pleasebookme.server.core.attendee.exception.AttendeeNotFoundException;
 import com.pleasebookme.server.core.attendee.repository.AttendeeRepository;
 import com.pleasebookme.server.core.attendee.service.AttendeeService;
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
-import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
-import com.pleasebookme.server.core.booking.repository.BookingRepository;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.exception.BookingNotFoundException;
+import com.pleasebookme.server.core.booking.domain.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

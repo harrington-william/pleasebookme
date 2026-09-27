@@ -23,6 +23,7 @@ import com.pleasebookme.server.organization.membership.entity.MembershipEntity;
 import com.pleasebookme.server.organization.membership.repository.MembershipRepository;
 import com.pleasebookme.server.organization.membershiprole.entity.MembershipRoleEntity;
 import com.pleasebookme.server.organization.membershiprole.repository.MembershipRoleRepository;
+import com.pleasebookme.server.organization.organizations.ReservedOrganizationSlugs;
 import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
 import com.pleasebookme.server.organization.organizations.repository.OrganizationRepository;
 import com.pleasebookme.server.organization.profile.entity.ProfileEntity;
@@ -153,7 +154,10 @@ public class WorkspaceProvisioningServiceImpl implements WorkspaceProvisioningSe
             .replace(" ", "") +
             "-organization";
 
-        if (organizationRepository.existsBySlug(organizationSlug)) {
+        if (
+            ReservedOrganizationSlugs.isReserved(organizationSlug) ||
+            organizationRepository.existsBySlug(organizationSlug)
+        ) {
             organizationSlug = user.getUserUid().toString();
         }
 

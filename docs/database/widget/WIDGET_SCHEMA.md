@@ -54,7 +54,6 @@ Widget to tenant’s website
 
 - INLINE
 - POPUP
-- FULL_PAGE
 - EMBEDDED
 
 ---

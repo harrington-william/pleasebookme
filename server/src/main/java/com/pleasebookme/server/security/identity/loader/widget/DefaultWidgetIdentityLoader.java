@@ -64,10 +64,7 @@ public class DefaultWidgetIdentityLoader implements WidgetIdentityLoader {
     }
 
     private void validateOrigin(WidgetEntity widget, String origin) {
-        if (!widget.getOriginValidation()) {
-            return;
-        }
-
+        // No registered origin must not exempt a widget from status or expiry checks.
         if (widget.getStatus() != WidgetStatus.ACTIVE) {
             throw new WidgetNotActiveException("Widget is not active");
         }
@@ -77,6 +74,10 @@ public class DefaultWidgetIdentityLoader implements WidgetIdentityLoader {
             widget.getExpiresAt().isBefore(Instant.now())
         ) {
             throw new WidgetExpiredException("Widget expired");
+        }
+
+        if (!widget.getOriginValidation()) {
+            return;
         }
 
         boolean valid = widgetOriginRepository.existsByWidgetWidgetIdAndOrigin(

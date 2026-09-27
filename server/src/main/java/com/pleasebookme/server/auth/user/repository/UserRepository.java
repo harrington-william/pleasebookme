@@ -1,7 +1,9 @@
 package com.pleasebookme.server.auth.user.repository;
 
 import com.pleasebookme.server.auth.user.entity.UserEntity;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -17,6 +19,9 @@ public interface UserRepository extends JpaRepository<UserEntity, BigInteger> {
     Optional<UserEntity> findByPhone(String phone);
 
     Optional<UserEntity> findByUserUid(UUID uid);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<UserEntity> findLockedByUserId(BigInteger userId);
 
     boolean existsByUsername(String username);
 

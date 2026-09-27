@@ -4,7 +4,6 @@ import {
   AppWindow,
   CodeXml,
   LayoutTemplate,
-  Maximize2,
   type LucideIcon,
 } from "lucide-react";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -21,7 +20,6 @@ import { cn } from "@/lib/utils";
 const TYPE_OPTIONS: Record<WidgetType, { icon: LucideIcon; hint: string }> = {
   INLINE: { icon: LayoutTemplate, hint: "Renders inside your page" },
   POPUP: { icon: AppWindow, hint: "Opens over your page" },
-  FULL_PAGE: { icon: Maximize2, hint: "A hosted booking page" },
   EMBEDDED: { icon: CodeXml, hint: "Script-injected container" },
 };
 
@@ -31,7 +29,7 @@ function isSupported(type: WidgetType): boolean {
 
 /**
  * Real radio inputs, visually hidden, so keyboard and assistive tech get radio
- * semantics for free. The platform accepts all four types but this client
+ * semantics for free. The platform accepts all three types but this client
  * ships one; the others stay visible and disabled so the roadmap is legible
  * without pretending to work.
  */
@@ -40,7 +38,7 @@ export function WidgetTypePicker() {
   const selected = useWatch({ control, name: "type" });
 
   return (
-    <fieldset className="grid grid-cols-2 gap-sm md:grid-cols-4">
+    <fieldset className="grid grid-cols-2 gap-sm md:grid-cols-3">
       <legend className="sr-only">Widget type</legend>
 
       {WIDGET_TYPES.map((type) => {

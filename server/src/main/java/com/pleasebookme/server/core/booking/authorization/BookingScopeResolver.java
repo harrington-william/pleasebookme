@@ -1,6 +1,6 @@
 package com.pleasebookme.server.core.booking.authorization;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
 import com.pleasebookme.server.security.authorization.scope.ResourceScope;
 import com.pleasebookme.server.security.authorization.scope.ScopeResolver;
 import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
