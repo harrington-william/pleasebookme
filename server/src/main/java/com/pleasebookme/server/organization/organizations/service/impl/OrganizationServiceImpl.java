@@ -1,6 +1,7 @@
 package com.pleasebookme.server.organization.organizations.service.impl;
 
 import com.pleasebookme.server.organization.organizations.dto.OrganizationRequest;
+import com.pleasebookme.server.organization.organizations.ReservedOrganizationSlugs;
 import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
 import com.pleasebookme.server.organization.organizations.exception.DuplicateOrganizationException;
 import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
@@ -19,6 +20,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public OrganizationEntity createOrganization(OrganizationRequest request) {
+        rejectReservedSlug(request.slug());
+
         if (organizationRepository.existsBySlug(request.slug())) {
             throw new DuplicateOrganizationException("Slug already exists: " + request.slug());
         }
@@ -55,6 +58,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         BigInteger organizationId,
         OrganizationRequest request
     ) {
+        rejectReservedSlug(request.slug());
+
         OrganizationEntity organization = getOrganizationById(organizationId);
 
         organization.setName(request.name());
@@ -73,5 +78,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public void deleteOrganization(BigInteger organizationId) {
         organizationRepository.delete(getOrganizationById(organizationId));
+    }
+
+    private void rejectReservedSlug(String slug) {
+        if (ReservedOrganizationSlugs.isReserved(slug)) {
+            throw new DuplicateOrganizationException("Slug is reserved: " + slug);
+        }
     }
 }

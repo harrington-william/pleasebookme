@@ -15,7 +15,7 @@ Issues a credentialed embeddable booking widget for a tenant, distributed to the
 | `tenant_id` | `BIGINT` | The tenant this widget belongs to. |
 | `name` | `VARCHAR(255)` | Caller-assigned label for the widget. |
 | `status` | `widget.widget_status` | `REGISTERING` / `ACTIVE` / `DISABLED` / `REVOKED`. |
-| `type` | `widget.widget_type` | `INLINE` / `POPUP` / `FULL_PAGE` / `EMBEDDED`. |
+| `type` | `widget.widget_type` | `INLINE` / `POPUP` / `EMBEDDED`. Hosted full-page booking is not a widget row. |
 | `origin_validation` | `BOOLEAN` | Whether requests are checked against registered origins. |
 | `public_key` | `TEXT` | Public, non-secret identifier for the widget; unique. |
 | `secret_key` | `TEXT` | BCrypt hash of the widget's private authentication secret. |

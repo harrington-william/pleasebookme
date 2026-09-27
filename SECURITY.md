@@ -180,6 +180,28 @@ JWT
 
 JwtClaims and JwtClaimsFactory are actor-agnostic (actorType, subject, tenant, tokenId, tokenType, timestamps), so the same JWT shape and issuance/verification code serves both User and Widget. JwtAuthenticationFilter reads claims.actorType() on every request to decide whether to resolve the subject through UserIdentityLoader or WidgetIdentityLoader.
 
+Embedded widget channel
+
+`/api/v1/widget/**` is the first surface a widget can actually use. Four endpoints — organization, service, slots, create booking — served by `service/widget/embedded` over the shared `service/widget/barbershop` flow.
+
+What authenticates it: the JWT minted by the existing bootstrap endpoint, unchanged. What gates each request:
+
+- `CurrentPrincipalProvider.requireWidget()` — an exact mirror of `requireUser()`. No principal is 401; a *user* principal is 403. A user's token cannot read a widget's tenant.
+- `WidgetPrincipal.isActive()`, checked by `EmbeddedWidgetOrganizationResolver` on every request, so revoking a widget stops its existing token at the next call rather than at expiry. This is the check `ActorStatusPolicy` performs for every other resource; it is made directly here because the authorization engine is not invoked on this channel.
+- The served-tenant gate (`ACTIVE`/`TRIAL`), collapsed to the same 404 the hosted page returns, with no tenant or widget id in the message.
+- Redis IP rate limiting, the same buckets and the same fail-closed behaviour as the public channel.
+
+What scopes it: **the principal, and nothing else.** No endpoint on this channel accepts a tenant, organization, user or widget identifier in a path, query or body. The resolver reads `WidgetPrincipal.tenantId()`, loads that tenant, and returns its organization. Cross-tenant access is not prevented by a check that could be forgotten — there is no input that could express it.
+
+A related fix landed with it: `DefaultWidgetIdentityLoader` now applies its status and expiry checks before the `originValidation` early return. A widget with no registered origin was previously exempt from both, so a revoked one could still bootstrap.
+
+Deferred by explicit decision to the cross-domain authorization policy plan, not overlooked:
+
+- **The authorization engine is not consulted on this channel.** No `@PreAuthorize`, no `AuthorizationService`, no `ScopeResolver`. `WidgetCapabilityPolicy`'s slug allow-list (`SERVICE.READ`, `AVAILABILITY.READ`, `SELECTEDSLOT.CREATE/DELETE`, `BOOKING.CREATE`, `ATTENDEE.CREATE`) and `WidgetTenantIsolationPolicy` are both unreached. The capability surface is four endpoints, by construction rather than by policy. Note for whoever wires it: `AuthorizationPermissionEvaluator.decide` passes `ResourceScope.unscoped()`, so `WidgetTenantIsolationPolicy` would deny every widget call today — the evaluator needs scope resolution first.
+- **Bootstrap reads `origin` from the request body, not the browser `Origin` header.** A browser cannot forge the body value any more than the header, but a non-browser caller supplies whatever it likes, so origin validation is a check against replay from another *page*, not against a scripted client. The header-based version is the intended end state; the prose above describing a header check is aspirational.
+- **Nothing re-verifies origin after bootstrap.** The token carries no origin claim, so for its 15 minutes it is bearer-equivalent from anywhere.
+- **Both keys ship in the client's browser bundle.** `NEXT_PUBLIC_PBM_PUBLIC_KEY` and `NEXT_PUBLIC_PBM_SECRET_KEY` live in the consuming site's own `.env.local` and are inlined at build time. This is inherent to a browser-side widget and is accepted: the controls that carry weight are tenant pinning, the CORS allow-list, rate limiting, and origin validation at bootstrap.
+
 Not Yet Implemented
 
 WidgetPrincipal currently has no scopes or authority set — a widget authenticates successfully but AuthenticationTokenFactory grants it an empty GrantedAuthority collection. A capability model (e.g. reusing the auth.permissions slug vocabulary as a fixed, non-RBAC scope set per widget) is expected but not yet built. The widget bootstrap flow does exist at `POST /api/v1/auth/widget/bootstrap`: it exchanges the public/secret key pair and request origin for a JWT through `WidgetIdentityLoader.loadByPublicKey`. The first read endpoint built for widgets, `GET /api/v1/slots` (TASK-0009), is reachable by any authenticated actor — user or widget — for any `serviceId`, with no tenant, origin, or service scoping, by explicit decision pending the cross-domain authorization policy plan; it exposes only time intervals, never the bookings, holds, or absences that produced them.
@@ -458,6 +480,18 @@ Google Sign-In likewise did not introduce a new actor type. It produces the same
 The one-shot registration flow in section 14 is a further illustration: it introduced no actor type, no principal, no IdentityLoader, and no schema change whatsoever. It reuses section 11's resolver and section 12's writer behind one transaction, and adds a single new piece — the session handoff — which exists solely to cross an origin boundary, not to authenticate anything.
 
 Remaining future work follows the same shape: API Keys and Service Accounts are added by introducing a new IdentityLoader (and only an AuthenticationAggregate/PrincipalMapper pair if the actor's identity genuinely requires a multi-table join), adding the new concrete type to AuthenticatedPrincipal's permits list, and adding its branch to AuthenticationTokenFactory's switch — the compiler enforces that the last two steps aren't skipped. Regardless of whether authentication originates from Username/Password, JWT, OAuth, API Keys, or Widget Tokens, the remainder of the platform continues to operate exclusively on AuthenticatedPrincipal.
+
+## Full-Page Widget Endpoints
+
+(Formerly "Public Booking Endpoints". The server package was renamed `service/publicbooking` → `service/widget/fullpage` on 2026-09-22 and the hosted page moved to the client route `/booking/{organizationSlug}`. The wire contract below is unchanged.)
+
+`GET` and `POST /api/v1/public/**` are `permitAll` by explicit product decision. A visitor has no platform account and receives no guest token; the organization and service slugs in the URL are the only identity inputs. Responses contain public presentation fields, availability, and the booking just created—never tenant, organization, host, schedule, or other-booking identifiers.
+
+Spring enforces Redis fixed-window rate limits per remote IP: 120 reads and 5 writes per minute by default. Redis errors fail closed as 500s. Booking creation then locks the host user and re-runs slot generation inside the write transaction, preventing two concurrent visitors from taking the same host time. Missing, suspended, and otherwise unserved tenants intentionally look identical on the wire. Reserved slugs are no longer a category here: the resolver's `ReservedOrganizationSlugs` short-circuit was removed with the route move, because under `/booking/{slug}` an organization slug cannot shadow an application route and organization creation already refuses those names. Nothing became reachable that was not reachable before — such a row cannot exist.
+
+The Next.js BFF forwards `X-Forwarded-For` only when its own inbound request contains one. Spring uses `server.forward-headers-strategy: native`, so Tomcat accepts that address only from configured internal proxies. Production must narrow `server.tomcat.remoteip.internal-proxies` to its real proxy network; `framework` forwarding must not be used for this boundary.
+
+Rate limiting does not prove that a caller is human and does not stop a distributed botnet. hCaptcha and IP/email/phone blacklists are pending controls. The full-page widget also has no idempotency key, attendee cancel/reschedule token, notification write, or customer-record upsert in PLATFORM V1.
 
 Known gaps in the Google delegated-authorization flow, in priority order:
 

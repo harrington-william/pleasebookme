@@ -1,6 +1,6 @@
 package com.pleasebookme.server.integration.syncjob.entity;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
 import com.pleasebookme.server.integration.enums.SyncJobStatus;
 import com.pleasebookme.server.integration.enums.SyncJobType;
 import com.pleasebookme.server.integration.oauthconnection.entity.OAuthConnectionEntity;

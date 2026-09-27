@@ -1,6 +1,6 @@
 package com.pleasebookme.server.core.booking.authorization;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
 import com.pleasebookme.server.security.authorization.context.AuthorizationContext;
 import com.pleasebookme.server.security.authorization.decision.AuthorizationDecision;
 import com.pleasebookme.server.security.authorization.policy.AuthorizationPolicy;

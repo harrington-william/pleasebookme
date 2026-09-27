@@ -2,9 +2,9 @@ package com.pleasebookme.server.service.dashboard.service.impl;
 
 import com.pleasebookme.server.core.attendee.entity.AttendeeEntity;
 import com.pleasebookme.server.core.attendee.repository.AttendeeRepository;
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
-import com.pleasebookme.server.core.booking.repository.BookingRepository;
-import com.pleasebookme.server.core.booking.specification.BookingSpecifications;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.repository.BookingRepository;
+import com.pleasebookme.server.core.booking.domain.specification.BookingSpecifications;
 import com.pleasebookme.server.core.bookingresource.entity.BookingResourceEntity;
 import com.pleasebookme.server.core.bookingresource.repository.BookingResourceRepository;
 import com.pleasebookme.server.core.enums.BookingStatus;

@@ -7,12 +7,12 @@ export const WIDGET_STATUSES = [
 
 export type WidgetStatus = (typeof WIDGET_STATUSES)[number];
 
-export const WIDGET_TYPES = ["INLINE", "POPUP", "FULL_PAGE", "EMBEDDED"] as const;
+export const WIDGET_TYPES = ["INLINE", "POPUP", "EMBEDDED"] as const;
 
 export type WidgetType = (typeof WIDGET_TYPES)[number];
 
 /**
- * The platform accepts all four types; this client ships one. Everything that
+ * The platform accepts all three types; this client ships one. Everything that
  * offers a type to the user — the picker, the filter — reads from this list,
  * so widening it later is a one-line change.
  */
@@ -21,7 +21,6 @@ export const SUPPORTED_WIDGET_TYPES = ["INLINE"] as const satisfies readonly Wid
 export const WIDGET_TYPE_LABELS: Record<WidgetType, string> = {
   INLINE: "Inline",
   POPUP: "Popup",
-  FULL_PAGE: "Full page",
   EMBEDDED: "Embedded",
 };
 

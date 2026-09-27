@@ -118,3 +118,9 @@ Both map straight from `WidgetEntity` in one step — there is no aggregation an
 **Not Yet Implemented**
 
 `WidgetPrincipal` currently carries no scopes or authorities of its own — `AuthenticationTokenFactory` grants an empty authority set, and `WidgetCapabilityPolicy`'s hardcoded allow-list is the only thing standing in for a real capability model. See **[[Security Architecture]]** section 12 for the anticipated evolution.
+
+## Consumers
+
+`CurrentPrincipalProvider.requireWidget()` is the sanctioned way to read a widget principal outside the security package — the exact mirror of `requireUser()`, throwing `UnauthenticatedException` (401) with no principal and `ForbiddenActorException` (403) for a non-widget actor.
+
+Its first consumer is `EmbeddedWidgetOrganizationResolver` (`service/widget/embedded`), which reads `tenantId()` to decide which organization the `/api/v1/widget/**` endpoints serve, and `isActive()` to refuse a widget revoked after its token was minted. See [[Embedded Widget Service]].

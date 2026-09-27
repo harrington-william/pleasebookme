@@ -35,7 +35,7 @@ Required **Bearer Token**
 | Parameter | Required | Description |
 |---|---|---|
 | `organizationId` | Yes | Organization whose tenant widgets should be listed. |
-| `type` | No | `INLINE`, `POPUP`, `FULL_PAGE`, or `EMBEDDED`. |
+| `type` | No | `INLINE`, `POPUP`, or `EMBEDDED`. |
 | `status` | No | Status filter. `REVOKED` deliberately returns an empty page. |
 | `page` | No | Zero-based page number; defaults to `0`. |
 | `size` | No | Page size; defaults to `20` and is capped at `100`. |

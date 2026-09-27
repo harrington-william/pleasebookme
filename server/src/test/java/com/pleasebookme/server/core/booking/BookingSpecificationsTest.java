@@ -1,7 +1,7 @@
 package com.pleasebookme.server.core.booking;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
-import com.pleasebookme.server.core.booking.specification.BookingSpecifications;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.specification.BookingSpecifications;
 import com.pleasebookme.server.core.enums.BookingStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;

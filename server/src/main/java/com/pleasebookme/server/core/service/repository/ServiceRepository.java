@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<ServiceEntity, BigInteger> {
@@ -15,4 +16,9 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, BigInteg
     );
 
     List<ServiceEntity> findByOrganizationOrganizationId(BigInteger organizationId);
+
+    Optional<ServiceEntity> findByOrganizationOrganizationIdAndSlug(
+        BigInteger organizationId,
+        String slug
+    );
 }
