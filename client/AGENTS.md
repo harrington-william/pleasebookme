@@ -254,7 +254,7 @@ dashboard — grouping the public routes is the only way to scope it.
 
 ## Platform contract & known gaps
 
-Auth endpoints are under `/api/v1/auth` and are the only `permitAll()` paths.
+Auth endpoints are under `/api/v1/auth`; the deliberately anonymous `/api/v1/public/**` booking namespace is the other `permitAll()` surface.
 
 | Endpoint    | Notes                                                        |
 | ----------- | ------------------------------------------------------------ |
@@ -597,7 +597,7 @@ one `WidgetEditor` — a three-step wizard (Basics, Security, Review) carried as
   never written to storage, a cookie, the URL, or a Server Component prop. A
   reload mid-wizard loses it — that is correct, and the Review step says so.
   Nothing logs request or response bodies on the widget BFF routes.
-- **Only `INLINE` is selectable.** The platform accepts four `WidgetType`s; this
+- **Only `INLINE` is selectable.** The platform accepts three `WidgetType`s; this
   client writes one. The other three render disabled with a "Soon" chip so the
   roadmap is legible without pretending to work. `SUPPORTED_WIDGET_TYPES` is
   the single list the picker and the filter both read.
@@ -703,6 +703,24 @@ corrected alongside the loader code, not before it.
   Component calls the gateway directly. Add one only if something client-side
   needs to refetch without a full `router.refresh()`; don't build it
   speculatively.
+
+## The full-page widget (the hosted booking page)
+
+The hosted customer flow lives in `app/(public)/booking/[organizationSlug]/`, so it **inherits `MarketingHeader`** on purpose — a visitor must be able to leave the page without editing the URL. It is a "hybrid full page": one centered card (`BookingShell`, `max-w-5xl`, viewport-tall on `md+`) that a single `BookingWidget` fills with all six steps in memory — Service → Date → Time → Details → Review → Done. Both `/booking/{organizationSlug}` and `/booking/{organizationSlug}/{serviceSlug}` render the same widget; the second just starts at Date with the service preselected, and "change service" is a step back, not a navigation.
+
+**The `/booking` prefix is deliberate (2026-09-22).** The page used to sit at the client's root, `/{organizationSlug}`, which meant every marketing route the platform might ever add (`/pricing`, `/blog`) had to be reserved against organization slugs on the server — a list that only grows and that can collide with a slug a tenant already owns. Prefixing gives organization slugs their own namespace and keeps `/booking/*`, `/dashboard/*` and future `/embed/*` visibly separate. The server package was renamed to match (`service/widget/fullpage`); the API path `/api/v1/public/**` and the BFF routes under `app/api/public/**` did **not** move. `proxy.ts` needs no entry: `/booking/*` is neither protected nor guest-only.
+
+- **The sidebar is one component that morphs** (`BookingSidebar`): on the Service step it shows the organization's logo, name, bio and — because `organizations` has no address column — a location only when every bookable service shares one. From Date onward it becomes the step list plus the chosen service's summary and `location`. Both states enter with `animate-in fade-in slide-in-from-left-2`; the progress bar animates its width. These are the only animations, and they were asked for after the demo review.
+- **Picking a service fetches its detail through `GET /api/public/{org}/service/{svc}`** (a BFF route) and advances; the card shows an inline spinner while it loads.
+- **Stepping back keeps every choice up to the target step and clears the ones after it** (`goToStep` in `booking-widget.tsx`): from Review, editing the date clears the slot and the typed details; editing the details keeps them. Moving forward (`advance`) never clears anything. A reload still restarts the flow.
+- **Every clickable control carries `cursor-pointer`** (and `disabled:cursor-not-allowed`). Tailwind v4 dropped the pointer cursor from `<button>`, and customers expect the same feel as other booking tools.
+- Service cards are `<button>`s with the price vertically centred at `text-headline-lg-mobile`; the previously chosen service stays outlined when the visitor comes back to the list.
+
+The widget uses the app's dark semantic tokens; Stitch tonal names map to `background`, `surface`, `surface-container`, `surface-hover`, `border`, `muted-foreground`, and `primary`. No Stitch hex values belong in feature code.
+
+The feature folder is still `features/public-booking/` even though the server package is now `service/widget/fullpage` — it is deliberately not renamed, because TASK-0012 replaces this code wholesale with the shared widget library rather than editing it in place. Server Components read through `public-booking-gateway.ts`. Browser service-detail reads, slot reads and booking writes use `app/api/public/**` Route Handlers and `public-booking-api.ts`, preserving the BFF hop. These public routes must never read cookies or attach a Bearer token. They forward `X-Forwarded-For` only if the hosting proxy supplied it on the inbound request.
+
+All timezone-sensitive arithmetic lives in `features/public-booking/lib/date-math.ts`. The visitor's local day may overlap two dates in the schedule timezone, so `use-available-slots.ts` requests at most those two dates, merges them, and filters slot instants back to the visitor day. The calendar is hand-rolled over `YYYY-MM-DD` strings and `Intl.formatToParts`; no date/calendar library is used because browser-local `Date` calendar APIs cannot represent a selectable date in an arbitrary display timezone reliably.
 
 ## Before you commit
 

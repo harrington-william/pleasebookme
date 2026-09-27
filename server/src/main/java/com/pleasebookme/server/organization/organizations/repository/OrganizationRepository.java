@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Repository
 public interface OrganizationRepository extends JpaRepository<OrganizationEntity, BigInteger> {
     boolean existsBySlug(String slug);
+
+    Optional<OrganizationEntity> findBySlug(String slug);
 }

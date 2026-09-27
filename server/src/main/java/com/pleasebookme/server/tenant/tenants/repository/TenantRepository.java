@@ -2,6 +2,7 @@ package com.pleasebookme.server.tenant.tenants.repository;
 
 import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -11,5 +12,11 @@ import java.util.Optional;
 public interface TenantRepository extends JpaRepository<TenantEntity, BigInteger> {
     boolean existsBySlug(String slug);
 
+    // Channel resolvers run before the booking transaction, without relying on OSIV.
+    @Override
+    @EntityGraph(attributePaths = {"organization", "ecosystem"})
+    Optional<TenantEntity> findById(BigInteger id);
+
+    @EntityGraph(attributePaths = "ecosystem")
     Optional<TenantEntity> findByOrganizationOrganizationId(BigInteger organizationId);
 }

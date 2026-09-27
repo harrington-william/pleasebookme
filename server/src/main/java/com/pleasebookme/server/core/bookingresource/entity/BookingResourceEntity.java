@@ -1,6 +1,6 @@
 package com.pleasebookme.server.core.bookingresource.entity;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
 import com.pleasebookme.server.core.bookingresource.id.BookingResourceId;
 import com.pleasebookme.server.resource.resources.entity.ResourceEntity;
 import jakarta.persistence.*;

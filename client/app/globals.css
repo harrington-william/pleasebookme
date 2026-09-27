@@ -92,6 +92,10 @@
   --text-headline-md--letter-spacing: -0.01em;
   --text-headline-md--font-weight: 500;
 
+  --text-headline-sm: 18px;
+  --text-headline-sm--line-height: 26px;
+  --text-headline-sm--font-weight: 600;
+
   --text-body-lg: 16px;
   --text-body-lg--line-height: 24px;
   --text-body-lg--letter-spacing: 0;

@@ -13,6 +13,7 @@ export interface ApiError {
   message: string;
   status: number;
   fieldErrors?: Record<string, string>;
+  retryAfterSeconds?: number;
 }
 
 export class ApiRequestError extends Error {
@@ -89,7 +90,11 @@ export function normalizeApiError(
       typeof (data as ApiError).message === "string" &&
       typeof (data as ApiError).status === "number"
     ) {
-      return data as ApiError;
+      const normalized = data as ApiError;
+      const retryAfter = Number(error.response.headers["retry-after"]);
+      return Number.isFinite(retryAfter)
+        ? { ...normalized, retryAfterSeconds: retryAfter }
+        : normalized;
     }
 
     if (statusOverrides[status]) {

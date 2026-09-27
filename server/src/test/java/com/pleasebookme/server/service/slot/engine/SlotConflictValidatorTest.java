@@ -1,6 +1,6 @@
 package com.pleasebookme.server.service.slot.engine;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
 import com.pleasebookme.server.core.outofoffice.entity.OutOfOfficeEntity;
 import com.pleasebookme.server.core.selectedslot.entity.SelectedSlotEntity;
 import com.pleasebookme.server.service.slot.dto.TimeSlot;

@@ -1,8 +1,8 @@
 package com.pleasebookme.server.core.bookingresource.service.impl;
 
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
-import com.pleasebookme.server.core.booking.exception.BookingNotFoundException;
-import com.pleasebookme.server.core.booking.repository.BookingRepository;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.exception.BookingNotFoundException;
+import com.pleasebookme.server.core.booking.domain.repository.BookingRepository;
 import com.pleasebookme.server.core.bookingresource.dto.BookingResourceRequest;
 import com.pleasebookme.server.core.bookingresource.entity.BookingResourceEntity;
 import com.pleasebookme.server.core.bookingresource.exception.BookingResourceNotFoundException;

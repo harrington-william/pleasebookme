@@ -2,9 +2,9 @@ package com.pleasebookme.server.service.slot.service.impl;
 
 import com.pleasebookme.server.core.availability.entity.AvailabilityEntity;
 import com.pleasebookme.server.core.availability.repository.AvailabilityRepository;
-import com.pleasebookme.server.core.booking.entity.BookingEntity;
-import com.pleasebookme.server.core.booking.repository.BookingRepository;
-import com.pleasebookme.server.core.booking.specification.BookingSpecifications;
+import com.pleasebookme.server.core.booking.domain.entity.BookingEntity;
+import com.pleasebookme.server.core.booking.domain.repository.BookingRepository;
+import com.pleasebookme.server.core.booking.domain.specification.BookingSpecifications;
 import com.pleasebookme.server.core.bookingpolicy.entity.BookingPolicyEntity;
 import com.pleasebookme.server.core.bookingpolicy.exception.BookingPolicyNotFoundException;
 import com.pleasebookme.server.core.bookingpolicy.repository.BookingPolicyRepository;

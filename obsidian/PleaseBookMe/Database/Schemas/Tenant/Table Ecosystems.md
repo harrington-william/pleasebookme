@@ -33,6 +33,10 @@ Each row represents one business-category vertical a tenant can be classified un
 
 Seeded with the vertical-specific `BARBERSHOP` row in V100 and the neutral active `GENERAL` row in V140. Registration assigns `GENERAL`; additional ecosystems can be created through the standard CRUD service.
 
+V144 re-seeds `BARBERSHOP` with `ON CONFLICT (code) DO NOTHING` and is therefore a **no-op** — it was written for the widget library without noticing V100, so the row keeps V100's name `Barbershops`. It is retained because it has already been applied and removing an applied migration fails Flyway's validate at boot.
+
+`code` is what the widget library's `registry.ts` switches on to choose which ecosystem's widget to render, so these values are a wire contract, not just labels.
+
 ## Invariants
 
 - `code` is globally unique.

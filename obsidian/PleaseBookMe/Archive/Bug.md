@@ -1,0 +1,1 @@
+Auto confirm booking return a awaiting host
