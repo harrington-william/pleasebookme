@@ -1,4 +1,4 @@
-package com.pleasebookme.server.service.organization.context;
+package com.pleasebookme.server.security.identity.context.organization.context;
 
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.organization.membership.entity.MembershipEntity;

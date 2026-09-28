@@ -1,4 +1,4 @@
-package com.pleasebookme.server.service.organization.service.impl;
+package com.pleasebookme.server.security.identity.context.organization.service.impl;
 
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.exception.UserNotFoundException;
@@ -10,12 +10,12 @@ import com.pleasebookme.server.organization.profile.exception.ProfileNotFoundExc
 import com.pleasebookme.server.organization.profile.repository.ProfileRepository;
 import com.pleasebookme.server.security.authorization.membership.MembershipResolver;
 import com.pleasebookme.server.security.authorization.membership.MembershipSnapshot;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.organization.service.CurrentOrganizationProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import com.pleasebookme.server.security.identity.principal.UserPrincipal;
-import com.pleasebookme.server.service.organization.context.OrganizationContext;
-import com.pleasebookme.server.service.organization.exception.AmbiguousOrganizationContextException;
-import com.pleasebookme.server.service.organization.exception.NoOrganizationMembershipException;
-import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
+import com.pleasebookme.server.security.identity.context.organization.context.OrganizationContext;
+import com.pleasebookme.server.security.identity.context.organization.exception.AmbiguousOrganizationContextException;
+import com.pleasebookme.server.security.identity.context.organization.exception.NoOrganizationMembershipException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,19 +63,19 @@ public class DefaultCurrentOrganizationProvider implements CurrentOrganizationPr
 
         if (organizationId == null) {
             throw new NoOrganizationMembershipException(
-                "User " + principal.userId() + " supplied no organization to act in."
+                "User " + principal.userId() + " supplied no organization."
             );
         }
 
         MembershipSnapshot snapshot = membershipResolver
             .resolve(principal.subject(), organizationId)
             .orElseThrow(() -> new NoOrganizationMembershipException(
-                "User " + principal.userId() + " has no accepted membership in organization " + organizationId + "."
+                "User " + principal.userId() + " has no accepted membership in organization " + organizationId
             ));
 
         MembershipEntity membership = membershipRepository.findById(snapshot.membershipId())
             .orElseThrow(() -> new NoOrganizationMembershipException(
-                "User " + principal.userId() + " has no accepted membership in organization " + organizationId + "."
+                "User " + principal.userId() + " has no accepted membership in organization " + organizationId
             ));
 
         return toContext(principal.userId(), membership);

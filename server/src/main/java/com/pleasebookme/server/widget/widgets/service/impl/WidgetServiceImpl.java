@@ -1,8 +1,8 @@
 package com.pleasebookme.server.widget.widgets.service.impl;
 
-import com.pleasebookme.server.service.organization.context.OrganizationContext;
-import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
-import com.pleasebookme.server.service.tenant.service.CurrentTenantProvider;
+import com.pleasebookme.server.security.identity.context.organization.context.OrganizationContext;
+import com.pleasebookme.server.security.identity.context.organization.service.CurrentOrganizationProvider;
+import com.pleasebookme.server.security.identity.context.tenant.service.CurrentTenantProvider;
 import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
 import com.pleasebookme.server.widget.enums.WidgetStatus;
 import com.pleasebookme.server.widget.widgetorigin.entity.WidgetOriginEntity;

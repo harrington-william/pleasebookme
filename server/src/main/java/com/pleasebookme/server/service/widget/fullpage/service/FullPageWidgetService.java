@@ -1,10 +1,10 @@
 package com.pleasebookme.server.service.widget.fullpage.service;
 
 import com.pleasebookme.server.service.slot.dto.AvailableSlotsResponse;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetBookingRequest;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetBookingResponse;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetOrganizationResponse;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetServiceResponse;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetBookingRequest;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetBookingResponse;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetOrganizationResponse;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetServiceResponse;
 
 import java.time.LocalDate;
 

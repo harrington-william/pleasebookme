@@ -1,7 +1,7 @@
-package com.pleasebookme.server.service.organization.service;
+package com.pleasebookme.server.security.identity.context.organization.service;
 
 import com.pleasebookme.server.organization.profile.entity.ProfileEntity;
-import com.pleasebookme.server.service.organization.context.OrganizationContext;
+import com.pleasebookme.server.security.identity.context.organization.context.OrganizationContext;
 
 import java.math.BigInteger;
 

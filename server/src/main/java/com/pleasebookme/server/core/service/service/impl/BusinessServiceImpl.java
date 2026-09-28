@@ -19,8 +19,8 @@ import com.pleasebookme.server.integration.calendar.repository.DestinationCalend
 import com.pleasebookme.server.integration.sheets.entity.DestinationSheetsEntity;
 import com.pleasebookme.server.integration.sheets.exception.DestinationSheetsNotFoundException;
 import com.pleasebookme.server.integration.sheets.repository.DestinationSheetsRepository;
-import com.pleasebookme.server.service.organization.context.OrganizationContext;
-import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
+import com.pleasebookme.server.security.identity.context.organization.context.OrganizationContext;
+import com.pleasebookme.server.security.identity.context.organization.service.CurrentOrganizationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

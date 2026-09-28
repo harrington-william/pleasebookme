@@ -1,6 +1,6 @@
 package com.pleasebookme.server.service.widget.embedded;
 
-import com.pleasebookme.server.security.identity.context.DefaultCurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.DefaultCurrentPrincipalProvider;
 import com.pleasebookme.server.security.identity.enums.AuthenticatedActorType;
 import com.pleasebookme.server.security.identity.exception.ForbiddenActorException;
 import com.pleasebookme.server.security.identity.exception.UnauthenticatedException;

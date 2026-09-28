@@ -20,9 +20,9 @@ import com.pleasebookme.server.integration.sheets.repository.DestinationSheetsRe
 import com.pleasebookme.server.organization.membership.entity.MembershipEntity;
 import com.pleasebookme.server.organization.organizations.entity.OrganizationEntity;
 import com.pleasebookme.server.organization.profile.entity.ProfileEntity;
-import com.pleasebookme.server.service.organization.context.OrganizationContext;
-import com.pleasebookme.server.service.organization.exception.AmbiguousOrganizationContextException;
-import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
+import com.pleasebookme.server.security.identity.context.organization.context.OrganizationContext;
+import com.pleasebookme.server.security.identity.context.organization.exception.AmbiguousOrganizationContextException;
+import com.pleasebookme.server.security.identity.context.organization.service.CurrentOrganizationProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

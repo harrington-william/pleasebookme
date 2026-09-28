@@ -5,7 +5,7 @@ import com.pleasebookme.server.auth.refreshtoken.exception.RefreshTokenRevokedEx
 import com.pleasebookme.server.security.token.jwt.exception.TokenExpiredException;
 import com.pleasebookme.server.security.token.jwt.exception.WidgetOriginMismatchException;
 import com.pleasebookme.server.security.ratelimit.exception.RateLimitExceededException;
-import com.pleasebookme.server.service.widget.barbershop.exception.SlotUnavailableException;
+import com.pleasebookme.server.service.booking.barbershop.exception.SlotUnavailableException;
 import com.pleasebookme.server.widget.widgets.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -51,8 +51,8 @@ import com.pleasebookme.server.core.outofoffice.exception.OutOfOfficeNotFoundExc
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
 import com.pleasebookme.server.core.selectedslot.exception.DuplicateSelectedSlotException;
 import com.pleasebookme.server.core.selectedslot.exception.SelectedSlotNotFoundException;
-import com.pleasebookme.server.service.organization.exception.AmbiguousOrganizationContextException;
-import com.pleasebookme.server.service.organization.exception.NoOrganizationMembershipException;
+import com.pleasebookme.server.security.identity.context.organization.exception.AmbiguousOrganizationContextException;
+import com.pleasebookme.server.security.identity.context.organization.exception.NoOrganizationMembershipException;
 import com.pleasebookme.server.core.service.exception.DuplicateServiceException;
 import com.pleasebookme.server.core.service.exception.ServiceNotFoundException;
 import com.pleasebookme.server.customer.activity.exception.CustomerActivityNotFoundException;

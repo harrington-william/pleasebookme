@@ -9,7 +9,7 @@ import com.pleasebookme.server.core.availability.repository.AvailabilityReposito
 import com.pleasebookme.server.core.schedule.dto.ScheduleResponse;
 import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import com.pleasebookme.server.service.availabilityruleset.service.AvailabilityRulesetService;
 import com.pleasebookme.server.service.availabilityruleset.dto.AvailabilityRulesetRequest;
 import com.pleasebookme.server.service.availabilityruleset.dto.AvailabilityRulesetResponse;

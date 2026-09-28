@@ -1,7 +1,7 @@
-package com.pleasebookme.server.service.tenant.service.impl;
+package com.pleasebookme.server.security.identity.context.tenant.service.impl;
 
-import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
-import com.pleasebookme.server.service.tenant.service.CurrentTenantProvider;
+import com.pleasebookme.server.security.identity.context.organization.service.CurrentOrganizationProvider;
+import com.pleasebookme.server.security.identity.context.tenant.service.CurrentTenantProvider;
 import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
 import com.pleasebookme.server.tenant.tenants.exception.TenantNotFoundException;
 import com.pleasebookme.server.tenant.tenants.repository.TenantRepository;
@@ -28,8 +28,7 @@ public class CurrentTenantProviderImpl implements CurrentTenantProvider {
     public TenantEntity requireByOrganizationId(BigInteger organizationId) {
         return tenantRepository.findByOrganizationOrganizationId(organizationId)
             .orElseThrow(() -> new TenantNotFoundException(
-                "Organization " + organizationId
-                    + " has no tenant; it predates tenant provisioning (V141)"
+                "Tenant not found for organization with ID: " + organizationId
             ));
     }
 }
