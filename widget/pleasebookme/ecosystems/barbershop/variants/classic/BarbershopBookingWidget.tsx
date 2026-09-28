@@ -49,6 +49,7 @@ export function BarbershopBookingWidget() {
       activeStep={step}
       onNavigate={step === "done" ? undefined : navigateCompleted}
     >
+      {/* Step 1: Select a service */}
       {step === "service" ? (
         <>
           <StepHeader step="service" title="Choose a Service" subtitle="Pick what you'd like to book." />
@@ -62,6 +63,7 @@ export function BarbershopBookingWidget() {
         </>
       ) : null}
 
+      {/* Step 2: Select a date */}
       {step === "date" && service ? (
         <>
           <StepHeader step="date" title="Select a Date" subtitle="Choose when you'd like to visit." />
@@ -82,6 +84,7 @@ export function BarbershopBookingWidget() {
         </>
       ) : null}
 
+      {/* Step 3: Select time slot */}
       {step === "time" && service && selectedDate ? (
         <>
           <StepHeader step="time" title="Select Time" subtitle={formatLongDate(selectedDate, visitorZone, "short")} />
@@ -97,6 +100,7 @@ export function BarbershopBookingWidget() {
         </>
       ) : null}
 
+      {/* Step 4: Attendee information */}
       {step === "details" && service && selectedDate && selectedSlot ? (
         <>
           <StepHeader step="details" title="Your Details" subtitle="Please provide your contact information to finalize the booking." />
@@ -106,6 +110,7 @@ export function BarbershopBookingWidget() {
         </>
       ) : null}
 
+      {/* Step 5: Review */}
       {step === "review" && service && selectedSlot && details ? (
         <>
           <StepHeader step="review" title="Review Booking" subtitle="Please review your appointment details before confirming." />
@@ -125,6 +130,7 @@ export function BarbershopBookingWidget() {
         </>
       ) : null}
 
+      {/* Success page */}
       {step === "done" && service && result ? (
         <BookingSuccess service={service} booking={result} visitorZone={visitorZone} onBookAnother={bookAnother} />
       ) : null}

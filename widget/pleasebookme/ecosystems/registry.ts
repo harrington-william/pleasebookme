@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import { BarbershopBookingWidget } from "./barbershop/variants/kinetic/BarbershopBookingWidget";
+import { BarbershopBookingWidget } from "./barbershop/variants/classic/BarbershopBookingWidget";
 
 export const ECOSYSTEM_WIDGETS: Record<string, ComponentType> = {
   BARBERSHOP: BarbershopBookingWidget,

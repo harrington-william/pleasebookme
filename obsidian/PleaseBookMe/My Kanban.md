@@ -23,7 +23,6 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] Move `BarbershopService` to a new `booking` directory in orchestration service
 - [ ] Rename the kinetic BarbershopBookingWidget to classic
 - [ ] Add Accept Booking feature to Booking page
 - [ ] Build Email notification service using RabbitMQ
@@ -36,6 +35,7 @@ kanban-plugin: board
 ## Completed
 
 **Complete**
+- [x] Move `BarbershopService` to a new `booking` directory in orchestration service
 
 
 
