@@ -1,9 +1,12 @@
 package com.pleasebookme.server.service.widget.embedded.service.impl;
 
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetBookingRequest;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetBookingResponse;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetOrganizationResponse;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetServiceResponse;
 import com.pleasebookme.server.service.widget.embedded.EmbeddedWidgetOrganizationResolver;
 import com.pleasebookme.server.service.widget.embedded.service.EmbeddedWidgetService;
-import com.pleasebookme.server.service.widget.barbershop.service.BarbershopBookingService;
-import com.pleasebookme.server.service.widget.barbershop.dto.*;
+import com.pleasebookme.server.service.booking.barbershop.service.BarbershopBookingService;
 import com.pleasebookme.server.service.slot.dto.AvailableSlotsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

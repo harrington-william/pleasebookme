@@ -1,6 +1,6 @@
 package com.pleasebookme.server.service.auth.controller;
 
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import com.pleasebookme.server.service.auth.dto.*;
 import com.pleasebookme.server.service.auth.service.AuthService;

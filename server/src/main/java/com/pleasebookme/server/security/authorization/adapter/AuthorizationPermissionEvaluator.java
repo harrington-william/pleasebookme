@@ -4,7 +4,7 @@ import com.pleasebookme.server.security.authorization.context.AuthorizationConte
 import com.pleasebookme.server.security.authorization.decision.AuthorizationDecision;
 import com.pleasebookme.server.security.authorization.scope.ResourceScope;
 import com.pleasebookme.server.security.authorization.service.AuthorizationService;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.PermissionEvaluator;

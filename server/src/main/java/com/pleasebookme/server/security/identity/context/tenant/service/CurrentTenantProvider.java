@@ -1,4 +1,4 @@
-package com.pleasebookme.server.service.tenant.service;
+package com.pleasebookme.server.security.identity.context.tenant.service;
 
 import com.pleasebookme.server.tenant.tenants.entity.TenantEntity;
 

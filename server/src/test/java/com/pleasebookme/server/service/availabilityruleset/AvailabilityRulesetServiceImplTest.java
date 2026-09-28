@@ -8,7 +8,7 @@ import com.pleasebookme.server.core.availability.entity.AvailabilityEntity;
 import com.pleasebookme.server.core.availability.repository.AvailabilityRepository;
 import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import com.pleasebookme.server.security.identity.enums.AuthenticatedActorType;
 import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import com.pleasebookme.server.service.availabilityruleset.dto.AvailabilityRulesetRequest;

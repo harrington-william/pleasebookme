@@ -1,4 +1,4 @@
-package com.pleasebookme.server.security.identity.context;
+package com.pleasebookme.server.security.identity.context.principal;
 
 import com.pleasebookme.server.security.identity.principal.AuthenticatedPrincipal;
 import com.pleasebookme.server.security.identity.principal.UserPrincipal;

@@ -1,7 +1,7 @@
 package com.pleasebookme.server.service.widget.embedded;
 
 import com.pleasebookme.server.organization.organizations.exception.OrganizationNotFoundException;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import com.pleasebookme.server.service.widget.ServedOrganization;
 import com.pleasebookme.server.service.widget.ServedTenantStatuses;
 import com.pleasebookme.server.tenant.tenants.repository.TenantRepository;

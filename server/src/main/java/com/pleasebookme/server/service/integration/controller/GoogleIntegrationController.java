@@ -1,6 +1,6 @@
 package com.pleasebookme.server.service.integration.controller;
 
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import com.pleasebookme.server.service.integration.dto.GoogleConnectRequest;
 import com.pleasebookme.server.service.integration.dto.GoogleConnectResponse;
 import com.pleasebookme.server.service.integration.dto.OAuthConnectionSummaryResponse;

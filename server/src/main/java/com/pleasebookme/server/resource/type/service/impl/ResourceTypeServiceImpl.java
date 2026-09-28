@@ -5,8 +5,8 @@ import com.pleasebookme.server.resource.type.entity.ResourceTypeEntity;
 import com.pleasebookme.server.resource.type.exception.ResourceTypeNotFoundException;
 import com.pleasebookme.server.resource.type.repository.ResourceTypeRepository;
 import com.pleasebookme.server.resource.type.service.ResourceTypeService;
-import com.pleasebookme.server.service.organization.context.OrganizationContext;
-import com.pleasebookme.server.service.organization.service.CurrentOrganizationProvider;
+import com.pleasebookme.server.security.identity.context.organization.context.OrganizationContext;
+import com.pleasebookme.server.security.identity.context.organization.service.CurrentOrganizationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

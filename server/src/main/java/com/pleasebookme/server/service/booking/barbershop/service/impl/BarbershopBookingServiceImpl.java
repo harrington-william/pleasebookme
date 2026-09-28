@@ -1,4 +1,4 @@
-package com.pleasebookme.server.service.widget.barbershop.service.impl;
+package com.pleasebookme.server.service.booking.barbershop.service.impl;
 
 import com.pleasebookme.server.auth.user.entity.UserEntity;
 import com.pleasebookme.server.auth.user.repository.UserRepository;
@@ -19,13 +19,13 @@ import com.pleasebookme.server.organization.organizations.exception.Organization
 import com.pleasebookme.server.service.slot.dto.AvailableSlotsResponse;
 import com.pleasebookme.server.service.slot.dto.TimeSlot;
 import com.pleasebookme.server.service.slot.service.SlotService;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetBookingRequest;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetBookingResponse;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetOrganizationResponse;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetServiceResponse;
-import com.pleasebookme.server.service.widget.barbershop.dto.WidgetServiceSummary;
-import com.pleasebookme.server.service.widget.barbershop.exception.SlotUnavailableException;
-import com.pleasebookme.server.service.widget.barbershop.service.BarbershopBookingService;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetBookingRequest;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetBookingResponse;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetOrganizationResponse;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetServiceResponse;
+import com.pleasebookme.server.service.booking.barbershop.dto.WidgetServiceSummary;
+import com.pleasebookme.server.service.booking.barbershop.exception.SlotUnavailableException;
+import com.pleasebookme.server.service.booking.barbershop.service.BarbershopBookingService;
 import com.pleasebookme.server.service.widget.ServedOrganization;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -187,7 +187,7 @@ public class BarbershopBookingServiceImpl implements BarbershopBookingService {
             throw new SlotUnavailableException("That time is no longer available");
         }
 
-        // PENDING has broader legacy meaning; AWAITING_HOST explicitly represents
+        // PENDING has broader legacy meaning, AWAITING_HOST explicitly represents
         // a valid public request that still needs the business to confirm it.
         BookingStatus status = Boolean.TRUE.equals(policy.getAutoConfirm())
             ? BookingStatus.ACCEPTED
@@ -197,11 +197,7 @@ public class BarbershopBookingServiceImpl implements BarbershopBookingService {
             BookingEntity.builder()
                 .user(host)
                 .service(service)
-                // "<service> with <attendee>", per TASK-0011 D7 — not the MVP v2
-                // BookingResolver's "<service> - <customer>". The host reads this in
-                // their calendar, and it matches the "with …" phrasing the booking
-                // page already uses. Do not regress it while porting from the MVP.
-                .title(service.getTitle() + " with " + request.name())
+                .title(service.getTitle() + " - " + request.name())
                 .description(request.notes())
                 .location(service.getLocation())
                 .startTime(request.slotStart())

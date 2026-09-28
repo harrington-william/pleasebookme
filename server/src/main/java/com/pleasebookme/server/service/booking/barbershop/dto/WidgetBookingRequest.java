@@ -1,4 +1,4 @@
-package com.pleasebookme.server.service.widget.barbershop.dto;
+package com.pleasebookme.server.service.booking.barbershop.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

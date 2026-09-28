@@ -8,7 +8,7 @@ import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
 import com.pleasebookme.server.core.schedule.exception.ScheduleNotFoundException;
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
 import com.pleasebookme.server.core.schedule.service.ScheduleService;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

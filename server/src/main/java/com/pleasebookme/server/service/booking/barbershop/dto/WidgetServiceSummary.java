@@ -1,4 +1,4 @@
-package com.pleasebookme.server.service.widget.barbershop.dto;
+package com.pleasebookme.server.service.booking.barbershop.dto;
 
 import com.pleasebookme.server.global.enums.Currency;
 

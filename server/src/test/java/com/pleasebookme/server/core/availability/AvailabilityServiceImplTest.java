@@ -10,7 +10,7 @@ import com.pleasebookme.server.core.availability.repository.AvailabilityReposito
 import com.pleasebookme.server.core.availability.service.impl.AvailabilityServiceImpl;
 import com.pleasebookme.server.core.schedule.entity.ScheduleEntity;
 import com.pleasebookme.server.core.schedule.repository.ScheduleRepository;
-import com.pleasebookme.server.security.identity.context.CurrentPrincipalProvider;
+import com.pleasebookme.server.security.identity.context.principal.CurrentPrincipalProvider;
 import com.pleasebookme.server.security.identity.enums.AuthenticatedActorType;
 import com.pleasebookme.server.security.identity.principal.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
