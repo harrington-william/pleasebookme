@@ -128,6 +128,30 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public BookingEntity acceptBooking(BigInteger bookingId) {
+        BookingEntity booking = getBookingById(bookingId);
+
+        if (booking.getStatus() == BookingStatus.ACCEPTED) {
+            return booking;
+        }
+
+        booking.setStatus(BookingStatus.ACCEPTED);
+        return bookingRepository.save(booking);
+    }
+
+    @Override
+    public BookingEntity rejectBooking(BigInteger bookingId) {
+        BookingEntity booking = getBookingById(bookingId);
+
+        if (booking.getStatus() == BookingStatus.REJECTED) {
+            return booking;
+        }
+
+        booking.setStatus(BookingStatus.REJECTED);
+        return bookingRepository.save(booking);
+    }
+
+    @Override
     public BookingEntity updateBooking(
         BigInteger bookingId,
         BookingRequest request

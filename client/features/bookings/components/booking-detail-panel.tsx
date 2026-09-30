@@ -1,9 +1,10 @@
-import { CalendarDays, Clock, MapPin, Pencil, UserRound, X } from "lucide-react";
+import { CalendarDays, Clock, MapPin, UserRound, X } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { AcceptBookingButton } from "@/features/bookings/components/accept-booking-button";
 import { BookingStatusBadge } from "@/features/bookings/components/booking-status-badge";
-import { CancelBookingButton } from "@/features/bookings/components/cancel-booking-button";
+import { RejectBookingButton } from "@/features/bookings/components/reject-booking-button";
 import { buildBookingSearchParams } from "@/features/bookings/schemas/booking-query";
 import type {
   Attendee,
@@ -156,23 +157,19 @@ export function BookingDetailPanel({
       </div>
 
       <div className="flex-1 space-y-xl overflow-y-auto p-lg">
-        <div className="grid grid-cols-2 gap-sm">
-          {/* Reserved: this task has no edit endpoint or edit page. */}
-          <button
-            type="button"
-            disabled
-            title="Editing bookings is not part of this phase."
-            className="inline-flex h-9 cursor-not-allowed items-center justify-center gap-xs rounded-lg border border-border bg-surface-container px-md text-label-md text-muted-foreground opacity-50"
-          >
-            <Pencil className="size-4" aria-hidden="true" />
-            Edit
-          </button>
-          <CancelBookingButton
-            bookingId={entry.booking.bookingId}
-            title={entry.booking.title}
-            disabled={entry.booking.status === "CANCELLED"}
-          />
-        </div>
+        {entry.booking.status === "PENDING" ||
+        entry.booking.status === "AWAITING_HOST" ? (
+          <div className="grid grid-cols-2 gap-sm">
+            <RejectBookingButton
+              bookingId={entry.booking.bookingId}
+              title={entry.booking.title}
+            />
+            <AcceptBookingButton
+              bookingId={entry.booking.bookingId}
+              title={entry.booking.title}
+            />
+          </div>
+        ) : null}
 
         <section className="space-y-md">
           <h3 className="text-label-md tracking-wider text-muted-foreground uppercase">

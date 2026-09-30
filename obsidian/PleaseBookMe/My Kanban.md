@@ -6,8 +6,6 @@ kanban-plugin: board
 
 ## Not Started
 
-- [ ] Add columns to Resource page
-- [ ] Build Google Calendar synchronization service
 - [ ] Add notification preference setup to WorkspaceProvisioningService
 - [ ] Set up image storage
 - [ ] Add debounced feature for search bars
@@ -23,9 +21,11 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] Rename the kinetic BarbershopBookingWidget to classic
-- [ ] Add Accept Booking feature to Booking page
 - [ ] Build Email notification service using RabbitMQ
+- [ ] Build a edit window like Notion in the Booking page
+- [ ] Drop the `Edit` button on the Booking page
+- [ ] Build Google Calendar synchronization service
+- [ ] Add columns to Resource page
 
 
 ## Reviewing
@@ -35,6 +35,9 @@ kanban-plugin: board
 ## Completed
 
 **Complete**
+- [x] Add `Reject Booking` feature to the Booking page
+- [x] Add `Accept Booking` feature to the Booking page
+- [x] Rename the kinetic BarbershopBookingWidget to classic
 - [x] Move `BarbershopService` to a new `booking` directory in orchestration service
 
 

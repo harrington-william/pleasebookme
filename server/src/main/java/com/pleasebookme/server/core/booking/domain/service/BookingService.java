@@ -23,6 +23,10 @@ public interface BookingService {
 
     BookingEntity cancelBooking(BigInteger bookingId);
 
+    BookingEntity acceptBooking(BigInteger bookingId);
+
+    BookingEntity rejectBooking(BigInteger bookingId);
+
     BookingEntity updateBooking(
         BigInteger bookingId,
         BookingRequest request

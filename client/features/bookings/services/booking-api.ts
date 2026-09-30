@@ -12,3 +12,25 @@ export async function cancelBooking(bookingId: number): Promise<Booking> {
     throw new ApiRequestError(normalizeApiError(error));
   }
 }
+
+export async function acceptBooking(bookingId: number): Promise<Booking> {
+  try {
+    const response = await bffClient.put<Booking>(
+      `/bookings/${bookingId}/accept`
+    );
+    return response.data;
+  } catch (error) {
+    throw new ApiRequestError(normalizeApiError(error));
+  }
+}
+
+export async function rejectBooking(bookingId: number): Promise<Booking> {
+  try {
+    const response = await bffClient.put<Booking>(
+      `/bookings/${bookingId}/reject`
+    );
+    return response.data;
+  } catch (error) {
+    throw new ApiRequestError(normalizeApiError(error));
+  }
+}
