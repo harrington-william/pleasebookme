@@ -107,6 +107,32 @@ export async function cancelBookingOnPlatform(
   return response.data;
 }
 
+export async function acceptBookingOnPlatform(
+  accessToken: string,
+  bookingId: number
+): Promise<Booking> {
+  const response = await platformClient().put<Booking>(
+    `${BOOKING_BASE}/${bookingId}/accept`,
+    null,
+    { headers: bearer(accessToken) }
+  );
+
+  return response.data;
+}
+
+export async function rejectBookingOnPlatform(
+  accessToken: string,
+  bookingId: number
+): Promise<Booking> {
+  const response = await platformClient().put<Booking>(
+    `${BOOKING_BASE}/${bookingId}/reject`,
+    null,
+    { headers: bearer(accessToken) }
+  );
+
+  return response.data;
+}
+
 /**
  * Assembles one page of bookings with one batched fetch per lookup surface.
  */

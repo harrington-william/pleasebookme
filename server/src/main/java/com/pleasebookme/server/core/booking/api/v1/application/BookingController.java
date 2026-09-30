@@ -58,6 +58,16 @@ public class BookingController {
         return BookingResponse.from(bookingService.cancelBooking(bookingId));
     }
 
+    @PutMapping("/{bookingId}/accept")
+    public BookingResponse acceptBooking(@PathVariable BigInteger bookingId) {
+        return BookingResponse.from(bookingService.acceptBooking(bookingId));
+    }
+
+    @PutMapping("/{bookingId}/reject")
+    public BookingResponse rejectBooking(@PathVariable BigInteger bookingId) {
+        return BookingResponse.from(bookingService.rejectBooking(bookingId));
+    }
+
     @PutMapping("/{bookingId}")
     public BookingResponse updateBooking(
         @PathVariable BigInteger bookingId,
